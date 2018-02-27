@@ -4,7 +4,7 @@ namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Client\DetrackClient;
 
-abstract class Model{
+abstract class Model implements \JsonSerializable{
   protected $client;
   public function setClient(DetrackClient $client){
     $this->client = $client;
@@ -27,6 +27,10 @@ abstract class Model{
   }
   public function __set($key,$value){
     $this->attributes[$key] = $value;
+  }
+  //so that PHP's json_encode can understand
+  public function jsonSerialize(){
+    return $this->attributes;
   }
 }
 
