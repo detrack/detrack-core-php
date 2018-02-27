@@ -50,43 +50,58 @@ trait DeliveryMiscActions{
   public function bulkSaveDeliveries($deliveries){
     $apiPath = "deliveries/create.json";
     $dataArray = $deliveries;
-    $response = $this->sendData($apiPath,$dataArray);
+    $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
     $failedCreates = [];
     $failedEitherWay = [];
     foreach($response->results as $responseResult){
       if($responseResult->status == "failed"){
         foreach($responseResult->errors as $error){
           if($error->code == Delivery::ERROR_CODE_DELIVERY_ALREADY_EXISTS){
-            //create has failed because it already exists
-            break;
+            /*create has failed because it already exists
+             find the Delivery object in the original $dataArray array, and push it to $failedCreates
+             we must push the original delivery object in the $deliveries array instead of the response result,
+             or updates will be lost.
+            */
+            foreach($deliveries as $deliveriesKey=>$delivery){
+              if(["date"=>$responseResult->date,"do"=>$responseResult->do]==$delivery->getIdentifier()){
+                  array_push($failedCreates,$delivery);
+                  unset($deliveries[$deliveriesKey]); //unset for faster search next iteration
+              }
+            }
+            array_push($failedCreates,$responseResult);
           }else{
             //create failed because of some other reason. ignore.
-            array_push($failedEitherWay,$responseResult);
-            continue 2;
+            //once again, we must push the original delivery object, or information will be lost.
+            foreach($deliveries as $deliveriesKey=>$delivery){
+              if(["date"=>$responseResult->date,"do"=>$responseResult->do]==$delivery->getIdentifier()){
+                  array_push($failedEitherWay,$delivery);
+                  unset($deliveries[$deliveriesKey]); //unset for faster search next iteration
+              }
+            }
           }
         }
-        unset($responseResult->status);
-        unset($responseResult->errors);
-        array_push($failedCreates,$responseResult);
       }
+    }
+    //if all the creates succeeded, there is no need to try update
+    if(count($failedCreates)==0){
+      return true;
     }
     //now call update
     $apiPath = "deliveries/update.json";
     $dataArray = $failedCreates;
-    $response = $this->sendData($apiPath,$dataArray);
-    if($response->info->failed==0){
-      if(count($failedEitherWay)==0){
-        return true;
-      }else{
-        return $failedEitherWay;
-      }
-    }else{
+    $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
+    if($response->info->status!="ok"){
+      throw new \Exception("Something broke:".json_encode($response));
+    }
+    if($response->info->failed!=0){
       foreach($response->results as $responseResult){
         if($responseResult->status=="failed"){
           array_push($failedEitherWay,$responseResult);
         }
       }
       return $failedEitherWay;
+    }else{
+      return true;
     }
   }
   /**

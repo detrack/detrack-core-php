@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Factory\DeliveryFactory;
+
 use Carbon\Carbon;
 class DetrackClientTest extends TestCase
 {
@@ -28,7 +30,30 @@ class DetrackClientTest extends TestCase
   * @covers DetrackClient::bulkSaveDeliveries();
   */
   public function testBulkCreateDeliveries(){
-    $this->assertTrue(true);
+    $newFactory = new DeliveryFactory($this->client);
+    $newDeliveries = $newFactory->createFakes(rand(2,30));
+    //ensure nothing broke during the bulkSaveDeliveries call
+    $this->assertTrue($this->client->bulkSaveDeliveries($newDeliveries));
+    //now we try mixing create and update and see how it goes
+    $newDeliveries2 = $newFactory->createFakes(rand(2,30));
+    echo "\nnewDeliveries: " . count($newDeliveries);
+    echo "\nnewDeliveries: " . count($newDeliveries2);
+    echo "test: " . $newDeliveries2[0]->do;
+    foreach($newDeliveries as $newDelivery){
+      //modify some fields
+      $newDelivery->instructions = "lorem ipsum bottom kek";
+    }
+    $combinedDeliveries = array_merge_recursive($newDeliveries,$newDeliveries2);
+    shuffle($combinedDeliveries);
+    //ensure nothing broke during the bulkSaveDeliveries call
+    $this->assertTrue($this->client->bulkSaveDeliveries($combinedDeliveries));
+    //sample one random delivery from $newDeliveries and $newDeliveries2
+    $sampleDelivery = $newDeliveries[rand(0,count($newDeliveries)-1)];
+    $sampleDelivery2 = $newDeliveries2[rand(0,count($newDeliveries2)-1)];
+    //test if update worked
+    $this->assertEquals("lorem ipsum bottom kek",$this->client->findDelivery($sampleDelivery->getIdentifier())->instructions);
+    //test if create worked
+    $this->assertNotNull($this->client->findDelivery($sampleDelivery2->getIdentifier()));
   }
 }
 
