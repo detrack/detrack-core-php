@@ -3,10 +3,10 @@
 namespace Detrack\DetrackCore\Factory;
 
 abstract class Factory{
-    private static $client;
-
+    protected static $defaultClient;
+    protected $client;
     public static function setDefaultClient(DetrackClient $client){
-      static::$client = $client;
+      static::$defaultClient = $client;
     }
 }
 

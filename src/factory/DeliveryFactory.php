@@ -10,8 +10,8 @@ use Detrack\DetrackCore\Model\Delivery;
 class DeliveryFactory extends Factory{
   public function __construct(DetrackClient $client=NULL){
     if($client==NULL){
-      if(static::client!=NULL){
-        $client = static::client;
+      if(static::$defaultClient!=NULL){
+        $client = static::$defaultClient;
       }else{
         throw new NoClientAttachedException("No client passed in factory constructor, or no default client set");
       }
@@ -30,7 +30,7 @@ class DeliveryFactory extends Factory{
     for($i=0;$i<$num;$i++){
       $newDelivery = new Delivery([
         "date"=>\Carbon\Carbon::now()->toDateString(),
-        "do"=>rand(0,99999999999),
+        "do"=>rand(0,99999999999)."-".\Carbon\Carbon::now()->toTimeString(),
         "address"=>"Null island"
       ]);
       array_push($newArray, $newDelivery);
