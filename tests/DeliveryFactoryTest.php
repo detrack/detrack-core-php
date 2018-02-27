@@ -25,6 +25,11 @@ class DeliveryFactoryTest extends TestCase
     $randomNumber = rand(0,99);
     $newDeliveries = $newFactory->createFakes($randomNumber);
     $this->assertTrue(is_array($newDeliveries));
-    $this->assertEquals("Detrack\DetrackCore\Model\Delivery",get_class($newDeliveries[rand(0,$randomNumber)]));
+    //sample one delivery and check
+    $sampleDelivery = $newDeliveries[rand(0,count($newDeliveries)-1)];
+    $this->assertEquals("Detrack\DetrackCore\Model\Delivery",get_class($sampleDelivery));
+    $this->assertNotNull($sampleDelivery->do);
+    $this->assertNotNull($sampleDelivery->date);
+    $this->assertNotNull($sampleDelivery->address);
   }
 }
