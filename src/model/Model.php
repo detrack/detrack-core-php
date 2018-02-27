@@ -28,9 +28,23 @@ abstract class Model implements \JsonSerializable{
   public function __set($key,$value){
     $this->attributes[$key] = $value;
   }
-  //so that PHP's json_encode can understand
+  /**
+  * Return attributes that PHP's json_encode will act on
+  *
+  * @return Array the model's array attributes
+  */
   public function jsonSerialize(){
     return $this->attributes;
+  }
+  /**
+  * Defines __toString() magic method for debugging purposes
+  *
+  * For now, calls json_encode on itself (and thus jsonSerialize()).
+  *
+  * @return String String representation of the model
+  */
+  public function __toString(){
+    return json_encode($this);
   }
 }
 
