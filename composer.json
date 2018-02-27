@@ -1,0 +1,27 @@
+{
+    "name": "detrack/detrack-core",
+    "description": "Core library for developers working with the Detrack API",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "phpunit/phpunit": "^6.5",
+        "vlucas/phpdotenv": "^2.4",
+        "nesbot/carbon": "^1.22"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Chester Koh",
+            "email": "chester@detrack.com"
+        },
+        {
+            "name": "chesnutcase",
+            "email": "chester8991@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4" : {
+            "Detrack\\DetrackCore\\" : "src"
+        }
+    }
+}
