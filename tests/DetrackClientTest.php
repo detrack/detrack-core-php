@@ -36,8 +36,6 @@ class DetrackClientTest extends TestCase
     $this->assertTrue($this->client->bulkSaveDeliveries($newDeliveries));
     //now we try mixing create and update and see how it goes
     $newDeliveries2 = $newFactory->createFakes(rand(101,201));
-    echo "\nnewDeliveries: " . count($newDeliveries);
-    echo "\nnewDeliveries: " . count($newDeliveries2);
     foreach($newDeliveries as $newDelivery){
       //modify some fields
       $newDelivery->instructions = "lorem ipsum bottom kek";
@@ -71,6 +69,20 @@ class DetrackClientTest extends TestCase
       array_push($combinedDeliveryIdentifiers,$combinedDelivery->getIdentifier());
     }
     $this->assertEquals(count($combinedDeliveries),count($this->client->bulkFindDeliveries($combinedDeliveryIdentifiers)));
+    return $combinedDeliveries;
+  }
+  /**
+  * Test the findDeliveriesByDate function to see if we can list all deliveries created today
+  *
+  * @depends testBulkFindDeliveries
+  *
+  * @covers DeliveryMiscActions::findDeliveriesByDate
+  */
+  public function testFindDeliveriesByDate($combinedDeliveries){
+    $receivedDeliveries = $this->client->findDeliveriesByDate($combinedDeliveries[0]->date);
+    $this->assertInstanceOf(Delivery::class, $receivedDeliveries[rand(0,count($receivedDeliveries))]);
+    $this->assertGreaterThanOrEqual(count($combinedDeliveries),count($receivedDeliveries));
+    return $combinedDeliveries;
   }
 }
 

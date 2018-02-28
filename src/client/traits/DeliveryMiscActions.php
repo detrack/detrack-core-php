@@ -8,6 +8,7 @@ namespace Detrack\DetrackCore\Client\Traits;
 * WHY PHP WHY
 */
 use Detrack\DetrackCore\Model\Delivery;
+use Carbon\Carbon;
 
 trait DeliveryMiscActions{
   /**
@@ -46,7 +47,7 @@ trait DeliveryMiscActions{
   *
   * @param Array $paramArray an array of deliveries or delivery identifiers to findDelivery
   *
-  * @return Array array of deliveries
+  * @return Array array of Delivery objects
   */
   public function bulkFindDeliveries($paramArray){
     //standardise array objects into identifiers;
@@ -77,6 +78,26 @@ trait DeliveryMiscActions{
       }
     }
     return $resultsArray;
+  }
+  /**
+  * Get all deliveries scheduled for a certain date
+  *
+  * @param String $date the date (YYYY-MM-DD) you want to retrieve $deliveries
+  *
+  * @return Array an array of deliveries scheduled for that date
+  */
+  public function findDeliveriesByDate($date){
+    $data = new \stdClass();
+    $data->date = $date;
+    $apiPath = "deliveries/view/all.json";
+    $response = json_decode((String) $this->sendData($apiPath,$data)->getBody());
+    $deliveries = [];
+    if($response->info->status=="ok"){
+      foreach($response->deliveries as $delivery){
+        array_push($deliveries,new Delivery($delivery));
+      }
+    }
+    return $deliveries;
   }
   /**
   * Bulk save deliveries. This is similar to Delivery::save, but does so in only two HTTP requests per 100 deliveries.
