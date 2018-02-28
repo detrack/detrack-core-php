@@ -84,6 +84,31 @@ class DetrackClientTest extends TestCase
     $this->assertGreaterThanOrEqual(count($combinedDeliveries),count($receivedDeliveries));
     return $combinedDeliveries;
   }
+  /**
+  * Tests the bulkDeleteDeliveries function to see if we can delete some of the deliveries we created today
+  *
+  * @depends testFindDeliveriesByDate
+  *
+  * @covers DeliveryMiscActions::bulkDeleteDeliveries
+  */
+  public function testBulkDeleteDeliveries($combinedDeliveries){
+    //choose a subset of deliveries to deletes
+    $toBeDeleted = array_slice($combinedDeliveries,0,rand(1,count($combinedDeliveries)));
+    $this->assertSame(true,$this->client->bulkDeleteDeliveries($toBeDeleted));
+    $this->assertSame([],$this->client->bulkFindDeliveries($toBeDeleted));
+    return array_slice($combinedDeliveries,count($toBeDeleted));
+  }
+  /**
+  * Test the deleteDeliveriesByDate function to see if we can delete all deliveries created today
+  *
+  * @depends testBulkDeleteDeliveries
+  *
+  * @covers DeliveryMiscActions::deleteDeliveriesByDate
+  */
+  public function testDeleteDeliveriesByDate($combinedDeliveries){
+    $this->assertSame(true,$this->client->deleteDeliveriesByDate($combinedDeliveries[0]->date));
+    $this->assertSame([],$this->client->findDeliveriesByDate($combinedDeliveries[0]->date));
+  }
 }
 
  ?>

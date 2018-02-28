@@ -71,7 +71,7 @@ trait DeliveryMiscActions{
       $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
       if($response->info->status=="ok"){
         foreach($response->results as $responseResult){
-          if($responseResult->status="ok"){
+          if($responseResult->status=="ok"){
             array_push($resultsArray,new Delivery(array_filter(json_decode(json_encode($responseResult->delivery),true))));
           }
         }
@@ -199,21 +199,46 @@ trait DeliveryMiscActions{
         }
       }
     }
-    $response = $this->sendData($apiPath,$dataArray);
-    if($responseObj->info->status!="ok"){
+    $failedDeletes = [];
+    $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
+    if($response->info->status!="ok"){
       //handle errors
       return false;
     }else{
-      for($i=0;$i<count($response->results);$i++){
-        if($response->results[$i]->status!="failed"){
-          unset($response->results[$i]);
+      foreach($response->results as $responseResult){
+        if($responseResult->status!="ok"){
+          array_push($failedDeletes,new Delivery($responseResult));
         }
       }
-      if(count($response->results)!=0){
-        return $response->results;
-      }else{
+    }
+    if(count($failedDeletes)!=0){
+      return $failedDeletes;
+    }else{
+      return true;
+    }
+  }
+  /**
+  * Delete all deliveries scheduled for a certain date
+  *
+  * This may take some time, so please use sparingly
+  *
+  * @param String $date the date of which you want to delete all deliveries
+  *
+  * @return Boolean|Integer returns true if all the deliveries were deleted successfully, or the number of failed deletes. Returns false if something else broke.
+  */
+  public function deleteDeliveriesByDate(String $date){
+    $data = new \stdClass();
+    $data->date = $date;
+    $apiPath = "deliveries/delete/all.json";
+    $response = json_decode((String) $this->sendData($apiPath,$data)->getBody());
+    if($response->info->status=="ok"){
+      if($response->info->failed==0){
         return true;
+      }else{
+        return $response->info->failed;
       }
+    }else{
+      return false;
     }
   }
 }
