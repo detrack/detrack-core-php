@@ -36,8 +36,9 @@ trait DeliveryMiscActions{
       }
   }
   /**
-  * Bulk save deliveries. This is similar to Delivery::save, but does so in only two HTTP requests.
+  * Bulk save deliveries. This is similar to Delivery::save, but does so in only two HTTP requests per 100 deliveries.
   *
+  * It go through recursion if there are more than 100 deliveries passed in
   * Use this instead of multiple Delivery::save() calls to cut down the number of HTTP requests you have to make.
   * Supply an array of Delivery objects.
   * It first attempts "create" on every delivery object, collects the ones that failed because it already exists, then calls "update" on the rest.
@@ -48,6 +49,11 @@ trait DeliveryMiscActions{
   * @return Boolean|Array array of responses containing deliveries that failed either operation for either reason
   */
   public function bulkSaveDeliveries($deliveries){
+    //break up into separate requests
+    if(count($deliveries)>100){
+      $this->bulkSaveDeliveries(array_slice(array_values($deliveries),101));
+      $deliveries = array_slice($deliveries,0,100);
+    }
     $apiPath = "deliveries/create.json";
     $dataArray = $deliveries;
     $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
