@@ -27,6 +27,7 @@ trait DeliveryRepository{
     }else{
       static::create($this);
     }
+    $this->resetModifiedAttributes();
   }
   /**
   * Sends HTTP request to the create new delivery endpoint

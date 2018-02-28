@@ -31,14 +31,13 @@ class DetrackClientTest extends TestCase
   */
   public function testBulkCreateDeliveries(){
     $newFactory = new DeliveryFactory($this->client);
-    $newDeliveries = $newFactory->createFakes(rand(2,30));
+    $newDeliveries = $newFactory->createFakes(rand(2,10));
     //ensure nothing broke during the bulkSaveDeliveries call
     $this->assertTrue($this->client->bulkSaveDeliveries($newDeliveries));
     //now we try mixing create and update and see how it goes
-    $newDeliveries2 = $newFactory->createFakes(rand(2,30));
+    $newDeliveries2 = $newFactory->createFakes(rand(2,10));
     echo "\nnewDeliveries: " . count($newDeliveries);
     echo "\nnewDeliveries: " . count($newDeliveries2);
-    echo "test: " . $newDeliveries2[0]->do;
     foreach($newDeliveries as $newDelivery){
       //modify some fields
       $newDelivery->instructions = "lorem ipsum bottom kek";

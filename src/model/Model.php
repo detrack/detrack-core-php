@@ -6,6 +6,13 @@ use Detrack\DetrackCore\Client\DetrackClient;
 
 abstract class Model implements \JsonSerializable{
   protected $client;
+  /**
+  * An associative array that stores what values have been updated since the last save() function calls
+  *
+  * We will store the names of the stored attributes in keys, not in values because it is faster
+  */
+  protected $modifiedAttributes = [];
+  protected static $requiredAttributes = [];
   public function setClient(DetrackClient $client){
     $this->client = $client;
     return $this;
@@ -26,15 +33,26 @@ abstract class Model implements \JsonSerializable{
     return $this->attributes[$key];
   }
   public function __set($key,$value){
+    $this->modifiedAttributes[$key] = true;
     $this->attributes[$key] = $value;
   }
   /**
   * Return attributes that PHP's json_encode will act on
   *
+  * Because the API will treat values entered as NULL as deleting, we will remove null values except where it was modified
+  *
   * @return Array the model's array attributes
   */
   public function jsonSerialize(){
-    return $this->attributes;
+    return array_filter($this->attributes,function($attribute){
+      return isset($this->modifiedAttributes[$attribute]) || in_array($attribute,static::$requiredAttributes);
+    },ARRAY_FILTER_USE_KEY);
+  }
+  /**
+  * Reset the modifiedAttributes array
+  */
+  protected function resetModifiedAttributes(){
+    $this->modifiedAttributes = [];
   }
   /**
   * Defines __toString() magic method for debugging purposes

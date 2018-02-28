@@ -8,7 +8,7 @@ class Delivery extends Model{
   use DeliveryRepository;
   /**
   * Attributes a delivery model has.
-  * Not all of these attributes are compulsory.
+  * Not all of these attributes are compulsory. Required values are to be specified in the $requiredAttributes static variable
   * Fields marked REQUIRED are required by the Detrack API for the most basic functionality.
   * Fields marked OPTIONAL are optional but still utilised by the Detrack Backend System if you supply them.
   * Fields marked EXTRA (or not marked) are arbitary custom fields that are up to the discretion of the Detrack user to decide what they are used for.
@@ -89,6 +89,10 @@ class Delivery extends Model{
     "qty" => NULL,
     "uom" => NULL,
   ];
+  /**
+  * Required attributes are defined here
+  */
+  protected static $requiredAttributes = ["date","do","address"];
   /**
   * Define error code constants returned by the API when calling delivery endpoints
   *
