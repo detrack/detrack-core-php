@@ -23,6 +23,7 @@ abstract class Model implements \JsonSerializable{
     foreach($this->attributes as $key=>$value){
       if(isset($attr[$key])){
         $this->attributes[$key] = $attr[$key];
+        $this->modifiedAttributes[$key] = true;
       }
     }
     if($client!=NULL){
@@ -45,7 +46,11 @@ abstract class Model implements \JsonSerializable{
   */
   public function jsonSerialize(){
     return array_filter($this->attributes,function($attribute){
-      return isset($this->modifiedAttributes[$attribute]) || in_array($attribute,static::$requiredAttributes);
+      /*conditions for not getting filtered out:
+      * Must not be NULL
+      * If NULL, must have been modified to NULL and not initialised by default as NULL
+      */
+      return !is_null($this->attributes["$attribute"]) ? true : (isset($this->modifiedAttributes[$attribute]) || in_array($attribute,static::$requiredAttributes));
     },ARRAY_FILTER_USE_KEY);
   }
   /**
