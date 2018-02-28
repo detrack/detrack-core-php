@@ -36,10 +36,53 @@ trait DeliveryMiscActions{
       }
   }
   /**
+  * Bulk find deliveries.
+  *
+  * This is similar to DeliveryMiscActions::findDelivery, but does so in only one HTTP request per 100 $deliveries
+  * If you pass an array of more than 100 elements, it will break up into separate HTTP requests
+  * Use this instead of multiple DeliveryMiscActions::findDelivery() calls to cut down on the number of HTTP requests you have to make
+  * Supply an array of Delivery objects or an array of Delivery Indentifier Associative arrays
+  * Please use sparingly.
+  *
+  * @param Array $paramArray an array of deliveries or delivery identifiers to findDelivery
+  *
+  * @return Array array of deliveries
+  */
+  public function bulkFindDeliveries($paramArray){
+    //standardise array objects into identifiers;
+    $paramArray = array_filter(array_map(function($param){
+      if($param instanceof Delivery){
+        return $param->getIdentifier();
+      }else if(is_array($param)){
+        if(isset($param["date"]) && isset($param["do"])){
+          return ["date"=>$param["date"],"do"=>$param["do"]];
+        }
+      }else{
+        return NULL;
+      }
+    },$paramArray));
+    //break up into separate requests
+    $resultsArray = [];
+    $paramArray = array_chunk($paramArray,100);
+    foreach($paramArray as $paramArrayChunk){
+      $apiPath = "deliveries/view.json";
+      $dataArray = $paramArrayChunk;
+      $response = json_decode((String) $this->sendData($apiPath,$dataArray)->getBody());
+      if($response->info->status=="ok"){
+        foreach($response->results as $responseResult){
+          if($responseResult->status="ok"){
+            array_push($resultsArray,new Delivery(array_filter(json_decode(json_encode($responseResult->delivery),true))));
+          }
+        }
+      }
+    }
+    return $resultsArray;
+  }
+  /**
   * Bulk save deliveries. This is similar to Delivery::save, but does so in only two HTTP requests per 100 deliveries.
   *
-  * It go through recursion if there are more than 100 deliveries passed in
-  * Use this instead of multiple Delivery::save() calls to cut down the number of HTTP requests you have to make.
+  * It goes through recursion if there are more than 100 deliveries passed in
+  * Use this instead of multiple Delivery::save() calls to cut down on the number of HTTP requests you have to make.
   * Supply an array of Delivery objects.
   * It first attempts "create" on every delivery object, collects the ones that failed because it already exists, then calls "update" on the rest.
   * Please use sparingly.
@@ -51,7 +94,7 @@ trait DeliveryMiscActions{
   public function bulkSaveDeliveries($deliveries){
     //break up into separate requests
     if(count($deliveries)>100){
-      $this->bulkSaveDeliveries(array_slice(array_values($deliveries),101));
+      $this->bulkSaveDeliveries(array_slice(array_values($deliveries),100));
       $deliveries = array_slice($deliveries,0,100);
     }
     $apiPath = "deliveries/create.json";
