@@ -1,3 +1,4 @@
 /vendor/
 phpunit
 .env
+composer.lock
