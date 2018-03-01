@@ -109,6 +109,50 @@ class DetrackClientTest extends TestCase
     $this->assertSame(true,$this->client->deleteDeliveriesByDate($combinedDeliveries[0]->date));
     $this->assertSame([],$this->client->findDeliveriesByDate($combinedDeliveries[0]->date));
   }
+  /**
+  * Tests if we can download POD
+  *
+  * @covers Delivery::getPODImage
+  */
+  public function testGetPODImage(){
+    try{
+      $dotenv = new Dotenv\Dotenv(__DIR__ . "/..");
+      $dotenv->load();
+    }catch(Exception $ex){
+      throw new RuntimeException(".env file not found. Please refer to .env.example and create one.");
+    }
+    $sampleDO = getenv("SAMPLE_DELIVERY_DO");
+    $sampleDate = getenv("SAMPLE_DELIVERY_DATE");
+    if($sampleDO == NULL || $sampleDate == NULL){
+      $this->markTestSkipped("Sample delivery details not specified in .env. Cannot proceed with testing POD download.");
+    }
+    $sampleDelivery = $this->client->findDelivery(["date"=>$sampleDate,"do"=>$sampleDO]);
+    if($sampleDelivery==NULL){
+      $this->markTestSkipped("Cannot find delivery based on details specified in .env. Please double-check with the dashboard.");
+    }else{
+      $numImages = getenv("SAMPLE_DELIVERY_POD_COUNT");
+      $numImages = (int) $numImages;
+      if(!is_int($numImages) || $numImages < 0 || $numImages > 5){
+        $this->markTestSkipped("Invalid SAMPLE_DELIVERY_POD_COUNT specified in .env. Please double check.");
+      }
+      for($i=1;$i<=5;$i++){
+        $img = $sampleDelivery->getPODImage($i);
+        if($i<=$numImages){
+          $this->assertInstanceOf(\Intervention\Image\Image::class,$img);
+          $this->assertNotNull($img->width());
+          $this->assertNotNull($img->height());
+          if(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR")!=NULL){
+            if(!file_exists(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do))){
+              mkdir(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do));
+            }
+            $img->save(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do).DIRECTORY_SEPARATOR.$i.".jpg");
+          }
+        }else{
+          $this->assertNull($img);
+        }
+      }
+    }
+  }
 }
 
  ?>

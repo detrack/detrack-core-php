@@ -3,6 +3,7 @@
 namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Repository\DeliveryRepository;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class Delivery extends Model{
   use DeliveryRepository;
@@ -114,6 +115,27 @@ class Delivery extends Model{
   */
   public function getIdentifier(){
     return ["date"=>$this->date,"do"=>$this->do];
+  }
+  /**
+  * Downloads the image of POD with specified index as an Intervention\Image instanceof
+  *
+  * @param Integer $no Which image file (1-5) to Downloads
+  *
+  * @return Intervention\Image|NULL the POD image file, NULL if not found
+  */
+  public function getPODImage($no){
+    $no = (int) $no;
+    if(!is_int($no) || $no < 1 || $no > 5){
+      throw new \RuntimeException("POD Image Number must be between 1 to 5");
+    }
+    try{
+      $response = $this->client->sendData("deliveries/photo_".$no.".json",$this->getIdentifier())->getBody();
+      $img = Image::make($response);
+      return $img;
+    }catch(\GuzzleHttp\Exception\ClientException $ex){
+      //we got 404'd
+      return NULL;
+    }
   }
 }
 
