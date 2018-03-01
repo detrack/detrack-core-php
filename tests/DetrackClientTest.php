@@ -143,7 +143,7 @@ class DetrackClientTest extends TestCase
           $this->assertNotNull($img->height());
           if(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR")!=NULL){
             if(!file_exists(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do))){
-              mkdir(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do));
+              mkdir(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do),0750,true);
             }
             $img->save(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do).DIRECTORY_SEPARATOR.$i.".jpg");
           }
