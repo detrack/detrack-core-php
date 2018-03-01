@@ -121,6 +121,8 @@ class Delivery extends Model{
   *
   * @param Integer $no Which image file (1-5) to Downloads
   *
+  * @throws RuntimeException if param is not an integer from 1 to 5
+  *
   * @return Intervention\Image|NULL the POD image file, NULL if not found
   */
   public function getPODImage($no){
@@ -136,6 +138,41 @@ class Delivery extends Model{
       //we got 404'd
       return NULL;
     }
+  }
+  /**
+  * Downloads the POD in pdf format. Returns a binary string.
+  *
+  * This does not automatically save the file to disk. If that's what you're looking for, use downloadPODPDF instead.
+  *
+  * @return String|NULL the binary data of the pdf, NULL if no pdf is present
+  */
+  public function getPODPDF(){
+    try{
+      $response = (String) $this->client->sendData("deliveries/export.pdf",$this->getIdentifier())->getBody();
+      return $response;
+    }catch(\GuzzleHttp\Exception\ClientException $ex){
+      //we got 404'd
+      return NULL;
+    }
+  }
+  /**
+  * Downloads the POD in pdf format and writes it to the given path.
+  *
+  * This automatically saves to disk. If you only want the file data without saving, use getPODPDF instead.
+  *
+  * @param String $path The path you want to write to
+  *
+  * @throws Exception if the path is not writable
+  * @throws RuntimeException if there is no POD PDF on the server
+  * @return boolean if download succeeds
+  */
+  public function downloadPODPDF($path){
+    $response = $this->getPODPDF();
+    if(is_null($response)){
+      throw new \RuntimeException("There is no POD PDF available to retrieve for this delivery, or wrong delivery details were given");
+    }
+    $file = fopen($path,"w");
+    return (bool) fwrite($file, $response);
   }
 }
 
