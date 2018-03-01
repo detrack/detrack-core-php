@@ -4,6 +4,7 @@ namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Repository\DeliveryRepository;
 use Intervention\Image\ImageManagerStatic as Image;
+use \RuntimeException;
 
 class Delivery extends Model{
   use DeliveryRepository;
@@ -119,7 +120,7 @@ class Delivery extends Model{
   /**
   * Downloads the image of POD with specified index as an Intervention\Image instanceof
   *
-  * @param Integer $no Which image file (1-5) to Downloads
+  * @param Integer $no Which image file (1-5) to download
   *
   * @throws RuntimeException if param is not an integer from 1 to 5
   *
@@ -137,6 +138,33 @@ class Delivery extends Model{
     }catch(\GuzzleHttp\Exception\ClientException $ex){
       //we got 404'd
       return NULL;
+    }
+  }
+  /**
+  * Downloads and saves an image of the proof of delivery to the path (with filename) specified.
+  *
+  * This automatically saves the file to disk. If you want to do some image editing before saving, please use getPODImage instead.
+  *
+  * @param Integer $no Which image file (1-5) to download
+  * @param String $path the path you want to download the file to (including the name)
+  *
+  * @throws Exception if the path is not writable
+  * @throws RuntimeException if there is no POD image with the specified index on the server, or the delivery is not found
+  *
+  * @return Boolean returns true if the download is successful
+  */
+  public function downloadPODImage($no,$path){
+    $img = $this->getPODImage($no);
+    if($img==NULL){
+      throw new \RuntimeException("POD Image does not exist");
+    }
+    $dir = substr($path,0,strrpos($path,DIRECTORY_SEPARATOR));
+    //if path is /tmp/img/pod.jpg, should return /tmp/img
+    if(!file_exists($dir)){
+      mkdir($dir,0750,true);
+    }else{
+      $img->save($path);
+      return true;
     }
   }
   /**
@@ -160,7 +188,7 @@ class Delivery extends Model{
   *
   * This automatically saves to disk. If you only want the file data without saving, use getPODPDF instead.
   *
-  * @param String $path The path you want to write to
+  * @param String $path The path you want to write to (with filename)
   *
   * @throws Exception if the path is not writable
   * @throws RuntimeException if there is no POD PDF on the server

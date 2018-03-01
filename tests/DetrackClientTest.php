@@ -8,6 +8,7 @@ use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivery;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
 
+use Intervention\Image\ImageManagerStatic as Image;
 use Carbon\Carbon;
 class DetrackClientTest extends TestCase
 {
@@ -149,6 +150,52 @@ class DetrackClientTest extends TestCase
           }
         }else{
           $this->assertNull($img);
+        }
+      }
+    }
+  }
+  /**
+  * Tests if we can download POD images and write to disk
+  *
+  * @covers Delivery::downloadPODPDF
+  */
+  public function testDownloadPODImage(){
+    try{
+      $dotenv = new Dotenv\Dotenv(__DIR__ . "/..");
+      $dotenv->load();
+    }catch(Exception $ex){
+      throw new RuntimeException(".env file not found. Please refer to .env.example and create one.");
+    }
+    $sampleDO = getenv("SAMPLE_DELIVERY_DO");
+    $sampleDate = getenv("SAMPLE_DELIVERY_DATE");
+    if($sampleDO == NULL || $sampleDate == NULL){
+      $this->markTestSkipped("Sample delivery details not specified in .env. Cannot proceed with testing POD download.");
+    }
+    $sampleDelivery = $this->client->findDelivery(["date"=>$sampleDate,"do"=>$sampleDO]);
+    if($sampleDelivery==NULL){
+      $this->markTestSkipped("Cannot find delivery based on details specified in .env. Please double-check with the dashboard.");
+    }else{
+      if(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR")==NULL){
+        $this->markTestSkipped("No directory specified in .env for saving sample POD. Please do so to execute this test.");
+      }else{
+        $numImages = getenv("SAMPLE_DELIVERY_POD_COUNT");
+        $numImages = (int) $numImages;
+        if(!is_int($numImages) || $numImages < 0 || $numImages > 5){
+          $this->markTestSkipped("Invalid SAMPLE_DELIVERY_POD_COUNT specified in .env. Please double check.");
+        }
+        for($i=1;$i<=5;$i++){
+          $path = getenv("SAMPLE_DELIVERY_POD_SAVE_DIR").str_replace(" ","",$sampleDelivery->do).DIRECTORY_SEPARATOR.$i.".jpg";
+          if($i<=$numImages){
+            $this->assertTrue($sampleDelivery->downloadPODImage($i,$path));
+            $this->assertTrue(file_exists($path));
+            $img = Image::make($path);
+            $this->assertNotNull($img);
+            $this->assertNotNull($img->width());
+            $this->assertNotNull($img->height());
+          }else{
+            $this->expectException(\RuntimeException::class);
+            $this->assertTrue($sampleDelivery->downloadPODImage($i,$path));
+          }
         }
       }
     }
