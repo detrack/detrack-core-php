@@ -3,6 +3,7 @@
 namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Repository\DeliveryRepository;
+use Detrack\DetrackCore\Model\ItemCollection;
 use Intervention\Image\ImageManagerStatic as Image;
 use \RuntimeException;
 
@@ -90,6 +91,7 @@ class Delivery extends Model{
     "cmts" => NULL,
     "qty" => NULL,
     "uom" => NULL,
+    "items" => [] //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
   ];
   /**
   * Required attributes are defined here
@@ -107,6 +109,13 @@ class Delivery extends Model{
   const ERROR_CODE_DELIVERY_NOT_FOUND = "1003";
   const ERROR_CODE_DELIVERY_NOT_EDITABLE = "1004";
   const ERROR_CODE_DELIVERY_NOT_DELETABLE = "1005";
+  /**
+  * Constructor function for Delivery model
+  */
+  public function __construct(){
+    parent::__construct();
+    $this->items = new ItemCollection();
+  }
   /**
   * Get the unqiue idenitifier of the delivery object used to find the delivery object in the database
   *

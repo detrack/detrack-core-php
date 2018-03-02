@@ -11,16 +11,21 @@ class Item extends Model{
   * Fields marked EXTRA (or not marked) are arbitary custom fields that are up to the discretion of the Detrack user to decide what they are used for.
   * Required: sku, desc, qty;
   */
-  private $attributes = [
-    "sku", //REQUIRED: stock keeping unit or item number.
-    "po_no",
-    "batch_no",
-    "expiry",
-    "desc", //REQUIRED: desc of the item. If not supplied, an empty sting will be given to the API.
-    "cmts",
-    "qty", //REQUIRED: quantity of the item present in the delivery. If not supplied, "1" will be given to the API.
-    "uom",
-  ]
+  protected $attributes = [
+    "sku" => NULL, //REQUIRED: stock keeping unit or item number.
+    "po_no" => NULL,
+    "batch_no" => NULL,
+    "expiry" => NULL,
+    "desc" => NULL, //REQUIRED: desc of the item. If not supplied, an empty sting will be given to the API.
+    "cmts" => NULL,
+    "qty" => NULL, //REQUIRED: quantity of the item present in the delivery. If not supplied, "1" will be given to the API.
+    "uom" => NULL,
+  ];
+  /**
+  * Required attributes are defined here
+  */
+  protected static $requiredAttributes = ["sku","desc","qty"];
+
 }
 
  ?>
