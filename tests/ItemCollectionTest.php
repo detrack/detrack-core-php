@@ -70,10 +70,24 @@ class ItemCollectionTest extends TestCase{
     return $testCollection;
   }
   /**
+  * Tests if we can remove at element at a specific indexes
+  *
+  * @covers ItemCollection::removeAt
+  * @depends testAt
+  */
+  public function testRemoveAt($testCollection){
+    $index = rand(0,$testCollection->count() - 2); //dont remove the last one
+    $originalElement = $testCollection->at($index);
+    $testCollection->removeAt($index);
+    $this->assertNotNull($testCollection->at($index));
+    $this->assertNotEquals($originalElement,$testCollection->at($index));
+    return $testCollection;
+  }
+  /**
   * Tests if we can pop the last item in the collection
   *
   * @covers ItemCollection::pop
-  * @depends testLast
+  * @depends testRemoveAt
   */
   public function testPop($testCollection){
     $originalLength = $testCollection->count();

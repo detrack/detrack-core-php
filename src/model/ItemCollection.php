@@ -39,9 +39,25 @@ class ItemCollection extends \ArrayObject{
   * @return ItemCollection returns itself for method chaining
   */
   public function pop(){
+    return $this->removeAt($this->count()-1);
+  }
+  /**
+  * Removes element at given position
+  *
+  * @param int $pos position you want to remove
+  */
+  public function removeAt($pos){
     $iterator = $this->getIterator();
-    $iterator->seek($this->count()-1);
-    return $this->offsetUnset($iterator->key());
+    $iterator->seek($pos);
+    $this->offsetUnset($iterator->key());
+    return $this->resetKeys();
+  }
+  /**
+  * Reset the keys of this collection when a destructive method is called
+  *
+  */
+  private function resetKeys(){
+    return new ItemCollection(array_values($this->getArrayCopy()));
   }
   /**
   * Gets the item at the specified index
