@@ -24,6 +24,8 @@ class DeliveryFactory extends Factory{
   * Creates one more many delivery objects with the client and fake data automatically set
   *
   * @param Integer specify how many to create
+  *
+  * @return Array an array of fake deliveries
   */
   public function createFakes($num=1){
     $newArray = [];
