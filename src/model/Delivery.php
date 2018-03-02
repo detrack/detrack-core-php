@@ -113,9 +113,11 @@ class Delivery extends Model{
   * Constructor function for Delivery model
   */
   public function __construct($attr=[],$client=NULL){
-    parent::__construct();
+    //convert array/stdClass to array, and get rid of ''
+    $attr = array_filter(json_decode(json_encode($attr),true));
+    parent::__construct($attr,$client);
     //initialise items
-    if(isset($attr["items"]){
+    if(isset($attr["items"])){
       if(is_array($attr["items"])){
         $this->items = new ItemCollection($attr["items"]);
       }else if($attr["items"] instanceof ItemCollection){
