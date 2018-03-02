@@ -112,9 +112,18 @@ class Delivery extends Model{
   /**
   * Constructor function for Delivery model
   */
-  public function __construct(){
+  public function __construct($attr=[],$client=NULL){
     parent::__construct();
-    $this->items = new ItemCollection();
+    //initialise items
+    if(isset($attr["items"]){
+      if(is_array($attr["items"])){
+        $this->items = new ItemCollection($attr["items"]);
+      }else if($attr["items"] instanceof ItemCollection){
+        $this->items = $attr["items"];
+      }
+    }else{
+      $this->items = new ItemCollection();
+    }
   }
   /**
   * Get the unqiue idenitifier of the delivery object used to find the delivery object in the database
