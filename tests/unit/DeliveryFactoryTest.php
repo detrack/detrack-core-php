@@ -1,7 +1,5 @@
 <?php
 
-require_once "CreateClientTrait.php";
-
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Factory\DeliveryFactory;

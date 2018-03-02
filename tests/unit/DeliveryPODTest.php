@@ -1,7 +1,5 @@
 <?php
 
-require_once "CreateClientTrait.php";
-
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Model\Delivery;
@@ -16,7 +14,7 @@ class DeliveryPODTest extends TestCase{
   function setUp(){
     $this->createClient();
     try{
-      $dotenv = new Dotenv\Dotenv(__DIR__ . "/..");
+      $dotenv = new Dotenv\Dotenv(__DIR__ . "/../..");
       $dotenv->load();
     }catch(Exception $ex){
       throw new RuntimeException(".env file not found. Please refer to .env.example and create one.");

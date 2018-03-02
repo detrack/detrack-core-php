@@ -1,7 +1,5 @@
 <?php
 
-require_once "CreateClientTrait.php";
-
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Model\Item;
 use Detrack\DetrackCore\Model\ItemCollection;

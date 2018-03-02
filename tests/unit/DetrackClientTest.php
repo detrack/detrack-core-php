@@ -1,7 +1,5 @@
 <?php
 
-require_once "CreateClientTrait.php";
-
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
@@ -30,11 +28,11 @@ class DetrackClientTest extends TestCase
   */
   public function testBulkCreateDeliveries(){
     $newFactory = new DeliveryFactory($this->client);
-    $newDeliveries = $newFactory->createFakes(rand(101,201));
+    $newDeliveries = $newFactory->createFakes(rand(101,150));
     //ensure nothing broke during the bulkSaveDeliveries call
     $this->assertTrue($this->client->bulkSaveDeliveries($newDeliveries));
     //now we try mixing create and update and see how it goes
-    $newDeliveries2 = $newFactory->createFakes(rand(101,201));
+    $newDeliveries2 = $newFactory->createFakes(rand(101,150));
     foreach($newDeliveries as $newDelivery){
       //modify some fields
       $newDelivery->instructions = "lorem ipsum bottom kek";
