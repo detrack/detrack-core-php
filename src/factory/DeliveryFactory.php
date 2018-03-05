@@ -37,6 +37,7 @@ class DeliveryFactory extends Factory{
         "address"=>"Null island",
         "items"=>ItemFactory::fakes(rand(1,10))
       ]);
+      $newDelivery->setClient($this->client);
       array_push($newArray, $newDelivery);
     }
     return $newArray;
