@@ -8,7 +8,25 @@ use Detrack\DetrackCore\Model\Item;
 * Actually not a model, but I'll leave it here for now
 * And actually operates more like a stack......
 */
-class ItemCollection extends \ArrayObject{
+class ItemCollection extends \ArrayObject implements \JsonSerializable{
+  /**
+  * The constructor. Casts the supplied arrays to Item objects
+  *
+  * @param array $attr attributes of the items you want to initialise
+  *
+  */
+  public function __construct($attr=NULL){
+    if(is_array($attr)){
+      for($i=0;$i<count($attr);$i++){
+        if(is_array($attr[$i])){
+          $attr[$i] = new Item($attr[$i]);
+        }else if(!($attr[$i] instanceof Item)){
+          unset($attr[$i]);
+        }
+      }
+      parent::__construct(array_values($attr));
+    }
+  }
   /**
   * Pushes an item to the end of the collection
   *
@@ -94,6 +112,27 @@ class ItemCollection extends \ArrayObject{
     $iterator = $this->getIterator();
     $iterator->seek($this->count()-1);
     return $this->offsetGet($iterator->key());
+  }
+  /**
+  * Return attributes that PHP's json_encode will act on
+  *
+  * Because the API will treat values entered as NULL as deleting, we will remove null values except where it was modified
+  * Call json_encode on each Item object
+  *
+  * @return Array the model's array attributes
+  */
+  public function jsonSerialize(){
+    return $this->getArrayCopy();
+  }
+  /**
+  * Defines __toString() magic method for debugging purposes
+  *
+  * For now, calls json_encode on itself (and thus jsonSerialize()).
+  *
+  * @return String String representation of the model
+  */
+  public function __toString(){
+    return json_encode($this);
   }
 }
 
