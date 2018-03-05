@@ -36,7 +36,7 @@ $client = new DetrackClient($your_api_key);
 
 You must recreate this client object in every function scope where you wish to interact with the Detrack API. (see below)
 
-### Creating Deliveries
+## Creating Deliveries
 
 When your e-shop confirms payment from a customer, you need to send a request to us regarding the details of the delivery, so that we can automatically assign it to a free vehicle in your fleet. This is represented via the `Delivery` and `Item` objects.
 
@@ -47,7 +47,7 @@ There are three attributes that you must give the Delivery object before you sub
 
 So let's look at the different ways we can create deliveries:
 
-#### Via factories
+### Via factories
 
 ```
 use Detrack\DetrackCore\Factory\DeliveryFactory;
@@ -76,7 +76,7 @@ $delivery->instructions = "Tell recipient to come out and retrieve ice cream fro
 $delivery->save(); //submits the delivery to Detrack
 ```
 
-#### Via Class Constructor
+### Via Class Constructor
 
 If you detest the idea of factories, you can create the Delivery object by yourself, but you **must** attach the client object manually by calling the `setClient()` method before you call save.
 
@@ -111,7 +111,7 @@ Note that the `save()` function can be used for both creation and update of deli
 
 And that's it! You've submitted your first delivery to Detrack. If you have your vehicles set up correctly on the Detrack Control Panel, your system will automatically assign deliveries to your drivers and you can start tracking them through their other apps.
 
-### Adding items to deliveries
+## Adding items to deliveries
 
 While what is documented in the previous section is the bare minimum required to get your application integrated with Detrack, you should add more information that is useful to both your staff and your customers. The next point we shall cover is adding items to your deliveries. These items will show up on receipts and Electronic PODs that you and will customers will receive.
 
