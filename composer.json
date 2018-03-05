@@ -1,6 +1,6 @@
 {
     "name": "detrack/detrack-core",
-    "description": "Core library for developers working with the Detrack API",
+    "description": "Official core library for developers working with the Detrack API",
     "keywords": ["detrack"],
     "homepage": "https://github.com/detrack/detrack-core-php",
     "type": "library",
