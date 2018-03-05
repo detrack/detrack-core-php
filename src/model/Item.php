@@ -4,7 +4,7 @@ namespace Detrack\DetrackCore\Model;
 
 class Item extends Model{
   /**
-  * Attributes a delivery model has.
+  * Attributes an item model has.
   * Not all of these attributes are compulsory.
   * Fields marked REQUIRED are required by the Detrack API for the most basic functionality.
   * Fields marked OPTIONAL are optional but still utilised by the Detrack Backend System if you supply them.
