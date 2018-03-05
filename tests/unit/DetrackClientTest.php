@@ -5,6 +5,7 @@ use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivery;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
+use Detrack\DetrackCore\Model\Vehicle;
 
 class DetrackClientTest extends TestCase
 {
@@ -96,7 +97,7 @@ class DetrackClientTest extends TestCase
     return array_slice($combinedDeliveries,count($toBeDeleted));
   }
   /**
-  * Test the deleteDeliveriesByDate function to see if we can delete all deliveries created today
+  * Tests the deleteDeliveriesByDate function to see if we can delete all deliveries created today
   *
   * @depends testBulkDeleteDeliveries
   *
@@ -105,6 +106,23 @@ class DetrackClientTest extends TestCase
   public function testDeleteDeliveriesByDate($combinedDeliveries){
     $this->assertSame(true,$this->client->deleteDeliveriesByDate($combinedDeliveries[0]->date));
     $this->assertSame([],$this->client->findDeliveriesByDate($combinedDeliveries[0]->date));
+  }
+  /**
+  * Tests the findVehicle function to see if we can retrieve details of a certain vehicle
+  *
+  * Requires the test driver/vehicle name to be set
+  * @covers DetrackClient::findVehicle
+  */
+  public function testFindVehicle(){
+    if(getenv("TEST_VEHICLE_NAME")==NULL){
+      $this->markTestSkipped("This test requires the TEST_VEHICLE_NAME in .env to be set.");
+    }else{
+      $retrievedVehicle = $this->client->findVehicle(getenv("TEST_VEHICLE_NAME"));
+      $this->assertNotNull($retrievedVehicle);
+      $this->assertInstanceOf(Vehicle::class, $retrievedVehicle);
+      $this->assertEquals(getenv("TEST_VEHICLE_NAME"),$retrievedVehicle->name);
+    }
+    return $retrievedVehicle;
   }
 }
 

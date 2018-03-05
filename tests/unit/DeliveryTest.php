@@ -5,6 +5,8 @@ use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Model\Delivery;
 use Detrack\DetrackCore\Factory\ItemFactory;
 use Detrack\DetrackCore\Model\Item;
+use Detrack\DetrackCore\Model\Vehicle;
+use Detrack\DetrackCore\Factory\DeliveryFactory;
 use Carbon\Carbon;
 
 class DeliveryTest extends TestCase{
@@ -51,7 +53,6 @@ class DeliveryTest extends TestCase{
   * @covers Delivery::create
   */
   function testCreateDelivery(){
-    echo "\n Testing create function \n";
     $this->testingDelivery->save();
     $this->assertNotNull($this->client->findDelivery($this->testingDelivery->getIdentifier()));
     $this->assertEquals($this->testingDelivery->items,$this->client->findDelivery($this->testingDelivery->getIdentifier())->items);
@@ -71,7 +72,6 @@ class DeliveryTest extends TestCase{
   * @covers DetrackClient::findDelivery();
   */
   function testUpdateDelivery($delivery){
-    echo "\n Testing update function \n";
     $newInstructions = "knock on the door, doorbell is not working";
     $delivery->instructions = $newInstructions;
     $newItem = new Item();
@@ -94,9 +94,50 @@ class DeliveryTest extends TestCase{
   * @covers DetrackClient::findDelivery();
   */
   function testDeleteDelivery($delivery){
-    echo "\n Testing delete function \n";
     $this->assertTrue($delivery->delete());
     $this->assertNull($this->client->findDelivery($delivery->getIdentifier()));
+  }
+  /**
+  * Tests if we can assign a vehicle to the delivery, and view driver details
+  *
+  * Requires the test driver/vehicle name to be set
+  *
+  * @covers Delivery::assignTo
+  * @covers Delivery::setDriver
+  * @covers Delivery::setVehicle
+  * @covers Delivery::getVehicle
+  * @covers Delivery::getDriver
+  */
+  public function testAssignTo(){
+    if(getenv("TEST_VEHICLE_NAME")==NULL){
+      $this->markTestSkipped("This test requires the TEST_VEHICLE_NAME in .env to be set.");
+    }else{
+      $retrievedVehicle = $this->client->findVehicle(getenv("TEST_VEHICLE_NAME"));
+      $this->assertNotNull($retrievedVehicle);
+      $this->assertInstanceOf(Vehicle::class, $retrievedVehicle);
+      $this->assertEquals(getenv("TEST_VEHICLE_NAME"),$retrievedVehicle->name);
+    }
+    $newFactory = new DeliveryFactory($this->client);
+    //one for each alias of assignTo
+    for($i=0;$i<3;$i++){
+      //one for each method (by string or by object)
+      for($j=0;$j<2;$j++){
+        $sampleDelivery = $newFactory->createFakes(1)[0];
+        if($i==0){
+          $sampleDelivery->assignTo($j==0 ? $retrievedVehicle : $retrievedVehicle->name);
+        }else if($i==1){
+          $sampleDelivery->setDriver($j==0 ? $retrievedVehicle : $retrievedVehicle->name);
+        }else if($i==2){
+          $sampleDelivery->setVehicle($j==0 ? $retrievedVehicle : $retrievedVehicle->name);
+        }
+        $this->assertEquals($retrievedVehicle->name,$sampleDelivery->assign_to);
+        $sampleDelivery->save();
+        $this->assertEquals($retrievedVehicle->name,$this->client->findDelivery($sampleDelivery->getIdentifier())->assign_to);
+        $this->assertEquals($retrievedVehicle,$this->client->findDelivery($sampleDelivery->getIdentifier())->getDriver());
+        $this->assertEquals($retrievedVehicle,$this->client->findDelivery($sampleDelivery->getIdentifier())->getVehicle());
+        $sampleDelivery->delete();
+      }
+    }
   }
 }
 

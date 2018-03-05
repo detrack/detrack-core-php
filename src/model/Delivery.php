@@ -6,6 +6,7 @@ use Detrack\DetrackCore\Repository\DeliveryRepository;
 use Detrack\DetrackCore\Model\ItemCollection;
 use Intervention\Image\ImageManagerStatic as Image;
 use \RuntimeException;
+use Detrack\DetrackCore\Model\Vehicle;
 
 class Delivery extends Model{
   use DeliveryRepository;
@@ -221,6 +222,68 @@ class Delivery extends Model{
     }
     $file = fopen($path,"w");
     return (bool) fwrite($file, $response);
+  }
+  /**
+  * Assign a driver to this delivery
+  *
+  * @param String|Vehicle $driver either the name of the driver or the Vehicle object
+  *
+  * @return Delivery returns itself for method chaining
+  */
+  public function assignTo($driver){
+    if(is_string($driver)){
+      $this->assign_to = $driver;
+    }else if($driver instanceof Vehicle){
+      $this->assign_to = $driver->name;
+    }else{
+      throw new \RuntimeException("Invalid argument passed for driver");
+    }
+    return $this;
+  }
+  /**
+  * Retrieve driver information
+  *
+  * @return Vehicle the vehicle assigned to this delivery
+  */
+  public function getVehicle(){
+    if($this->client==NULL){
+      throw new \RuntimeException("Client not assigned, cannot find vehicle attached to this delivery");
+    }
+    return $this->client->findVehicle($this->assign_to);
+  }
+  /**
+  * Retrieve driver information. Alias to getVehicle
+  *
+  * @see Delivery::getVehicle the function this function aliases
+  *
+  * @return Vehicle the vehicle assigned to this delivery
+  */
+  public function getDriver(){
+    return $this->getVehicle();
+  }
+  /**
+  * Set the delivery vehicle. Alias to assignTo().
+  *
+  * @see Delivery::assignTo() the function this function aliases.
+  *
+  * @param String|Vehicle $driver either the name of the driver or the Vehicle object
+  *
+  * @return Delivery returns itself for method chaining
+  */
+  public function setVehicle($driver){
+    $this->assignTo($driver);
+  }
+  /**
+  * Set the delivery vehicle. Alias to assignTo().
+  *
+  * @see Delivery::assignTo() the function this function aliases.
+  *
+  * @param String|Vehicle $driver either the name of the driver or the Vehicle object
+  *
+  * @return Delivery returns itself for method chaining
+  */
+  public function setDriver($driver){
+    $this->assignTo($driver);
   }
 }
 

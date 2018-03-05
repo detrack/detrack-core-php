@@ -3,6 +3,7 @@ namespace Detrack\DetrackCore\Client;
 
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Model\Vehicle;
 use Detrack\DetrackCore\Client\Traits\DeliveryMiscActions;
 use \GuzzleHttp\Client as httpClient;
 
@@ -44,6 +45,17 @@ class DetrackClient{
       //"http_errors" => false //we will create our own exception handlers
     ]);
     return $response;
+  }
+  public function findVehicle($vehicleName){
+    $apiPath = "vehicles/view.json";
+    $response = json_decode((String) $this->sendData($apiPath,$vehicleName)->getBody());
+    if($response->info->status!="ok" || $response->results[0]->status!="ok"){
+      var_dump($vehicleName);
+      var_dump($response);
+      throw new \RuntimeException("An error occurred while retrieving vehicle data");
+    }else{
+      return new Vehicle($response->results[0]);
+    }
   }
 }
 
