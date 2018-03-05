@@ -4,8 +4,9 @@ use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
-use Detrack\DetrackCore\Model\Delivey;
+use Detrack\DetrackCore\Model\Delivery;
 use Detrack\DetrackCore\Model\ItemCollection;
+use Carbon\Carbon;
 
 class DeliveryFactoryTest extends TestCase
 {
@@ -32,5 +33,24 @@ class DeliveryFactoryTest extends TestCase
     $this->assertNotNull($sampleDelivery->address);
     $this->assertInstanceOf(ItemCollection::class,$sampleDelivery->items);
     $this->assertNotEquals(0,$sampleDelivery->items->count());
+  }
+  /**
+  * Tests if we can create blank deliveries from the factory
+  *
+  * @covers DeliveryFactory::createNew
+  */
+  public function testCreateNew(){
+    $newFactory = new DeliveryFactory($this->client);
+    $newDelivery = $newFactory->createNew();
+    $this->assertInstanceOf(Delivery::class,$newDelivery);
+    $newDelivery2 = $newFactory->createNew([
+      "date"=>Carbon::now()->toDateString(),
+      "address"=>"null island",
+      "do"=>"123"
+    ]);
+    $this->assertInstanceOf(Delivery::class,$newDelivery2);
+    $this->assertEquals(Carbon::now()->toDateString(),$newDelivery2->date);
+    $this->assertEquals("null island",$newDelivery2->address);
+    $this->assertEquals("123",$newDelivery2->do);
   }
 }

@@ -42,6 +42,18 @@ class DeliveryFactory extends Factory{
     }
     return $newArray;
   }
+  /**
+  * Create a new delivery object, either blank or filled with whatever the user gave
+  *
+  * @param Array $attr attributes you want to pass to the new delivery
+  *
+  * @return Delivery the delivery object
+  */
+  public function createNew($attr=[]){
+    $newDelivery = new Delivery($attr);
+    $newDelivery->setClient($this->client);
+    return $newDelivery;
+  }
 }
 
 
