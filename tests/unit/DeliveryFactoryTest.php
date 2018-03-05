@@ -5,6 +5,7 @@ use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivey;
+use Detrack\DetrackCore\Model\ItemCollection;
 
 class DeliveryFactoryTest extends TestCase
 {
@@ -29,5 +30,7 @@ class DeliveryFactoryTest extends TestCase
     $this->assertNotNull($sampleDelivery->do);
     $this->assertNotNull($sampleDelivery->date);
     $this->assertNotNull($sampleDelivery->address);
+    $this->assertInstanceOf(ItemCollection::class,$sampleDelivery->items);
+    $this->assertNotEquals(0,$sampleDelivery->items->count());
   }
 }

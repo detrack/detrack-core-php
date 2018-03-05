@@ -6,6 +6,7 @@ use Detrack\DetrackCore\Factory\Factory;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Factory\Exception\NoClientAttachedException;
 use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Factory\ItemFactory;
 
 class DeliveryFactory extends Factory{
   public function __construct(DetrackClient $client=NULL){
@@ -33,7 +34,8 @@ class DeliveryFactory extends Factory{
       $newDelivery = new Delivery([
         "date"=>\Carbon\Carbon::now()->toDateString(),
         "do"=>rand(0,99999999999)."-".\Carbon\Carbon::now()->toTimeString(),
-        "address"=>"Null island"
+        "address"=>"Null island",
+        "items"=>ItemFactory::fakes(rand(1,10))
       ]);
       array_push($newArray, $newDelivery);
     }
