@@ -3,6 +3,8 @@
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Factory\ItemFactory;
+use Detrack\DetrackCore\Model\Item;
 use Carbon\Carbon;
 
 class DeliveryTest extends TestCase{
@@ -14,7 +16,8 @@ class DeliveryTest extends TestCase{
     $attr = [
       "date"=>Carbon::now()->toDateString(),
       "do"=>("D.O. " . rand(1,999999999)),
-      "address"=>"15 Simei Street 4 Singapore 529868"
+      "address"=>"61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943",
+      "items" => ItemFactory::fakes(10),
     ];
     $this->testingDelivery = new Delivery($attr);
     $this->testingDelivery->setClient($this->client);
@@ -28,12 +31,14 @@ class DeliveryTest extends TestCase{
     $attr = [
       "date"=>Carbon::now()->toDateString(),
       "do"=>("D.O. " . rand(1,999999999)),
-      "address"=>"15 Simei Street 4 Singapore 529868"
+      "address"=>"61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943",
+      "items" => ItemFactory::fakes(10),
     ];
     $delivery = new Delivery($attr);
     $this->assertEquals($attr["date"], $delivery->date);
     $this->assertEquals($attr["do"], $delivery->do);
     $this->assertEquals($attr["address"], $delivery->address);
+    $this->assertEquals($attr["items"], $delivery->items);
   }
   /**
   * Tests whether we can create a new delivery via the save() method.
@@ -47,14 +52,16 @@ class DeliveryTest extends TestCase{
   */
   function testCreateDelivery(){
     echo "\n Testing create function \n";
-    $this->testingDelivery->setClient($this->client)->save();
-    $this->assertEquals($this->testingDelivery->getIdentifier(),$this->client->findDelivery($this->testingDelivery->getIdentifier())->getIdentifier());
+    $this->testingDelivery->save();
+    $this->assertNotNull($this->client->findDelivery($this->testingDelivery->getIdentifier()));
+    $this->assertEquals($this->testingDelivery->items,$this->client->findDelivery($this->testingDelivery->getIdentifier())->items);
     return $this->testingDelivery;
   }
   /**
   * Tests whether deliveries can be updated also via the save() method.
   *
   * We will add the instructions "knock on the door, doorbell is not working" to the delivery.
+  * We will also add an additional item in the delivery
   *
   * @depends testCreateDelivery
   *
@@ -67,8 +74,14 @@ class DeliveryTest extends TestCase{
     echo "\n Testing update function \n";
     $newInstructions = "knock on the door, doorbell is not working";
     $delivery->instructions = $newInstructions;
+    $newItem = new Item();
+    $newItem->sku = "9001";
+    $newItem->desc = "Refridgerator Haiku";
+    $newItem->qty = 1; //the API will convert string to int
+    $delivery->items->add($newItem);
     $delivery->save();
     $this->assertEquals($newInstructions,$this->client->findDelivery($delivery->getIdentifier())->instructions);
+    $this->assertEquals($newItem,$this->client->findDelivery($delivery->getIdentifier())->items->last());
     return $delivery;
   }
   /**
