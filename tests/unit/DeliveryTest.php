@@ -31,9 +31,9 @@ class DeliveryTest extends TestCase{
       "address"=>"15 Simei Street 4 Singapore 529868"
     ];
     $delivery = new Delivery($attr);
-    $this->assertEquals($delivery->date, $attr["date"]);
-    $this->assertEquals($delivery->do, $attr["do"]);
-    $this->assertEquals($delivery->address, $attr["address"]);
+    $this->assertEquals($attr["date"], $delivery->date);
+    $this->assertEquals($attr["do"], $delivery->do);
+    $this->assertEquals($attr["address"], $delivery->address);
   }
   /**
   * Tests whether we can create a new delivery via the save() method.
