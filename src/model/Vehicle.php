@@ -1,6 +1,6 @@
 <?php
 
-namespace Detrack\DetrackCore\Models;
+namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Client\DetrackClient;
 
