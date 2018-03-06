@@ -7,7 +7,7 @@ Official core library for PHP applications to interact with the [Detrack](https:
 
 Install the package via [composer](https://getcomposer.org):
 
-```
+```bash
 composer require detrack/detrack-core
 ```
 Composer will handle all the dependencies for you.
@@ -19,6 +19,11 @@ Unless you installed Gentoo and compiled PHP from scratch, this should not be a 
 
 You must also have created a (free!) account on Detrack, and understand our basic workflow.
 
+And remember to include the autoloader, if you haven't already:
+
+```php
+require_once "vendor/autoload.php";
+```
 # Simple Usage Guide
 
 In this short guide, we'll pretend that we're an e-shop who sells ice-cream, and use the Detrack service to track our deliveries.
@@ -28,7 +33,7 @@ We will use this library to implement the bare-minimum functionality for Detrack
 
 First, you need to create an instance of `DetrackClient`. This is the main class that handles HTTP requests from your application to the Detrack API, and is needs to be attached to any child objects to provide them with the API Key. The API Key can be retrieved from the web control panel when you log in, and will not change unless you request for a new one.
 
-```
+```php
 use Detrack\DetrackCore\Client\DetrackClient;
 
 $client = new DetrackClient($your_api_key);
@@ -49,7 +54,7 @@ So let's look at the different ways we can create deliveries:
 
 ### Via factories
 
-```
+```php
 use Detrack\DetrackCore\Factory\DeliveryFactory;
 
 $factory = new DeliveryFactory($client); //remember to pass the client!
@@ -64,7 +69,7 @@ $delivery->save(); //submits the delivery to Detrack
 
 Instead of passing the attributes straightaway in the `createNew` function, you can also first create a blank one, then modify the attributes later:
 
-```
+```php
 use Detrack\DetrackCore\Factory\DeliveryFactory;
 
 $factory = new DeliveryFactory($client); //remember to pass the client!
@@ -78,9 +83,9 @@ $delivery->save(); //submits the delivery to Detrack
 
 ### Via Class Constructor
 
-If you detest the idea of factories, you can create the Delivery object by yourself, but you **must** attach the client object manually by calling the `setClient()` method before you call save.
+If you detest the idea of factories, you can create the Delivery object by yourself, but you **must** attach the client object manually by calling the `setClient()` method before you call `save()`.
 
-```
+```php
 use Detrack\DetrackCore\Model\Delivery;
 
 $delivery = new Delivery([
@@ -94,7 +99,7 @@ $delivery->setClient($client)->save(); //you can method chain!
 ```
 Like before, you can also first pass no arguments into the constructor, then modify the attributes later:
 
-```
+```php
 use Detrack\DetrackCore\Model\Delivery;
 
 $delivery = new Delivery();
@@ -119,7 +124,7 @@ The `Item` object has three base required attributes: *sku* (stock keeping unit 
 
 Creating the Item objects is similar to Deliveries, but you need not use factories since there's no client to attach:
 
-```
+```php
 use Detrack\DetrackCore\Model\Item;
 
 $item = new Item([
@@ -130,7 +135,7 @@ $item = new Item([
 ```
 Alternatively, like deliveries, you can pass an empty argument into the constructor, then set the attributes later:
 
-```
+```php
 use Detrack\DetrackCore\Model\Item;
 
 $item = new Item();
@@ -141,7 +146,7 @@ $item->desc = "Strawberry flavoured ice-cream";
 
 Then, you need to add them to a delivery object by first accessing the `items` property and then calling the `add()` method:
 
-```
+```php
 $delivery->items->add($item);
 $delivery->save() //sends the info to Detrack
 ```
@@ -155,7 +160,7 @@ This part contains miscellaneous bits and pieces of info should you require more
 
 Deliveries stored in the Detrack database are identified by both their *do* and their scheduled delivery *date*. To get the identifier used to identify a unique delivery, call the `getIdentifier()` method on the `Delivery` object.
 
-```
+```php
 $identifier = $delivery->getIdentifier();
 /*  returns [
  *    "do" => "DO# 12345",
@@ -166,7 +171,7 @@ $identifier = $delivery->getIdentifier();
 
 Afterwards, call the `findDelivery()` method on the `DetrackClient` object and supply the identifier:
 
-```
+```php
 $client->findDelivery($identifier);
 ```
 
@@ -176,7 +181,7 @@ This is usually used to retrieve updated information of a delivery.
 
 The `save()` and `delete()` functions work in the Object-Relation-Mapping style, and you can call them on any `Delivery` object:
 
-```
+```php
 // Update instructions
 $delivery->instructions = "Change of plan, leave ice cream package in the mailbox instead";
 $delivery->save();
@@ -185,6 +190,15 @@ $delivery->save();
 $delivery->delete();
 ```
 Upon deleting, the Delivery job will no longer show up on the Detrack Dashboard, and will no longer be tracked.
+
+## Retrieving Electronic Proof of Deliveries (POD)
+
+If your driver has submitted a proof of delivery, you can retrieve them via the following methods:
+
+- `$delivery->getPODImage(Integer $num)` Get a single image. Specify 1 to 5. Returns a `Intervention\Image` object.
+- `$delivery->downloadPODImage(Integer $num,String $path)` Same as above, but downloads the file to a given path.
+- `$delivery->getPODPDF()` Get PDF file containing all the POD images. Returns binary string representation of the pdf.
+- `$delivery->downloadPODPDF(String $path)` Same as above, but downloads the file to a given path.
 
 ## Bulk operations
 
@@ -203,21 +217,25 @@ Currently, Vehicles in the API are read-only, so the only things you can do are 
 - `$client->findVehicle(String $name)` to retrieve details about a driver. Will be casted into a `Detrack\DetrackCore\Model\Vehicle`
 - `$delivery->assignTo(String $vehicleName | Vehicle $vehicle)` if you want to assign a delivery to a specific driver.
 
-
-Explain how to run the automated tests for this system
-
-
-# Contributing
+## Contributing
 
 We are open to contributions. If you feel something can be improved, feel free to open a pull request.
 
-## Testing
+## Bug Reports & Feature Requests
 
-(to be filled up soon)
+Open an issue on GitHub, or send an email to info@detrack.com addressed to the Engineering team.
+
+### Setting up the development environment
+
+(coming soon)
+
+### Testing
+
+(coming soon)
 
 ## Built With
 
-* [GuzzleHttp](http://www.dropwizard.io/1.0.2/docs/) - The underlying HTTP library
+* [GuzzleHttp](http://docs.guzzlephp.org/en/stable/) - The underlying HTTP library
 
 ## Authors
 
