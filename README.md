@@ -74,7 +74,7 @@ use Detrack\DetrackCore\Factory\DeliveryFactory;
 
 $factory = new DeliveryFactory($client); //remember to pass the client!
 $delivery = $factory->createNew();
-$delivery->date = 2018-03-09";
+$delivery->date = "2018-03-09";
 $delivery->do = "DO# 12345";
 $delivery->address = "Null Island";
 $delivery->instructions = "Tell recipient to come out and retrieve ice cream from van"; //not required, but you can specify other fields that are documented on our API reference
@@ -103,7 +103,7 @@ Like before, you can also first pass no arguments into the constructor, then mod
 use Detrack\DetrackCore\Model\Delivery;
 
 $delivery = new Delivery();
-$delivery->date = 2018-03-09";
+$delivery->date = "2018-03-09";
 $delivery->do = "DO# 12345";
 $delivery->address = "Null Island";
 $delivery->instructions = "Tell recipient to come out and retrieve ice cream from van"; //not required, but you can specify other fields that are documented on our API reference
