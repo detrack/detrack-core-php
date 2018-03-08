@@ -50,9 +50,13 @@ class DetrackClient{
     $apiPath = "vehicles/view.json";
     $response = json_decode((String) $this->sendData($apiPath,$vehicleName)->getBody());
     if($response->info->status!="ok" || $response->results[0]->status!="ok"){
-      var_dump($vehicleName);
-      var_dump($response);
-      throw new \RuntimeException("An error occurred while retrieving vehicle data");
+      if(isset($response->results[0]->status) && $response->results[0]->status=="failed"){
+        return NULL;
+      }else{
+        var_dump($vehicleName);
+        var_dump($response);
+        throw new \RuntimeException("An error occurred while retrieving vehicle data");
+      }
     }else{
       return new Vehicle($response->results[0]);
     }

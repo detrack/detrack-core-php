@@ -121,6 +121,8 @@ class DetrackClientTest extends TestCase
       $this->assertNotNull($retrievedVehicle);
       $this->assertInstanceOf(Vehicle::class, $retrievedVehicle);
       $this->assertEquals(getenv("TEST_VEHICLE_NAME"),$retrievedVehicle->name);
+      //See if it returns null on a nonexistent vehicle
+      $this->assertNull($this->client->findVehicle("DEADBEEF"));
     }
     return $retrievedVehicle;
   }
