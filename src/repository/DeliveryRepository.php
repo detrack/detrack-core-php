@@ -40,7 +40,7 @@ trait DeliveryRepository{
       $dataArray = $delivery->attributes;
       //check for required fields;
       if($dataArray["date"]==NULL){
-        //maybe set default date?
+        throw new MissingFieldException("Delivery","date");
       }else if($dataArray["do"]==NULL){
         throw new MissingFieldException("Delivery","do");
       }else if($dataArray["address"]==NULL){
@@ -48,7 +48,7 @@ trait DeliveryRepository{
       }
       $response = $delivery->client->sendData($apiPath,$dataArray);
       $responseObj = json_decode((String) $response->getBody());
-      if($responseObj->info->status!="ok"){
+      if($responseObj->results[0]->status!="ok"){
         var_dump($responseObj);
         var_dump($dataArray);
         throw new \Exception("Failed to create new delivery");
@@ -66,7 +66,7 @@ trait DeliveryRepository{
     $apiPath = "deliveries/update.json";
     $dataArray = $this->attributes;
     if($dataArray["date"]==NULL){
-      //maybe set default date?
+      throw new MissingFieldException("Delivery","date");
     }else if($dataArray["do"]==NULL){
       throw new MissingFieldException("Delivery","do");
     }else if($dataArray["address"]==NULL){
@@ -74,7 +74,7 @@ trait DeliveryRepository{
     }
     $response = $this->client->sendData($apiPath,$dataArray);
     $responseObj = json_decode((String) $response->getBody());
-    if($responseObj->info->status!="ok"){
+    if($responseObj->results[0]->status!="ok"){
       var_dump($responseObj);
       var_dump($dataArray);
       throw new \Exception("Failed to update delivery");

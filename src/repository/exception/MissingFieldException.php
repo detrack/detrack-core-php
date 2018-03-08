@@ -1,6 +1,6 @@
 <?php
 
-namespace Detrack\DetrackCode\Repository\Exception;
+namespace Detrack\DetrackCore\Repository\Exception;
 
 class MissingFieldException extends \Exception{
   public function __construct($object,$missingField, Exception $previous = NULL){

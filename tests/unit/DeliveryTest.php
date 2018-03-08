@@ -7,6 +7,7 @@ use Detrack\DetrackCore\Factory\ItemFactory;
 use Detrack\DetrackCore\Model\Item;
 use Detrack\DetrackCore\Model\Vehicle;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
+use Detrack\DetrackCore\Repository\Exception\MissingFieldException;
 use Carbon\Carbon;
 
 class DeliveryTest extends TestCase{
@@ -138,6 +139,46 @@ class DeliveryTest extends TestCase{
         $sampleDelivery->delete();
       }
     }
+  }
+  /**
+  * Tests if entering bad attribitues will result in an exception being thrown in saves
+  *
+  * @covers DeliveryRepository::create
+  */
+  public function testBadSave(){
+    $badDelivery = new Delivery();
+    $badDelivery->setClient($this->client);
+    $badDelivery->do = "DEADBEEF";
+    $badDelivery->address = "Exception Island";
+    //don't set a date
+    $this->expectException(MissingFieldException::class);
+    $badDelivery->save();
+  }
+  /**
+  * Another test if entering bad attributes will result in an exception being thrown in saves
+  *
+  * @covers DeliveryRepository::create
+  */
+  public function testBadSave2(){
+    $badDelivery = new Delivery();
+    $badDelivery->setClient($this->client);
+    $badDelivery->date = "2012-12-12";
+    $badDelivery->address = "Exception Island";
+    //don't set a do
+    $this->expectException(MissingFieldException::class);
+    $badDelivery->save();
+  }
+  /**
+  * Yet another bad test
+  */
+  public function testBadSave3(){
+    $badDelivery = new Delivery();
+    $badDelivery->setClient($this->client);
+    $badDelivery->date = "2012-12-12";
+    $badDelivery->do = "DEADBEEF";
+    //don't set address
+    $this->expectException(MissingFieldException::class);
+    $badDelivery->save();
   }
 }
 
