@@ -4,7 +4,6 @@ namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Repository\DeliveryRepository;
 use Detrack\DetrackCore\Model\ItemCollection;
-use Intervention\Image\ImageManagerStatic as Image;
 use \RuntimeException;
 use Detrack\DetrackCore\Model\Vehicle;
 
@@ -139,13 +138,13 @@ class Delivery extends Model{
     return ["date"=>$this->date,"do"=>$this->do];
   }
   /**
-  * Downloads the image of POD with specified index as an Intervention\Image instanceof
+  * Returns a binary string representation of the specified POD image
   *
   * @param Integer $no Which image file (1-5) to download
   *
   * @throws RuntimeException if param is not an integer from 1 to 5
   *
-  * @return Intervention\Image|NULL the POD image file, NULL if not found
+  * @return String the POD image file, NULL if not found
   */
   public function getPODImage($no){
     $no = (int) $no;
@@ -153,9 +152,8 @@ class Delivery extends Model{
       throw new \RuntimeException("POD Image Number must be between 1 to 5");
     }
     try{
-      $response = $this->client->sendData("deliveries/photo_".$no.".json",$this->getIdentifier())->getBody();
-      $img = Image::make($response);
-      return $img;
+      $response = (String) $this->client->sendData("deliveries/photo_".$no.".json",$this->getIdentifier())->getBody();
+      return $response;
     }catch(\GuzzleHttp\Exception\ClientException $ex){
       //we got 404'd
       return NULL;
@@ -184,7 +182,7 @@ class Delivery extends Model{
     if(!file_exists($dir)){
       mkdir($dir,0750,true);
     }else{
-      $img->save($path);
+      file_put_contents($path,$img);
       return true;
     }
   }

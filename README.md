@@ -8,7 +8,7 @@ Official core library for PHP applications to interact with the [Detrack](https:
 Install the package via [composer](https://getcomposer.org):
 
 ```bash
-composer require detrack/detrack-core
+composer require detrack/detrack-core --nodev
 ```
 Composer will handle all the dependencies for you.
 
@@ -195,7 +195,7 @@ Upon deleting, the Delivery job will no longer show up on the Detrack Dashboard,
 
 If your driver has submitted a proof of delivery, you can retrieve them via the following methods:
 
-- `$delivery->getPODImage(Integer $num)` Get a single image. Specify 1 to 5. Returns a `Intervention\Image` object.
+- `$delivery->getPODImage(Integer $num)` Get a single image. Specify 1 to 5. Returns a binary string representation of the image.
 - `$delivery->downloadPODImage(Integer $num,String $path)` Same as above, but downloads the file to a given path.
 - `$delivery->getPODPDF()` Get PDF file containing all the POD images. Returns binary string representation of the pdf.
 - `$delivery->downloadPODPDF(String $path)` Same as above, but downloads the file to a given path.

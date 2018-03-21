@@ -46,7 +46,7 @@ class DeliveryPODTest extends TestCase{
     for($i=1;$i<=5;$i++){
       $img = $sampleDelivery->getPODImage($i);
       if($i<=$numImages){
-        $this->assertInstanceOf(\Intervention\Image\Image::class,$img);
+        $img = Image::make($img);
         $this->assertNotNull($img->width());
         $this->assertNotNull($img->height());
         if(getenv("SAMPLE_DELIVERY_POD_SAVE_DIR")!=NULL){
