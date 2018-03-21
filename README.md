@@ -8,7 +8,7 @@ Official core library for PHP applications to interact with the [Detrack](https:
 Install the package via [composer](https://getcomposer.org):
 
 ```bash
-composer require detrack/detrack-core --nodev
+composer require detrack/detrack-core --no-dev
 ```
 Composer will handle all the dependencies for you.
 
