@@ -243,7 +243,7 @@ trait DeliveryMiscActions
      *
      * @return bool|int returns true if all the deliveries were deleted successfully, or the number of failed deletes. Returns false if something else broke.
      */
-    public function deleteDeliveriesByDate(String $date)
+    public function deleteDeliveriesByDate($date)
     {
         $data = new \stdClass();
         $data->date = $date;
