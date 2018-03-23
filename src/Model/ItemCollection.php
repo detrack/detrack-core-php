@@ -84,7 +84,7 @@ class ItemCollection extends \ArrayObject implements \JsonSerializable
      */
     private function resetKeys()
     {
-        return new ItemCollection(array_values($this->getArrayCopy()));
+        return new self(array_values($this->getArrayCopy()));
     }
 
     /**
@@ -94,7 +94,7 @@ class ItemCollection extends \ArrayObject implements \JsonSerializable
      *
      * @return Item|null the item at the specified index, null if there is nothing
      */
-    public function at(int $index)
+    public function at($index)
     {
         $iterator = $this->getIterator();
         $iterator->seek($index);
