@@ -3,6 +3,8 @@
 
 Official core library for PHP applications to interact with the [Detrack](https://www.detrack.com) API, built to be as simple to use as possible.
 
+**Important** v1.2 fixes a critical bug that makes autoloading fail on case-sensitive filesystems. Please update ASAP.
+
 ## Installation
 
 Install the package via [composer](https://getcomposer.org):

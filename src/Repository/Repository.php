@@ -2,8 +2,6 @@
 
 namespace Detrack\DetrackCore\Repository;
 
-trait Repository{
-  
+trait Repository
+{
 }
-
- ?>
