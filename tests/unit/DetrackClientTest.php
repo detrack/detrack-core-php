@@ -91,7 +91,7 @@ class DetrackClientTest extends TestCase
   */
   public function testBulkDeleteDeliveries($combinedDeliveries){
     //choose a subset of deliveries to deletes
-    $toBeDeleted = array_slice($combinedDeliveries,0,rand(1,count($combinedDeliveries)));
+    $toBeDeleted = array_slice($combinedDeliveries,0,rand(1,count($combinedDeliveries)-1));
     $this->assertSame(true,$this->client->bulkDeleteDeliveries($toBeDeleted));
     $this->assertSame([],$this->client->bulkFindDeliveries($toBeDeleted));
     return array_slice($combinedDeliveries,count($toBeDeleted));
