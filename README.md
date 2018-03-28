@@ -16,8 +16,7 @@ Composer will handle all the dependencies for you.
 
 ### Prerequisites
 
-Your PHP installation must have either the GD or the ImageMagick libraries bundled.
-Unless you installed Gentoo and compiled PHP from scratch, this should not be a cause of concern.
+PHP > 5.6, PHP7+ highly recommended.
 
 You must also have created a (free!) account on Detrack, and understand our basic workflow.
 
