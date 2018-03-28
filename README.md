@@ -178,6 +178,8 @@ $client->findDelivery($identifier);
 
 This is usually used to retrieve updated information of a delivery.
 
+Version 1.3+: You can pass the DO# as a string instead to retrieve the latest delivery attached to that DO#.
+
 ## Update and delete
 
 The `save()` and `delete()` functions work in the Object-Relation-Mapping style, and you can call them on any `Delivery` object:

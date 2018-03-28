@@ -63,6 +63,8 @@ class DeliveryTest extends TestCase
         $this->testingDelivery->save();
         $this->assertNotNull($this->client->findDelivery($this->testingDelivery->getIdentifier()));
         $this->assertEquals($this->testingDelivery->items, $this->client->findDelivery($this->testingDelivery->getIdentifier())->items);
+        //tests if we can find delivery with just the DO
+        $this->assertEquals($this->testingDelivery->items, $this->client->findDelivery($this->testingDelivery->do)->items);
 
         return $this->testingDelivery;
     }

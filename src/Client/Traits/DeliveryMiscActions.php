@@ -15,14 +15,18 @@ trait DeliveryMiscActions
     /**
      * Sends HTTP request to the View delivery endpoint to find a single delivery.
      *
-     * @param array $attr An associative array containing the keys "date" and "do" that identifies the delivery
+     * @param array|string $attr An associative array containing the keys "date" and "do" that identifies the delivery, or just the DO to fetch the latest delivery attempt with that DO
      *
      * @return Delivery|null The first delivery that matches the two fields
      */
     public function findDelivery($attr)
     {
         $apiPath = 'deliveries/view.json';
-        $dataArray = $attr;
+        if (is_string($attr)) {
+            $dataArray = ['do' => $attr];
+        } else {
+            $dataArray = $attr;
+        }
         $response = $this->sendData($apiPath, $dataArray);
         $responseObj = json_decode((string) $response->getBody());
         if ($responseObj->info->status != 'ok') {
