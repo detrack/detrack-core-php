@@ -84,16 +84,24 @@ class DeliveryTest extends TestCase
      */
     public function testUpdateDelivery($delivery)
     {
+        //test if we can update a delivery with just the date
+        $delivery2 = new Delivery();
         $newInstructions = 'knock on the door, doorbell is not working';
-        $delivery->instructions = $newInstructions;
+        $delivery2->instructions = $newInstructions;
+        $delivery2->do = $delivery->do;
+        $delivery2->address = $delivery->address;
+        $delivery2->setClient($this->client);
+        $delivery2->save();
+        $this->assertEquals($newInstructions, $this->client->findDelivery($delivery->getIdentifier())->instructions);
         $newItem = new Item();
         $newItem->sku = '9001';
         $newItem->desc = 'Refridgerator Haiku';
         $newItem->qty = 1; //the API will convert string to int
         $delivery->items->add($newItem);
         $delivery->save();
-        $this->assertEquals($newInstructions, $this->client->findDelivery($delivery->getIdentifier())->instructions);
         $this->assertEquals($newItem, $this->client->findDelivery($delivery->getIdentifier())->items->last());
+        //tests if I did not accidentally delete the instructions
+        $this->assertEquals($newInstructions, $this->client->findDelivery($delivery->getIdentifier())->instructions);
 
         return $delivery;
     }
@@ -166,9 +174,9 @@ class DeliveryTest extends TestCase
     {
         $badDelivery = new Delivery();
         $badDelivery->setClient($this->client);
-        $badDelivery->do = 'DEADBEEF';
+        $badDelivery->date = '2012-12-12';
         $badDelivery->address = 'Exception Island';
-        //don't set a date
+        //don't set a do
         $this->expectException(MissingFieldException::class);
         $badDelivery->save();
     }
@@ -179,20 +187,6 @@ class DeliveryTest extends TestCase
      * @covers \DeliveryRepository::create
      */
     public function testBadSave2()
-    {
-        $badDelivery = new Delivery();
-        $badDelivery->setClient($this->client);
-        $badDelivery->date = '2012-12-12';
-        $badDelivery->address = 'Exception Island';
-        //don't set a do
-        $this->expectException(MissingFieldException::class);
-        $badDelivery->save();
-    }
-
-    /**
-     * Yet another bad test.
-     */
-    public function testBadSave3()
     {
         $badDelivery = new Delivery();
         $badDelivery->setClient($this->client);
