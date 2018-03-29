@@ -24,10 +24,21 @@ trait DeliveryRepository
         if ($client != null && $this->client == null) {
             $this->client = $client;
         }
-        if ($this->client->findDelivery($this->getIdentifier()) != null) {
-            $this->update();
+        if ($this->date == null) {
+            $foundDelivery = $this->client->findDelivery($this->do);
+            if ($foundDelivery != null) {
+                $this->date = $foundDelivery->date;
+                $this->update();
+            } else {
+                $this->date = date('Y-m-d');
+                static::create($this);
+            }
         } else {
-            static::create($this);
+            if ($this->client->findDelivery($this->getIdentifier()) != null) {
+                $this->update();
+            } else {
+                static::create($this);
+            }
         }
         $this->resetModifiedAttributes();
     }
@@ -40,7 +51,7 @@ trait DeliveryRepository
     private static function create($delivery)
     {
         $apiPath = 'deliveries/create.json';
-        $dataArray = $delivery->attributes;
+        $dataArray = $delivery->jsonSerialize();
         //check for required fields;
         if ($dataArray['date'] == null) {
             throw new MissingFieldException('Delivery', 'date');
@@ -70,7 +81,7 @@ trait DeliveryRepository
     private function update()
     {
         $apiPath = 'deliveries/update.json';
-        $dataArray = $this->attributes;
+        $dataArray = $this->jsonSerialize();
         if ($dataArray['date'] == null) {
             throw new MissingFieldException('Delivery', 'date');
         } elseif ($dataArray['do'] == null) {
