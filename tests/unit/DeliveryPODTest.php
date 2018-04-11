@@ -52,12 +52,6 @@ class DeliveryPODTest extends TestCase
                 $img = Image::make($img);
                 $this->assertNotNull($img->width());
                 $this->assertNotNull($img->height());
-                if (getenv('SAMPLE_DELIVERY_POD_SAVE_DIR') != null) {
-                    if (!file_exists(getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').str_replace(' ', '', $sampleDelivery->do))) {
-                        mkdir(getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').str_replace(' ', '', $sampleDelivery->do), 0750, true);
-                    }
-                    $img->save(getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').str_replace(' ', '', $sampleDelivery->do).DIRECTORY_SEPARATOR.$i.'.jpg');
-                }
             } else {
                 $this->assertNull($img);
             }
@@ -80,20 +74,26 @@ class DeliveryPODTest extends TestCase
             if (!is_int($numImages) || $numImages < 0 || $numImages > 5) {
                 $this->markTestSkipped('Invalid SAMPLE_DELIVERY_POD_COUNT specified in .env. Please double check.');
             }
+            if (!is_writable(getenv('SAMPLE_DELIVERY_POD_SAVE_DIR'))) {
+                $this->markTestSkipped('Sample Delivery POD Save Directory not writable. Skipping Test.');
+            }
+            $folder = getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').preg_replace("/[^\w\d]/", '', $sampleDelivery->do).'-'.time();
             for ($i = 1; $i <= 5; ++$i) {
-                $path = getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').str_replace(' ', '', $sampleDelivery->do).DIRECTORY_SEPARATOR.$i.'.jpg';
+                $path = $folder.DIRECTORY_SEPARATOR.$i.'.jpg';
                 if ($i <= $numImages) {
-                    $this->assertTrue($sampleDelivery->downloadPODImage($i, $path));
+                    $this->assertInternalType('int', $sampleDelivery->downloadPODImage($i, $path));
                     $this->assertTrue(file_exists($path));
                     $img = Image::make($path);
                     $this->assertNotNull($img);
                     $this->assertNotNull($img->width());
                     $this->assertNotNull($img->height());
+                    unlink($path);
                 } else {
                     $this->expectException(\RuntimeException::class);
                     $this->assertTrue($sampleDelivery->downloadPODImage($i, $path));
                 }
             }
+            rmdir($folder);
         }
     }
 
@@ -124,7 +124,12 @@ class DeliveryPODTest extends TestCase
         if (getenv('SAMPLE_DELIVERY_POD_SAVE_DIR') == null) {
             $this->markTestSkipped('No directory specified in .env for saving sample POD. Please do so to execute this test.');
         }
-        $saveDir = getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').DIRECTORY_SEPARATOR.str_replace(' ', '', $sampleDelivery->do);
-        $this->assertTrue($sampleDelivery->downloadPODPDF($saveDir.DIRECTORY_SEPARATOR.'POD.pdf'));
+        if (!is_writable(getenv('SAMPLE_DELIVERY_POD_SAVE_DIR'))) {
+            $this->markTestSkipped('Sample Delivery POD Save Directory not writable. Skipping Test.');
+        }
+        $folder = getenv('SAMPLE_DELIVERY_POD_SAVE_DIR').preg_replace("/[^\w\d]/", '', $sampleDelivery->do).'-'.time();
+        $this->assertInternalType('int', $sampleDelivery->downloadPODPDF($folder.DIRECTORY_SEPARATOR.'POD.pdf'));
+        unlink($folder.DIRECTORY_SEPARATOR.'POD.pdf');
+        rmdir($folder);
     }
 }
