@@ -185,15 +185,17 @@ class Delivery extends Model
         if ($img == null) {
             throw new \RuntimeException('POD Image does not exist');
         }
-        $dir = substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR));
-        //if path is /tmp/img/pod.jpg, should return /tmp/img
-        if (!file_exists($dir)) {
-            mkdir($dir, 0750, true);
-        } else {
-            file_put_contents($path, $img);
-
-            return true;
+        $folder = substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR));
+        if (!file_exists($folder)) {
+            if (!mkdir($folder, 0740, true)) {
+                throw new Exception('Failed to create directory to store POD');
+            }
         }
+        if (!is_dir($folder)) {
+            throw new Exception('Parent path is not a directory');
+        }
+
+        return file_put_contents($path, $img);
     }
 
     /**
@@ -233,9 +235,17 @@ class Delivery extends Model
         if (is_null($response)) {
             throw new \RuntimeException('There is no POD PDF available to retrieve for this delivery, or wrong delivery details were given');
         }
-        $file = fopen($path, 'w');
+        $folder = substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR));
+        if (!file_exists($folder)) {
+            if (!mkdir($folder, 0740, true)) {
+                throw new Exception('Failed to create directory to store POD');
+            }
+        }
+        if (!is_dir($folder)) {
+            throw new Exception('Parent path is not a directory');
+        }
 
-        return (bool) fwrite($file, $response);
+        return file_put_contents($path, $response);
     }
 
     /**
