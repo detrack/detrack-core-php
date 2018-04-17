@@ -63,9 +63,7 @@ trait DeliveryRepository
         $response = $delivery->client->sendData($apiPath, $dataArray);
         $responseObj = json_decode((string) $response->getBody());
         if ($responseObj->results[0]->status != 'ok') {
-            var_dump($responseObj);
-            var_dump($dataArray);
-            throw new \Exception('Failed to create new delivery');
+            throw new \Exception('Failed to create new delivery, '.var_export($responseObj, true).' , '.var_export($dataArray, true));
         }
 
         return $responseObj;
@@ -92,9 +90,7 @@ trait DeliveryRepository
         $response = $this->client->sendData($apiPath, $dataArray);
         $responseObj = json_decode((string) $response->getBody());
         if ($responseObj->results[0]->status != 'ok') {
-            var_dump($responseObj);
-            var_dump($dataArray);
-            throw new \Exception('Failed to update delivery');
+            throw new \Exception('Failed to update delivery, '.var_export($responseObj, true).' , '.var_export($dataArray, true));
         }
 
         return $responseObj;
