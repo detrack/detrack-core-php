@@ -138,7 +138,7 @@ class Delivery extends Model
      */
     public function getIdentifier()
     {
-        return ['date' => $this->date, 'do' => $this->do];
+        return array_filter(['date' => $this->date, 'do' => $this->do]);
     }
 
     /**
