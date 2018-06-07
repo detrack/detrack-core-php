@@ -90,6 +90,10 @@ class Delivery extends Model
       'cmts' => null,
       'qty' => null,
       'uom' => null,
+      'detrack_no' => null,
+      'attempt' => null,
+      'run_no' => null,
+      'remarks' => null,
       'items' => [], //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
     ];
     /**
