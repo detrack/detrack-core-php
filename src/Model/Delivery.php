@@ -321,4 +321,16 @@ class Delivery extends Model
     {
         $this->assignTo($driver);
     }
+
+    /**
+     * Gets the entire array of attributes in key=>value format.
+     *
+     * @see Delivery::$attributes the array this function references
+     *
+     * @return array an array of attributes in key=>value format
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
 }
