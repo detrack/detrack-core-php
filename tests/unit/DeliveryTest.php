@@ -166,6 +166,27 @@ class DeliveryTest extends TestCase
     }
 
     /**
+     * Tests if we can retrieve an array of attributes in the Delivery object.
+     *
+     * @covers \Delivery::getAttributes
+     */
+    public function testGetAttributes()
+    {
+        $delivery = new Delivery();
+        $delivery->date = '2012-12-12';
+        $delivery->address = 'Null island';
+        $delivery->do = '666666';
+        $this->assertInternalType('array', $delivery->getAttributes());
+        $this->assertNotEquals(0, count($delivery->getAttributes()));
+        $this->assertArrayHasKey('date', $delivery->getAttributes());
+        $this->assertArrayHasKey('do', $delivery->getAttributes());
+        $this->assertArrayHasKey('address', $delivery->getAttributes());
+        $this->assertNotNull($delivery->getAttributes()['date']);
+        $this->assertNotNull($delivery->getAttributes()['address']);
+        $this->assertNotNull($delivery->getAttributes()['do']);
+    }
+
+    /**
      * Tests if entering bad attribitues will result in an exception being thrown in saves.
      *
      * @covers \DeliveryRepository::create
