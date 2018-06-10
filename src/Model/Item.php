@@ -21,6 +21,10 @@ class Item extends Model
       'cmts' => null,
       'qty' => null, //REQUIRED: quantity of the item present in the delivery. If not supplied, "1" will be given to the API.
       'uom' => null,
+      'checked' => null,
+      'actual_qty' => null,
+      'reject' => null,
+      'reason' => null,
     ];
     /**
      * Required attributes are defined here.
