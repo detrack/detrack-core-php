@@ -114,6 +114,8 @@ class Delivery extends Model
       'view_photo_5_url' => null,
       'address_lat' => null,
       'address_lng' => null,
+      'last_name' => null,
+      'carrier' => null,
       'items' => [], //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
     ];
     /**
