@@ -116,6 +116,65 @@ trait DeliveryMiscActions
     }
 
     /**
+     * Bulk create deliveries. Strictly creates only, if a certain delivery already exists it will be returned in an array of failed creates.
+     *
+     * @param array $deliveries an array of deliveries to create
+     *
+     * @return array array of responses containing deliveries that failed either operation for either reason
+     */
+    public function bulkCreateDeliveries($deliveries)
+    {
+        //break up into separate requests
+        if (count($deliveries) > 100) {
+            $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            $deliveries = array_slice($deliveries, 0, 100);
+        }
+        $apiPath = 'deliveries/create.json';
+        $dataArray = $deliveries;
+        $response = json_decode((string) $this->sendData($apiPath, $dataArray)->getBody());
+        $failedCreates = [];
+        foreach ($response->results as $responseResult) {
+            if ($responseResult->status == 'failed') {
+                array_push($failedCreates, $responseResult);
+            }
+        }
+
+        return $failedCreates;
+    }
+
+    /**
+     * Bulk update deliveries. Strictly updates only, if a certain delivery does not already exist it will be returned in an array of failed updates.
+     *
+     * @param array $deliveries an array of deliveries to update
+     *
+     * @return array array of responses containing deliveries that failed either operation for either reason
+     */
+    public function bulkUpdateDeliveries($deliveries)
+    {
+        //break up into separate requests
+        if (count($deliveries) > 100) {
+            $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            $deliveries = array_slice($deliveries, 0, 100);
+        }
+        $apiPath = 'deliveries/update.json';
+        $dataArray = $deliveries;
+        $response = json_decode((string) $this->sendData($apiPath, $dataArray)->getBody());
+        if ($response->info->status != 'ok') {
+            throw new \Exception('Something broke:'.json_encode($response));
+        }
+        $failedCreates = [];
+        if ($response->info->failed != 0) {
+            foreach ($response->results as $responseResult) {
+                if ($responseResult->status == 'failed') {
+                    array_push($failedCreates, $responseResult);
+                }
+            }
+
+            return $failedCreates;
+        }
+    }
+
+    /**
      * Bulk save deliveries. This is similar to Delivery::save, but does so in only two HTTP requests per 100 deliveries.
      *
      * It goes through recursion if there are more than 100 deliveries passed in
