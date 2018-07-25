@@ -32,7 +32,7 @@ class DetrackClientTest extends TestCase
      * @covers \DeliveryFactory::create();
      * @covers \DeliveryMiscActions::bulkSaveDeliveries();
      */
-    public function testbulkSaveDeliveries()
+    public function testBulkSaveDeliveries()
     {
         $newFactory = new DeliveryFactory($this->client);
         $newDeliveries = $newFactory->createFakes(rand(101, 150));
@@ -62,7 +62,7 @@ class DetrackClientTest extends TestCase
     /**
      * Tests the bulkFindDeliveries function to see if we can find the deliveries we just created.
      *
-     * @depends testbulkSaveDeliveries
+     * @depends testBulkSaveDeliveries
      *
      * @covers \DeliveryMiscActions::bulkFindDeliveries;
      */
