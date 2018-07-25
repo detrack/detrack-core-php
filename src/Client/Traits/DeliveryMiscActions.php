@@ -124,15 +124,18 @@ trait DeliveryMiscActions
      */
     public function bulkCreateDeliveries($deliveries)
     {
+        $failedCreates = [];
         //break up into separate requests
         if (count($deliveries) > 100) {
-            $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            $recurseResult = $this->bulkCreateDeliveries(array_slice(array_values($deliveries), 100));
+            if (is_array($recurseResult)) {
+                $failedCreates = array_merge($failedCreates, $recurseResult);
+            }
             $deliveries = array_slice($deliveries, 0, 100);
         }
         $apiPath = 'deliveries/create.json';
         $dataArray = $deliveries;
         $response = json_decode((string) $this->sendData($apiPath, $dataArray)->getBody());
-        $failedCreates = [];
         foreach ($response->results as $responseResult) {
             if ($responseResult->status == 'failed') {
                 array_push($failedCreates, $responseResult);
@@ -151,9 +154,13 @@ trait DeliveryMiscActions
      */
     public function bulkUpdateDeliveries($deliveries)
     {
+        $failedUpdates = [];
         //break up into separate requests
         if (count($deliveries) > 100) {
-            $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            $recurseResult = $this->bulkUpdateDeliveries(array_slice(array_values($deliveries), 100));
+            if (is_array($recurseResult)) {
+                $failedUpdates = array_merge($failedUpdates, $recurseResult);
+            }
             $deliveries = array_slice($deliveries, 0, 100);
         }
         $apiPath = 'deliveries/update.json';
@@ -162,15 +169,14 @@ trait DeliveryMiscActions
         if ($response->info->status != 'ok') {
             throw new \Exception('Something broke:'.json_encode($response));
         }
-        $failedCreates = [];
         if ($response->info->failed != 0) {
             foreach ($response->results as $responseResult) {
                 if ($responseResult->status == 'failed') {
-                    array_push($failedCreates, $responseResult);
+                    array_push($failedUpdates, $responseResult);
                 }
             }
 
-            return $failedCreates;
+            return $failedUpdates;
         }
     }
 
@@ -189,16 +195,19 @@ trait DeliveryMiscActions
      */
     public function bulkSaveDeliveries($deliveries)
     {
+        $failedEitherWay = [];
         //break up into separate requests
         if (count($deliveries) > 100) {
-            $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            $recurseResult = $this->bulkSaveDeliveries(array_slice(array_values($deliveries), 100));
+            if (is_array($recurseResult)) {
+                $failedEitherWay = array_merge($failedEitherWay, $recurseResult);
+            }
             $deliveries = array_slice($deliveries, 0, 100);
         }
         $apiPath = 'deliveries/create.json';
         $dataArray = $deliveries;
         $response = json_decode((string) $this->sendData($apiPath, $dataArray)->getBody());
         $failedCreates = [];
-        $failedEitherWay = [];
         foreach ($response->results as $responseResult) {
             if ($responseResult->status == 'failed') {
                 foreach ($responseResult->errors as $error) {
