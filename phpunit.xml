@@ -16,12 +16,4 @@
   stopOnIncomplete="false"
   stopOnSkipped="false"
   stopOnRisky="false"
-  verbose="true"
-  default="unit"
-  >
-  <testsuites>
-  <testsuite name="unit">
-    <directory>tests/unit</directory>
-  </testsuite>
-</testsuites>
-</phpunit>
+  verbose="true"></phpunit>
