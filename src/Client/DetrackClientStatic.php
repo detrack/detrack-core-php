@@ -65,6 +65,7 @@ class DetrackClientStatic
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
               'base_uri' => static::baseURI,
+              'http_errors' => false,
             ]);
         }
         if (!isset(static::$jwt)) {
@@ -99,6 +100,7 @@ class DetrackClientStatic
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
               'base_uri' => static::baseURI,
+              'http_errors' => false,
             ]);
         }
         if (!isset(static::$jwt)) {
@@ -113,6 +115,8 @@ class DetrackClientStatic
         $responseJSON = json_decode((string) $response->getBody());
         if (!is_null($responseJSON)) {
             return $responseJSON;
+        } else {
+            return $response;
         }
     }
 }
