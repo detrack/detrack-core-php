@@ -248,4 +248,28 @@ class Job extends Resource
             return $this;
         }
     }
+
+    /**
+     * Reattempts the job.
+     *
+     * @return Job an updated version of the Job object
+     */
+    public function reattempt()
+    {
+        $verb = 'POST';
+        if (!isset($this->id) || trim($this->id) == '') {
+            $this->id = $this->get()->id;
+        }
+        $actionPath = 'jobs/reattempt';
+        $request = new \stdClass();
+        $request->id = $this->id;
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $request);
+        if ($response->data == []) {
+            return null;
+        } else {
+            $this->attributes = array_filter(json_decode(json_encode($response->data[0]), true));
+
+            return $this;
+        }
+    }
 }
