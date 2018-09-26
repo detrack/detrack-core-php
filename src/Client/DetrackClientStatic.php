@@ -32,6 +32,7 @@ class DetrackClientStatic
      */
     public static function sendData($verb, $actionPath, $dataArray)
     {
+        $verb = strtoupper($verb);
         if (!isset(static::$apiKey)) {
             return;
         }
@@ -41,12 +42,19 @@ class DetrackClientStatic
               'http_errors' => false,
             ]);
         }
-        $response = static::$httpClient->request($verb, $actionPath, [
-          'json' => [
-            'data' => $dataArray,
-          ],
-          'headers' => ['X-API-KEY' => static::$apiKey],
-        ]);
+        if ($verb == 'POST' || $verb != 'GET') {
+            $response = static::$httpClient->request($verb, $actionPath, [
+            'json' => [
+              'data' => $dataArray,
+            ],
+            'headers' => ['X-API-KEY' => static::$apiKey],
+          ]);
+        } elseif ($verb == 'GET') {
+            $response = static::$httpClient->request($verb, $actionPath, [
+              'query' => $dataArray,
+              'headers' => ['X-API-KEY' => static::$apiKey],
+            ]);
+        }
         $responseJSON = json_decode((string) $response->getBody());
         if (!is_null($responseJSON)) {
             return $responseJSON;
