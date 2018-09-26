@@ -8,6 +8,7 @@ class DetrackClientStatic
 {
     private static $httpClient;
     private static $apiKey;
+    private static $jwt;
     private const baseURI = 'https://app.detrack.com/api/v2/';
 
     /**
@@ -51,6 +52,68 @@ class DetrackClientStatic
             return $responseJSON;
         } else {
             return $response;
+        }
+    }
+
+    /**
+     * Returns the JSON Web Token (JWT), if the client has done so in this session.
+     *
+     * Returns the JSON Web Token (JWT), if the client has done so in this session.
+     * If it is null, you should either manually set it via DetrackClientStatic::setJWT(DetrackClientStatic::retrieveJWT()).
+     *
+     * @see static::setJWT()
+     * @see static::retrieveJWT()
+     *
+     * @return string the associated JWT
+     */
+    public static function getJWT()
+    {
+        return static::$jwt;
+    }
+
+    /**
+     * Sets the JSON Web Token (JWT).
+     *
+     * @param string $newJWT the new JWT you want to set as the default for this session
+     */
+    public static function setJWT($newJWT)
+    {
+        static::$jwt = $newJWT;
+    }
+
+    /**
+     * Get a new JWT without setting it as the static default.
+     *
+     * Calls the login path to retrieve a new JWT, but does not actually set the static $jwt class property.
+     * This is for you to use with DetrackClientStatic::setJWT() or to save it in some persistent (or transient) storage in your application to set it across requests.
+     *
+     * @see static::setJWT()
+     *
+     * @return string $token the JWT token
+     */
+    public static function retrieveJWT()
+    {
+        if (!isset(static::$apiKey)) {
+            return;
+        }
+        if (!isset(static::$httpClient)) {
+            static::$httpClient = new HttpClient([
+              'base_uri' => static::baseURI,
+              'http_errors' => false,
+            ]);
+        }
+        if (!isset(static::$jwt)) {
+            $response = static::$httpClient->request('POST', 'login', [
+              'json' => [
+                'data' => [
+                  'api_key' => static::$apiKey,
+                ],
+              ],
+            ]);
+            $responseJSON = json_decode((string) $response->getBody());
+            if (!is_null($responseJSON) && is_string($responseJSON->token)) {
+                return $responseJSON->token;
+            }
         }
     }
 }
