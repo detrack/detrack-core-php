@@ -28,7 +28,7 @@ class DetrackClientStatic
      * @param string $actionPath the path you want to send the request to
      * @param array  $dataArray  the array of data you want to send
      *
-     * @return stdClass $response the JSON-decoded response data, without any filtering
+     * @return \Guzzle\Http\Message\Response $response returns a \stdClass if the response is valid json, the original Response object if it is not
      */
     public static function sendData($verb, $actionPath, $dataArray)
     {
@@ -55,9 +55,13 @@ class DetrackClientStatic
               'headers' => ['X-API-KEY' => static::$apiKey],
             ]);
         }
-        $responseJSON = json_decode((string) $response->getBody());
-        if (!is_null($responseJSON)) {
-            return $responseJSON;
+        if ($response->getHeader('Content-Type')[0] == 'application/json') {
+            $responseJSON = json_decode((string) $response->getBody());
+            if (!is_null($responseJSON)) {
+                return $responseJSON;
+            } else {
+                return $response;
+            }
         } else {
             return $response;
         }
