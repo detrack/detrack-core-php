@@ -9,7 +9,10 @@ class DetrackClientStatic
     private static $httpClient;
     private static $apiKey;
     private static $jwt;
-    private const baseURI = 'https://app.detrack.com/api/v2/';
+    /** @var string The Base URI for the API.
+     * Private constants were only added in PHP 7.1. We will use a private static var instead.
+     **/
+    private static $baseURI = 'https://app.detrack.com/api/v2/';
 
     /**
      * Sets the "default" API Key for the Detrack Client for this application.
@@ -38,7 +41,7 @@ class DetrackClientStatic
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::baseURI,
+              'base_uri' => static::$baseURI,
               'http_errors' => false,
             ]);
         }
@@ -110,7 +113,7 @@ class DetrackClientStatic
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::baseURI,
+              'base_uri' => static::$baseURI,
               'http_errors' => false,
             ]);
         }
