@@ -58,7 +58,7 @@ class DetrackClientStatic
               'headers' => ['X-API-KEY' => static::$apiKey],
             ]);
         }
-        if ($response->getHeader('Content-Type')[0] == 'application/json') {
+        if (isset($response->getHeader('Content-Type')[0]) && $response->getHeader('Content-Type')[0] == 'application/json') {
             $responseJSON = json_decode((string) $response->getBody());
             if (!is_null($responseJSON)) {
                 return $responseJSON;
