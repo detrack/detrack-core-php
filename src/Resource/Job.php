@@ -272,4 +272,48 @@ class Job extends Resource
             return $this;
         }
     }
+
+    /**
+     * Saves the job export to target.
+     *
+     * If target is a existing directory, it will save into that directory with the default filename specified by the server.
+     * If target is an existing file, it will overwrite that file.
+     * If the target is a nonexistent path, it will be treated as a file name and the export will be saved to that full path.
+     * If no parameter is passed, the raw data of the file is returned as a string for you to save by yourself.
+     * The function returns the full path of the new file if a save target was specified, else it returns the raw file data.
+     *
+     * @param string $document either 'pod' (default) or 'shipping-label'
+     * @param string $format   either 'pdf' (default) or 'tiff'
+     * @param string $target   either a dir, filepath or null (default)
+     *
+     * @return string|bool raw file data if no target was passed, or boolean indicating success status
+     */
+    public function downloadDoc($document = 'pod', $format = 'pdf', $target = null)
+    {
+        $jwt = DetrackClientStatic::retrieveJWT();
+        $verb = 'GET';
+        if (!isset($this->id) || trim($this->id) == '') {
+            $this->id = $this->get()->id;
+        }
+        $actionPath = 'jobs/export/'.$this->id.'.'.$format;
+        $response = DetrackClientStatic::sendData($verb, $actionPath, [
+          'token' => $jwt,
+          'format' => $format,
+          'document' => $document,
+        ]);
+        if (is_dir($target)) {
+            preg_match('/^attachment; ?filename="(.*)"$/', $response->getHeader('Content-Disposition')[0], $matches);
+            $filename = $matches[1];
+            $filename = str_replace(' ', '-', $filename);
+            $target = rtrim($target, '/');
+
+            return (bool) file_put_contents($target.DIRECTORY_SEPARATOR.$filename, (string) $response->getBody());
+        } elseif (!is_null($target)) {
+            return (bool) file_put_contents($target, (string) $response->getBody());
+        } elseif (is_null($target)) {
+            return (string) $response->getBody();
+        } else {
+            throw new Exception('Somehow, you managed to reach unreachable code');
+        }
+    }
 }
