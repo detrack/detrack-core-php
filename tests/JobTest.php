@@ -100,5 +100,48 @@ final class JobTest extends TestCase
             }
         }
         shell_exec('rm -r '.$saveDir);
+        $testJob->delete();
+    }
+
+    /**
+     * Tests bulk search/list jobs.
+     *
+     * @covers \Detrack\DetrackCore\Resource\Job::listJobs
+     */
+    public function testListJobs()
+    {
+        $testJobs = [];
+        $seed = rand();
+        for ($i = 0; $i < 3; ++$i) {
+            $testJob = new Job();
+            $testJob->do_number = 'DCPHPv2_'.rand().'_'.$i;
+            $testJob->date = date('Y-m-d');
+            $testJob->address = 'PHP Islet No.'.$seed;
+            $testJob->save();
+            array_push($testJobs, $testJob);
+        }
+        for ($i = 0; $i < 10; ++$i) {
+            $returnedJobs = Job::listJobs(
+              [
+                  'date' => date('Y-m-d'),
+                  'sort' => 'created_at',
+              ],
+              'PHP Islet No.'.$seed
+            );
+            if (count($returnedJobs) == 3) {
+                break;
+            }
+            if ($i == 9) {
+                $this->markTestFailed('Unable to get 3 Jobs created in time');
+            }
+        }
+        $this->assertEquals(3, count($returnedJobs));
+        for ($i = 0; $i < 3; ++$i) {
+            $this->assertEquals($testJobs[$i]->do_number, $returnedJobs[$i]->do_number);
+            $this->assertEquals($testJobs[$i]->id, $returnedJobs[$i]->id);
+        }
+        foreach ($testJobs as $testJob) {
+            $testJob->delete();
+        }
     }
 }

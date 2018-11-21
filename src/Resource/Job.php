@@ -14,167 +14,167 @@ class Job extends Resource
      * Fields marked EXTRA (or not marked) are arbitary custom fields that are up to the discretion of the Detrack user to decide what they are used for.
      */
     protected $attributes = [
-      'id' => null,
-      'type' => 'Delivery', //REQUIRED: either 'Delivery' or 'Collection'
-      'deliver_to' => null, //OPTIONAL: The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
-      'do_number' => null, //REQUIRED: The delivery order number. This attribute must be unique for this date.
-      'date' => null, //REQUIRED: The delivery date. Format: YYYY-MM-DD.
-      'address' => null, //REQUIRED: The full address. Always include country name for accurate geocoding results.
-      'instructions' => null, //OPTIONAL: Any special delivery instruction for the driver. This will be displayed in the delivery detail view on the app.
-      'assign_to' => null, //OPTIONAL: The name of the vehicle to assign this delivery to. This must be spelled exactly the same as your vehicle’s name in your dashboard.
-      'notify_email' => null, //OPTIONAL: The email address to send customer-facing delivery updates to. If specified, a delivery notification will be sent to this email address upon successful delivery.
-      'webhook_url' => null, //OPTIONAL: The URL to post delivery updates to. Please refer to "Delivery Push Notification" on the our documentation.
-      'zone' => null, //OPTIONAL: If you divide your deliveries into zones, then specifying this will help you to easily filter out the deliveries by zones in your dashboard.
-      'items' => [], //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
-      'initial_status' => null,
-      'open_job' => null,
-      'offer' => null,
-      'do_number' => null,
-      'attempt' => null,
-      'start_date' => null,
-      'age' => null,
-      'sync_time' => null,
-      'job_time' => null,
-      'time_slot' => null,
-      'request_date' => null,
-      'tracking_number' => null,
-      'order_number' => null,
-      'job_type' => null,
-      'job_order' => null,
-      'job_fee' => null,
-      'address_lat' => null,
-      'address_lng' => null,
-      'address_company' => null,
-      'address_1' => null,
-      'address_2' => null,
-      'address_3' => null,
-      'postal_code' => null,
-      'city' => null,
-      'state' => null,
-      'country' => null,
-      'billing_address' => null,
-      'contact_name' => null,
-      'contact_last_name' => null,
-      'contact_phone' => null,
-      'sender_phone' => null,
-      'fax' => null,
-      'customer' => null,
-      'account_no' => null,
-      'owner_name' => null,
-      'invoice_number' => null,
-      'invoice_amount' => null,
-      'payment_mode' => null,
-      'payment_amount' => null,
-      'group_name' => null,
-      'vendor_name' => null,
-      'shipper_name' => null,
-      'source' => null,
-      'weight' => null,
-      'parcel_width' => null,
-      'parcel_length' => null,
-      'parcel_height' => null,
-      'cubic_meter' => null,
-      'boxes' => null,
-      'cartons' => null,
-      'pieces' => null,
-      'envelopes' => null,
-      'pallets' => null,
-      'bins' => null,
-      'trays' => null,
-      'bundles' => null,
-      'rolls' => null,
-      'labels' => null,
-      'attachment_1' => null,
-      'detrack_number' => null,
-      'status' => null,
-      'tracking_status' => null,
-      'reason' => null,
-      'last_reason' => null,
-      'handled_by' => null,
-      'note' => null,
-      'carrier' => null,
-      'pod_lat' => null,
-      'pod_lng' => null,
-      'pod_address' => null,
-      'address_tracked_at' => null,
-      'arrived_lat' => null,
-      'arrived_lng' => null,
-      'arrived_address' => null,
-      'arrived_at' => null,
-      'texted_at' => null,
-      'called_at' => null,
-      'serial_number' => null,
-      'signed_at' => null,
-      'photo_1_at' => null,
-      'photo_2_at' => null,
-      'photo_3_at' => null,
-      'photo_4_at' => null,
-      'photo_5_at' => null,
-      'signature_file_url' => null,
-      'photo_1_file_url' => null,
-      'photo_2_file_url' => null,
-      'photo_3_file_url' => null,
-      'photo_4_file_url' => null,
-      'photo_5_file_url' => null,
-      'actual_weight' => null,
-      'temperature' => null,
-      'hold_time' => null,
-      'payment_collected' => null,
-      'reschedule' => null,
-      'actual_crates' => null,
-      'actual_pallets' => null,
-      'actual_utilization' => null,
-      'goods_service_rating' => null,
-      'driver_rating' => null,
-      'feedback_remarks' => null,
-      'eta_time' => null,
-      'live_eta' => null,
-      'depot' => null,
-      'depot_contact' => null,
-      'department' => null,
-      'sales_person' => null,
-      'identification_number' => null,
-      'bank_prefix' => null,
-      'run_number' => null,
-      'pick_up_from' => null,
-      'pick_up_time' => null,
-      'pick_up_lat' => null,
-      'pick_up_lng' => null,
-      'pick_up_address' => null,
-      'pick_up_address_1' => null,
-      'pick_up_address_2' => null,
-      'pick_up_address_3' => null,
-      'pick_up_city' => null,
-      'pick_up_state' => null,
-      'pick_up_country' => null,
-      'pick_up_postal_code' => null,
-      'pick_up_zone' => null,
-      'pick_up_assign_to' => null,
-      'pick_up_reason' => null,
-      'info_received_at' => null,
-      'pick_up_at' => null,
-      'scheduled_at' => null,
-      'at_warehouse_at' => null,
-      'out_for_delivery_at' => null,
-      'head_to_pick_up_at' => null,
-      'head_to_delivery_at' => null,
-      'cancelled_at' => null,
-      'pod_at' => null,
-      'pick_up_failed_count' => null,
-      'deliver_failed_count' => null,
-      'job_price' => null,
-      'insurance_price' => null,
-      'insured' => null,
-      'total_price' => null,
-      'payer_type' => null,
-      'remarks' => null,
-      'items_count' => null,
-      'service_type' => null,
-      'warehouse_address' => null,
-      'destination_timeslot' => null,
-      'door' => null,
-      'time_zone' => null,
-      'created_at' => null,
+        'id' => null,
+        'type' => 'Delivery', //REQUIRED: either 'Delivery' or 'Collection'
+        'deliver_to' => null, //OPTIONAL: The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
+        'do_number' => null, //REQUIRED: The delivery order number. This attribute must be unique for this date.
+        'date' => null, //REQUIRED: The delivery date. Format: YYYY-MM-DD.
+        'address' => null, //REQUIRED: The full address. Always include country name for accurate geocoding results.
+        'instructions' => null, //OPTIONAL: Any special delivery instruction for the driver. This will be displayed in the delivery detail view on the app.
+        'assign_to' => null, //OPTIONAL: The name of the vehicle to assign this delivery to. This must be spelled exactly the same as your vehicle’s name in your dashboard.
+        'notify_email' => null, //OPTIONAL: The email address to send customer-facing delivery updates to. If specified, a delivery notification will be sent to this email address upon successful delivery.
+        'webhook_url' => null, //OPTIONAL: The URL to post delivery updates to. Please refer to "Delivery Push Notification" on the our documentation.
+        'zone' => null, //OPTIONAL: If you divide your deliveries into zones, then specifying this will help you to easily filter out the deliveries by zones in your dashboard.
+        'items' => [], //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
+        'initial_status' => null,
+        'open_job' => null,
+        'offer' => null,
+        'do_number' => null,
+        'attempt' => null,
+        'start_date' => null,
+        'age' => null,
+        'sync_time' => null,
+        'job_time' => null,
+        'time_slot' => null,
+        'request_date' => null,
+        'tracking_number' => null,
+        'order_number' => null,
+        'job_type' => null,
+        'job_order' => null,
+        'job_fee' => null,
+        'address_lat' => null,
+        'address_lng' => null,
+        'address_company' => null,
+        'address_1' => null,
+        'address_2' => null,
+        'address_3' => null,
+        'postal_code' => null,
+        'city' => null,
+        'state' => null,
+        'country' => null,
+        'billing_address' => null,
+        'contact_name' => null,
+        'contact_last_name' => null,
+        'contact_phone' => null,
+        'sender_phone' => null,
+        'fax' => null,
+        'customer' => null,
+        'account_no' => null,
+        'owner_name' => null,
+        'invoice_number' => null,
+        'invoice_amount' => null,
+        'payment_mode' => null,
+        'payment_amount' => null,
+        'group_name' => null,
+        'vendor_name' => null,
+        'shipper_name' => null,
+        'source' => null,
+        'weight' => null,
+        'parcel_width' => null,
+        'parcel_length' => null,
+        'parcel_height' => null,
+        'cubic_meter' => null,
+        'boxes' => null,
+        'cartons' => null,
+        'pieces' => null,
+        'envelopes' => null,
+        'pallets' => null,
+        'bins' => null,
+        'trays' => null,
+        'bundles' => null,
+        'rolls' => null,
+        'labels' => null,
+        'attachment_1' => null,
+        'detrack_number' => null,
+        'status' => null,
+        'tracking_status' => null,
+        'reason' => null,
+        'last_reason' => null,
+        'handled_by' => null,
+        'note' => null,
+        'carrier' => null,
+        'pod_lat' => null,
+        'pod_lng' => null,
+        'pod_address' => null,
+        'address_tracked_at' => null,
+        'arrived_lat' => null,
+        'arrived_lng' => null,
+        'arrived_address' => null,
+        'arrived_at' => null,
+        'texted_at' => null,
+        'called_at' => null,
+        'serial_number' => null,
+        'signed_at' => null,
+        'photo_1_at' => null,
+        'photo_2_at' => null,
+        'photo_3_at' => null,
+        'photo_4_at' => null,
+        'photo_5_at' => null,
+        'signature_file_url' => null,
+        'photo_1_file_url' => null,
+        'photo_2_file_url' => null,
+        'photo_3_file_url' => null,
+        'photo_4_file_url' => null,
+        'photo_5_file_url' => null,
+        'actual_weight' => null,
+        'temperature' => null,
+        'hold_time' => null,
+        'payment_collected' => null,
+        'reschedule' => null,
+        'actual_crates' => null,
+        'actual_pallets' => null,
+        'actual_utilization' => null,
+        'goods_service_rating' => null,
+        'driver_rating' => null,
+        'feedback_remarks' => null,
+        'eta_time' => null,
+        'live_eta' => null,
+        'depot' => null,
+        'depot_contact' => null,
+        'department' => null,
+        'sales_person' => null,
+        'identification_number' => null,
+        'bank_prefix' => null,
+        'run_number' => null,
+        'pick_up_from' => null,
+        'pick_up_time' => null,
+        'pick_up_lat' => null,
+        'pick_up_lng' => null,
+        'pick_up_address' => null,
+        'pick_up_address_1' => null,
+        'pick_up_address_2' => null,
+        'pick_up_address_3' => null,
+        'pick_up_city' => null,
+        'pick_up_state' => null,
+        'pick_up_country' => null,
+        'pick_up_postal_code' => null,
+        'pick_up_zone' => null,
+        'pick_up_assign_to' => null,
+        'pick_up_reason' => null,
+        'info_received_at' => null,
+        'pick_up_at' => null,
+        'scheduled_at' => null,
+        'at_warehouse_at' => null,
+        'out_for_delivery_at' => null,
+        'head_to_pick_up_at' => null,
+        'head_to_delivery_at' => null,
+        'cancelled_at' => null,
+        'pod_at' => null,
+        'pick_up_failed_count' => null,
+        'deliver_failed_count' => null,
+        'job_price' => null,
+        'insurance_price' => null,
+        'insured' => null,
+        'total_price' => null,
+        'payer_type' => null,
+        'remarks' => null,
+        'items_count' => null,
+        'service_type' => null,
+        'warehouse_address' => null,
+        'destination_timeslot' => null,
+        'door' => null,
+        'time_zone' => null,
+        'created_at' => null,
     ];
 
     /**
@@ -297,9 +297,9 @@ class Job extends Resource
         }
         $actionPath = 'jobs/export/'.$this->id.'.'.$format;
         $response = DetrackClientStatic::sendData($verb, $actionPath, [
-          'token' => $jwt,
-          'format' => $format,
-          'document' => $document,
+            'token' => $jwt,
+            'format' => $format,
+            'document' => $document,
         ]);
         if (is_dir($target)) {
             preg_match('/^attachment; ?filename="(.*)"$/', $response->getHeader('Content-Disposition')[0], $matches);
@@ -315,5 +315,52 @@ class Job extends Resource
         } else {
             throw new Exception('Somehow, you managed to reach unreachable code');
         }
+    }
+
+    /**
+     * Search jobs with the provided search queries.
+     *
+     * $args is an associative array with the following keys:
+     * 'page','limit','sort','date','type','assign_to','status','do_number'
+     * Search terms entered into these keys are evaluated with AND condition
+     * $query is an optional string that lets you perform a loose search across all attributes.
+     *
+     * @param array $args  top-level search arguments
+     * @param array $query sub-level search term
+     *
+     * @return array an array of jobs
+     **/
+    public static function listJobs($args = [], $query = null)
+    {
+        $verb = 'GET';
+        $actionPath = 'jobs';
+        $topLevelArgs = [
+        ];
+        $sendData = array_merge($topLevelArgs, ['query' => $query]);
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $sendData);
+        $returnArray = [];
+        foreach ($response->data as $responseData) {
+            array_push($returnArray, new Job($responseData));
+        }
+
+        return $returnArray;
+    }
+
+    /**
+     * Bulk creates many jobs at once.
+     *
+     * @todo not yet implemented
+     *
+     * @param array an array of Job objects, or an array of Job data arguments
+     *
+     * @return array a subset of the input array containing jobs that were successfully saved
+     */
+    public static function createJobs($jobs)
+    {
+        $verb = 'PUT';
+        $actionPath = 'jobs';
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $jobs);
+
+        return $response;
     }
 }
