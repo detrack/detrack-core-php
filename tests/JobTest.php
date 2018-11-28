@@ -231,4 +231,81 @@ final class JobTest extends TestCase
             $testJob->delete();
         }
     }
+
+    /** Tests if we can bulk delete jobs using the Job::deleteJobs function by passing an array of Jobs
+     * @covers \Job::deleteJobs
+     */
+    public function testDeleteJobsViaJobs()
+    {
+        $testJobs = [];
+        $seed = rand();
+        for ($i = 0; $i < 3; ++$i) {
+            $testJob = new Job();
+            $testJob->do_number = 'DCPHPv2_'.$seed.'_'.'testDeleteJobs'.'_'.$i;
+            $testJob->date = date('Y-m-d');
+            $testJob->address = 'PHP Islet '.$seed;
+            array_push($testJobs, $testJob);
+        }
+        $testJobs = Job::createJobs($testJobs);
+        sleep(3);
+        $response = Job::deleteJobs($testJobs);
+        $this->assertInternalType('array', $response);
+        $this->assertEquals(0, count($response));
+        $searchResponse = Job::listJobs(
+            [
+                'date' => date('Y-m-d'),
+            ],
+          'PHP Islet '.$seed
+        );
+        $this->assertInternalType('array', $searchResponse);
+        $this->assertEquals(0, count($searchResponse));
+
+        $badJob = new Job();
+        $badJob->id = 'THISIDDOESNOTEXIST';
+        $badJob2 = new Job();
+        $badJob2->address = 'Sentinel Island';
+        $response = Job::deleteJobs([$badJob, $badJob2]);
+        $this->assertInternalType('array', $response);
+        $this->assertEquals(2, count($response));
+        $this->assertContainsOnlyInstancesOf(Job::class, $response);
+        $this->assertEquals($badJob->id, $response[0]->id);
+    }
+
+    /** Tests if we can bulk delete jobs using the Job::deleteJobs function by passing an array of attributes
+     * @covers \Job::deleteJobs
+     */
+    public function testDeleteJobsViaArray()
+    {
+        $testJobs = [];
+        $seed = rand();
+        for ($i = 0; $i < 3; ++$i) {
+            $testJob = [];
+            $testJob['do_number'] = 'DCPHPv2_'.$seed.'_'.'testDeleteJobs'.'_'.$i;
+            $testJob['date'] = date('Y-m-d');
+            $testJob['address'] = 'PHP Islet '.$seed;
+            array_push($testJobs, $testJob);
+        }
+        $testJobs = Job::createJobs($testJobs);
+        sleep(3);
+        $response = Job::deleteJobs($testJobs);
+        $this->assertInternalType('array', $response);
+        $this->assertEquals(0, count($response));
+        $searchResponse = Job::listJobs(
+              [
+                  'date' => date('Y-m-d'),
+              ],
+            'PHP Islet '.$seed
+          );
+        $this->assertInternalType('array', $searchResponse);
+        $this->assertEquals(0, count($searchResponse));
+        $badJob = [];
+        $badJob['id'] = 'THISIDDOESNOTEXIST';
+        $badJob2 = [];
+        $badJob2['address'] = 'Sentinel Island';
+        $response = Job::deleteJobs([$badJob, $badJob2]);
+        $this->assertInternalType('array', $response);
+        $this->assertEquals(2, count($response));
+        $this->assertContainsOnly('array', $response);
+        $this->assertEquals($badJob['id'], $response[0]['id']);
+    }
 }

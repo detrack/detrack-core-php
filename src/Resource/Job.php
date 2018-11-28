@@ -239,9 +239,7 @@ class Job extends Resource
         $verb = 'POST';
         $actionPath = 'jobs/search';
         if ($this->id != null) {
-            $response = DetrackClientStatic::sendData($verb, $actionPath, array_filter($this->jsonSerialize(), function ($key) {
-                return $key == 'id';
-            }, ARRAY_FILTER_USE_KEY));
+            $response = DetrackClientStatic::sendData('GET', 'jobs/'.$this->id, null);
         } elseif ($this->do_number != null) {
             $response = DetrackClientStatic::sendData($verb, $actionPath, array_filter($this->jsonSerialize(), function ($key) {
                 return $key == 'do_number';
@@ -249,10 +247,14 @@ class Job extends Resource
         } else {
             return null;
         }
-        if ($response->data == []) {
+        if (!isset($response->data) || $response->data == []) {
             return null;
         } else {
-            $newJob = new Job($response->data[0]);
+            if (is_array($response->data)) {
+                $newJob = new Job($response->data[0]);
+            } else {
+                $newJob = new Job($response->data);
+            }
             $newJob->resetModifiedAttributes();
 
             return $newJob;
@@ -376,6 +378,46 @@ class Job extends Resource
             $newJob = new Job(array_filter(json_decode(json_encode($responseData), true)));
             $newJob->modifiedAttributes = [];
             array_push($returnArray, $newJob);
+        }
+
+        return $returnArray;
+    }
+
+    /**
+     * Bulk deletes many jobs at once.
+     *
+     * @param array an array of Job objects
+     *
+     * @return array a subset of the input array containing jobs that were NOT successfully deleted
+     */
+    public static function deleteJobs($jobs)
+    {
+        $verb = 'DELETE';
+        $actionPath = 'jobs';
+        $dataArray = array_filter(array_map(function ($job) {
+            $job = is_a($job, self::class) ? $job : (is_array($job) ? new Job($job) : null);
+            if ($job == null) {
+                return null;
+            }
+            $id = !is_null($job->id) ? $job->id : (!is_null($job->get()) ? $job->get()->id : null);
+
+            return (object) ['id' => $id];
+        }, $jobs));
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $dataArray);
+        $returnArray = [];
+        if (isset($response->errors)) {
+            $errorIds = array_map(function ($responseError) {
+                return $responseError->id;
+            }, $response->errors);
+            $returnArray = array_filter($jobs, function ($job) use ($errorIds) {
+                $job = is_a($job, self::class) ? $job : (is_array($job) ? new Job($job) : null);
+                if ($job == null) {
+                    return null;
+                }
+                $id = !is_null($job->id) ? $job->id : (!is_null($job->get()) ? $job->get()->id : null);
+
+                return in_array($id, $errorIds);
+            });
         }
 
         return $returnArray;
