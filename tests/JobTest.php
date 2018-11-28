@@ -11,7 +11,7 @@ final class JobTest extends TestCase
     {
         $testJob = new Job();
         $testJob->address = 'PHP Island';
-        $newDo = 'PHP DCv2 - '.time();
+        $newDo = 'PHP DCv2 - '.rand();
         $testJob->do_number = $newDo;
         $testJob->date = date('Y-m-d');
         $testJob->save();
@@ -35,7 +35,7 @@ final class JobTest extends TestCase
     {
         $testJob = new Job();
         $testJob->address = 'PHP Island';
-        $newDo = 'PHP DCv2 - '.time();
+        $newDo = 'PHP DCv2 - '.rand();
         $testJob->do_number = $newDo;
         $testJob->date = date('Y-m-d');
         $newItem = new Item();
@@ -47,6 +47,7 @@ final class JobTest extends TestCase
         $response = DetrackClientStatic::sendData('GET', 'jobs/'.$testJob->id, []);
         $this->assertEquals($newDo, $response->data->do_number);
         $this->assertEquals('RuntimeException', $response->data->items[0]->sku);
+        $testJob->delete();
     }
 
     /**
@@ -136,9 +137,95 @@ final class JobTest extends TestCase
             }
         }
         $this->assertEquals(3, count($returnedJobs));
+        foreach ($testJobs as $testJob) {
+            $found = false;
+            foreach ($returnedJobs as $returnedJob) {
+                if ($testJob->id == $returnedJob->id) {
+                    $found = true;
+                    break;
+                }
+            }
+            $this->assertTrue(true, $found);
+        }
+        foreach ($testJobs as $testJob) {
+            $testJob->delete();
+        }
+    }
+
+    /**
+     * @covers \Job::createJobs
+     */
+    public function testCreateJobs()
+    {
+        $testJobs = [];
+        $seed = rand();
         for ($i = 0; $i < 3; ++$i) {
-            $this->assertEquals($testJobs[$i]->do_number, $returnedJobs[$i]->do_number);
-            $this->assertEquals($testJobs[$i]->id, $returnedJobs[$i]->id);
+            $testJob = new Job();
+            $testJob->do_number = 'DCPHPv2_'.rand().'_'.$i;
+            $testJob->date = date('Y-m-d');
+            $testJob->address = 'PHP Islet No.'.$seed;
+            array_push($testJobs, $testJob);
+        }
+        Job::createJobs($testJobs);
+        $testJobs = array_map(function ($attrArray) {
+            $newJob = new Job($attrArray);
+            $newJob = $newJob->get();
+
+            return $newJob;
+        }, $testJobs);
+        sleep(1);
+        $returnedJobs = Job::listJobs(
+          [
+              'date' => date('Y-m-d'),
+              'sort' => 'created_at',
+          ],
+          'PHP Islet No.'.$seed
+        );
+        $this->assertEquals(3, count($returnedJobs));
+        foreach ($testJobs as $testJob) {
+            $found = false;
+            foreach ($returnedJobs as $returnedJob) {
+                if ($testJob->id == $returnedJob->id) {
+                    $found = true;
+                    break;
+                }
+            }
+            $this->assertTrue(true, $found);
+        }
+        foreach ($testJobs as $testJob) {
+            $testJob->delete();
+        }
+    }
+
+    public function testCreateJobs2()
+    {
+        //test with attr construction
+        $testJobs = [];
+        $testAttrs = [];
+        $seed = rand();
+        for ($i = 0; $i < 3; ++$i) {
+            $testJob = new Job();
+            $testJob->do_number = 'DCPHPv2_'.rand().'_'.$i;
+            $testJob->date = date('Y-m-d');
+            $testJob->address = 'PHP Islet No.'.$seed;
+            array_push($testAttrs, json_decode(json_encode($testJob), true));
+        }
+        $testJobs = Job::createJobs($testAttrs);
+        $this->assertInternalType('array', $testJobs);
+        $this->assertEquals(3, count($testJobs));
+        sleep(1);
+        $returnedJobs = Job::listJobs(
+          [
+              'date' => date('Y-m-d'),
+              'sort' => 'created_at',
+          ],
+          'PHP Islet No.'.$seed
+        );
+        $this->assertEquals(3, count($returnedJobs));
+        foreach ($testJobs as $testJob) {
+            $this->assertContains(json_encode($testJob), array_map(function ($returnedJob) {
+                return json_encode($returnedJob);
+            }, $returnedJobs));
         }
         foreach ($testJobs as $testJob) {
             $testJob->delete();

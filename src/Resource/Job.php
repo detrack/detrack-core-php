@@ -236,16 +236,26 @@ class Job extends Resource
      */
     public function get()
     {
-        $this->resetModifiedAttributes();
         $verb = 'POST';
         $actionPath = 'jobs/search';
-        $response = DetrackClientStatic::sendData($verb, $actionPath, $this->jsonSerialize());
+        if ($this->id != null) {
+            $response = DetrackClientStatic::sendData($verb, $actionPath, array_filter($this->jsonSerialize(), function ($key) {
+                return $key == 'id';
+            }, ARRAY_FILTER_USE_KEY));
+        } elseif ($this->do_number != null) {
+            $response = DetrackClientStatic::sendData($verb, $actionPath, array_filter($this->jsonSerialize(), function ($key) {
+                return $key == 'do_number';
+            }, ARRAY_FILTER_USE_KEY));
+        } else {
+            return null;
+        }
         if ($response->data == []) {
             return null;
         } else {
-            $this->attributes = array_filter(json_decode(json_encode($response->data[0]), true));
+            $newJob = new Job($response->data[0]);
+            $newJob->resetModifiedAttributes();
 
-            return $this;
+            return $newJob;
         }
     }
 
@@ -267,9 +277,10 @@ class Job extends Resource
         if ($response->data == []) {
             return null;
         } else {
-            $this->attributes = array_filter(json_decode(json_encode($response->data[0]), true));
+            $newJob = new Job($response->data[0]);
+            $newJob->resetModifiedAttributes();
 
-            return $this;
+            return $newJob;
         }
     }
 
@@ -340,7 +351,9 @@ class Job extends Resource
         $response = DetrackClientStatic::sendData($verb, $actionPath, $sendData);
         $returnArray = [];
         foreach ($response->data as $responseData) {
-            array_push($returnArray, new Job($responseData));
+            $newJob = new Job(array_filter(json_decode(json_encode($responseData), true)));
+            $newJob->modifiedAttributes = [];
+            array_push($returnArray, $newJob);
         }
 
         return $returnArray;
@@ -349,18 +362,22 @@ class Job extends Resource
     /**
      * Bulk creates many jobs at once.
      *
-     * @todo not yet implemented
-     *
      * @param array an array of Job objects, or an array of Job data arguments
      *
      * @return array a subset of the input array containing jobs that were successfully saved
      */
     public static function createJobs($jobs)
     {
-        $verb = 'PUT';
-        $actionPath = 'jobs';
+        $verb = 'POST';
+        $actionPath = 'jobs/batch';
         $response = DetrackClientStatic::sendData($verb, $actionPath, $jobs);
+        $returnArray = [];
+        foreach ($response->data as $responseData) {
+            $newJob = new Job(array_filter(json_decode(json_encode($responseData), true)));
+            $newJob->modifiedAttributes = [];
+            array_push($returnArray, $newJob);
+        }
 
-        return $response;
+        return $returnArray;
     }
 }
