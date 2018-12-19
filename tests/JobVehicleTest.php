@@ -26,5 +26,8 @@ final class JobVehicleTest extends TestCase
         $testJob->assignTo($testVehicle);
 
         $this->assertEquals($testVehicle->name, $testJob->assign_to);
+
+        $testJob->delete();
+        $testVehicle->delete();
     }
 }
