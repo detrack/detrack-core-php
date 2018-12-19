@@ -21,9 +21,9 @@ class ItemFactory extends Factory
         $itemCollection = new ItemCollection();
         for ($i = 0; $i < $num; ++$i) {
             $sampleItem = new Item([
-              'sku' => rand(0, 999999),
-              'desc' => 'testing item '.$i,
-              'qty' => rand(0, 10),
+                'sku' => rand(0, 999999),
+                'desc' => 'testing item '.$i,
+                'qty' => rand(0, 10),
             ]);
             $itemCollection->push($sampleItem);
         }
@@ -45,10 +45,10 @@ class ItemFactory extends Factory
         $itemCollection = new ItemCollection();
         for ($i = 0; $i < $num; ++$i) {
             $sampleItem = new Item([
-        'sku' => rand(0, 999999),
-        'desc' => 'testing item '.$i,
-        'qty' => rand(0, 10),
-      ]);
+                'sku' => rand(0, 999999),
+                'desc' => 'testing item '.$i,
+                'qty' => rand(0, 10),
+            ]);
             $itemCollection->push($sampleItem);
         }
 

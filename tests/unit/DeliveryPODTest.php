@@ -1,7 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Detrack\DetrackCore\Model\Delivery;
 use Intervention\Image\ImageManagerStatic as Image;
 
 /**

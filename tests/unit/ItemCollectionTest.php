@@ -26,10 +26,10 @@ class ItemCollectionTest extends TestCase
         $testCollection = $this->testCollection;
         for ($i = 0; $i < 10; ++$i) {
             $sampleItem = new Item([
-        'sku' => rand(0, 999999),
-        'desc' => 'testing item '.$i,
-        'qty' => rand(0, 10),
-      ]);
+                'sku' => rand(0, 999999),
+                'desc' => 'testing item '.$i,
+                'qty' => rand(0, 10),
+            ]);
             $testCollection->push($sampleItem);
             $this->assertEquals($i + 1, $testCollection->count());
         }

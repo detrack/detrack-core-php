@@ -30,12 +30,12 @@ class DetrackClient
         //attach guzzlehttp client to this instance
         if ($proxy == null) {
             $this->httpClient = new httpClient([
-              'base_uri' => $this->baseURI,
+                'base_uri' => $this->baseURI,
             ]);
         } else {
             $this->httpClient = new httpClient([
-              'base_uri' => $this->baseURI,
-              'proxy' => 'tcp://localhost:'.$proxy,
+                'base_uri' => $this->baseURI,
+                'proxy' => 'tcp://localhost:'.$proxy,
             ]);
         }
         $this->apiKey = $apiKey;
@@ -44,9 +44,9 @@ class DetrackClient
     public function sendData($actionPath, $dataArray)
     {
         $response = $this->httpClient->request('POST', $actionPath, [
-          'json' => $dataArray,
-          'headers' => ['X-API-KEY' => $this->apiKey],
-          //"http_errors" => false //we will create our own exception handlers
+            'json' => $dataArray,
+            'headers' => ['X-API-KEY' => $this->apiKey],
+            //"http_errors" => false //we will create our own exception handlers
         ]);
 
         return $response;

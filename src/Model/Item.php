@@ -13,18 +13,18 @@ class Item extends Model
      * Required: sku, desc, qty;.
      */
     protected $attributes = [
-      'sku' => null, //REQUIRED: stock keeping unit or item number.
-      'po_no' => null,
-      'batch_no' => null,
-      'expiry' => null,
-      'desc' => null, //REQUIRED: desc of the item. If not supplied, an empty sting will be given to the API.
-      'cmts' => null,
-      'qty' => null, //REQUIRED: quantity of the item present in the delivery. If not supplied, "1" will be given to the API.
-      'uom' => null,
-      'checked' => null,
-      'actual_qty' => null,
-      'reject' => null,
-      'reason' => null,
+        'sku' => null, //REQUIRED: stock keeping unit or item number.
+        'po_no' => null,
+        'batch_no' => null,
+        'expiry' => null,
+        'desc' => null, //REQUIRED: desc of the item. If not supplied, an empty sting will be given to the API.
+        'cmts' => null,
+        'qty' => null, //REQUIRED: quantity of the item present in the delivery. If not supplied, "1" will be given to the API.
+        'uom' => null,
+        'checked' => null,
+        'actual_qty' => null,
+        'reject' => null,
+        'reason' => null,
     ];
     /**
      * Required attributes are defined here.

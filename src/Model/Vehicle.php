@@ -15,20 +15,20 @@ class Vehicle extends Model
      * All of these fields are read only.
      */
     protected $attributes = [
-      'name' => null, //REQUIRED: The vehicle name.
-      'detrack_id' => null, // The Detrack ID tagged to this vehicle.
-      'speed_limit' => null, // The speed limit set by the user.
-      'stationary_limit' => null, // The stationary time limit set by the user.
-      'disabled' => null, // The status of this vehicle. If vehicle is disabled, the value is false, else it is true.
-      'lat' => null, // The latitude of the current / last known location.
-      'lng' => null, // The longitude of the current / last known location.
-      'address' => null, // The address of the current / last known location.
-      'no_gps' => null, // The GPS status of this vehicle. If vehicle has GPS signal, the value is false, else it is true.
-      'speed' => null, // The current speed.
-      'max_speed' => null, // The maximum speed.
-      'avg_speed' => null, // The average speed.
-      'distance' => null, // The distance traveled.
-      'tracked_at' => null, // The time the vehicle is last tracked. ISO 8601 format: YYYY–MM–DDTHH:MM:SS+HH:MM e.g. 2014-02-13T09:30:45+08:00
+        'name' => null, //REQUIRED: The vehicle name.
+        'detrack_id' => null, // The Detrack ID tagged to this vehicle.
+        'speed_limit' => null, // The speed limit set by the user.
+        'stationary_limit' => null, // The stationary time limit set by the user.
+        'disabled' => null, // The status of this vehicle. If vehicle is disabled, the value is false, else it is true.
+        'lat' => null, // The latitude of the current / last known location.
+        'lng' => null, // The longitude of the current / last known location.
+        'address' => null, // The address of the current / last known location.
+        'no_gps' => null, // The GPS status of this vehicle. If vehicle has GPS signal, the value is false, else it is true.
+        'speed' => null, // The current speed.
+        'max_speed' => null, // The maximum speed.
+        'avg_speed' => null, // The average speed.
+        'distance' => null, // The distance traveled.
+        'tracked_at' => null, // The time the vehicle is last tracked. ISO 8601 format: YYYY–MM–DDTHH:MM:SS+HH:MM e.g. 2014-02-13T09:30:45+08:00
     ];
     /**
      * Required attributes are defined here.

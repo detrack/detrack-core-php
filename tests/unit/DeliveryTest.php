@@ -19,10 +19,10 @@ class DeliveryTest extends TestCase
     {
         $this->createClient(); //from createClientTrait;
         $attr = [
-          'date' => Carbon::now()->toDateString(),
-          'do' => ('D.O. '.rand(1, 999999999)),
-          'address' => '61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943',
-          'items' => ItemFactory::fakes(10),
+            'date' => Carbon::now()->toDateString(),
+            'do' => ('D.O. '.rand(1, 999999999)),
+            'address' => '61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943',
+            'items' => ItemFactory::fakes(10),
         ];
         $this->testingDelivery = new Delivery($attr);
         $this->testingDelivery->setClient($this->client);
@@ -36,10 +36,10 @@ class DeliveryTest extends TestCase
     public function testClassConstructor()
     {
         $attr = [
-          'date' => Carbon::now()->toDateString(),
-          'do' => ('D.O. '.rand(1, 999999999)),
-          'address' => '61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943',
-          'items' => ItemFactory::fakes(10),
+            'date' => Carbon::now()->toDateString(),
+            'do' => ('D.O. '.rand(1, 999999999)),
+            'address' => '61 Kaki Bukit Ave 1 #04-34, Shun Li Ind Park Singapore 417943',
+            'items' => ItemFactory::fakes(10),
         ];
         $delivery = new Delivery($attr);
         $this->assertEquals($attr['date'], $delivery->date);
@@ -216,5 +216,31 @@ class DeliveryTest extends TestCase
         //don't set address
         $this->expectException(MissingFieldException::class);
         $badDelivery->save();
+    }
+
+    /**
+     ** Tests for concurrent save issues – two objects referring to the same Detrack Delivery haing different attributes.
+     */
+    public function testConcurrentSave()
+    {
+        $testDelivery = new Delivery();
+        $testDelivery->setClient($this->client);
+        $testDelivery->date = date('Y-m-d');
+        $testDelivery->do = 'ConcurrencyTest';
+        $testDelivery->address = 'PHP Island';
+        $testDelivery->save();
+
+        $testDelivery1 = $this->client->bulkFindDeliveries([$testDelivery])[0];
+        $testDelivery2 = $this->client->bulkFindDeliveries([$testDelivery])[0];
+        $testDelivery1->instructions = 'This should not get overwritten';
+        $testDelivery2->deliver_to = 'This should not get overwritten either';
+        $testDelivery1->setClient($this->client);
+        $testDelivery2->setClient($this->client);
+        $testDelivery1->save();
+        $testDelivery2->save();
+
+        $resultDelivery = $this->client->bulkFindDeliveries([$testDelivery])[0];
+        $this->assertEquals($resultDelivery->instructions, 'This should not get overwritten');
+        $this->assertEquals($resultDelivery->deliver_to, 'This should not get overwritten either');
     }
 }

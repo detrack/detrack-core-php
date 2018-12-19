@@ -34,10 +34,10 @@ class DeliveryFactory extends Factory
         $newArray = [];
         for ($i = 0; $i < $num; ++$i) {
             $newDelivery = new Delivery([
-              'date' => \Carbon\Carbon::now()->toDateString(),
-              'do' => rand(0, 99999999999).'-'.\Carbon\Carbon::now()->toTimeString(),
-              'address' => 'Null island',
-              'items' => ItemFactory::fakes(rand(1, 10)),
+                'date' => \Carbon\Carbon::now()->toDateString(),
+                'do' => rand(0, 99999999999).'-'.\Carbon\Carbon::now()->toTimeString(),
+                'address' => 'Null island',
+                'items' => ItemFactory::fakes(rand(1, 10)),
             ]);
             $newDelivery->setClient($this->client);
             array_push($newArray, $newDelivery);

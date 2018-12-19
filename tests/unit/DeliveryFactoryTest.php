@@ -48,9 +48,9 @@ class DeliveryFactoryTest extends TestCase
         $newDelivery = $newFactory->createNew();
         $this->assertInstanceOf(Delivery::class, $newDelivery);
         $newDelivery2 = $newFactory->createNew([
-          'date' => Carbon::now()->toDateString(),
-          'address' => 'null island',
-          'do' => '123',
+            'date' => Carbon::now()->toDateString(),
+            'address' => 'null island',
+            'do' => '123',
         ]);
         $this->assertInstanceOf(Delivery::class, $newDelivery2);
         $this->assertEquals(Carbon::now()->toDateString(), $newDelivery2->date);
