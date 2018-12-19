@@ -509,11 +509,24 @@ class Job extends Resource
      * Assigns the current job to the specified Vehicle Object.
      *
      * @param Vehicle the vehicle to assign to
+     *
+     * @return Job returns itself for method chaining
      */
     public function assignTo(Vehicle $vehicle)
     {
-        $this->assign_to = $vehicle->name;
+        if ($vehicle->name == null) {
+            $vehicle = $vehicle->hydrate();
+            if ($vehicle == null) {
+                return $this;
+            } else {
+                $this->assign_to = $vehicle->name;
+            }
+        } else {
+            $this->assign_to = $vehicle->name;
+        }
         $this->save();
+
+        return $this;
     }
 
     /**
