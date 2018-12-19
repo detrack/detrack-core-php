@@ -203,7 +203,7 @@ class Job extends Resource
             //try to hydrate and find the id
             //if found, it means we are going to perform an update
             //if still null, means we are going to perform an insert
-            $returnVehicle = $this->get();
+            $returnVehicle = $this->hydrate();
             if ($returnVehicle == null) {
                 return $this->create()->resetModifiedAttributes();
             } else {
@@ -298,7 +298,7 @@ class Job extends Resource
         if (isset($this->id) && trim($this->id) !== '') {
             $actionPath = 'jobs/'.$this->id;
         } else {
-            $actionPath = 'jobs/'.$this->get()->id;
+            $actionPath = 'jobs/'.$this->hydrate()->id;
         }
         $response = DetrackClientStatic::sendData($verb, $actionPath, []);
         if ($response == null) {
@@ -315,7 +315,7 @@ class Job extends Resource
      *
      * @return Job a copy of the job object with all attributes filled up
      */
-    public function get()
+    public function hydrate()
     {
         $verb = 'POST';
         $actionPath = 'jobs/search';
@@ -351,7 +351,7 @@ class Job extends Resource
     {
         $verb = 'POST';
         if (!isset($this->id) || trim($this->id) == '') {
-            $this->id = $this->get()->id;
+            $this->id = $this->hydrate()->id;
         }
         $actionPath = 'jobs/reattempt';
         $request = new \stdClass();
@@ -387,7 +387,7 @@ class Job extends Resource
         $jwt = DetrackClientStatic::retrieveJWT();
         $verb = 'GET';
         if (!isset($this->id) || trim($this->id) == '') {
-            $this->id = $this->get()->id;
+            $this->id = $this->hydrate()->id;
         }
         $actionPath = 'jobs/export/'.$this->id.'.'.$format;
         $response = DetrackClientStatic::sendData($verb, $actionPath, [
@@ -480,7 +480,7 @@ class Job extends Resource
             if ($job == null) {
                 return null;
             }
-            $id = !is_null($job->id) ? $job->id : (!is_null($job->get()) ? $job->get()->id : null);
+            $id = !is_null($job->id) ? $job->id : (!is_null($job->hydrate()) ? $job->hydrate()->id : null);
 
             return (object) ['id' => $id];
         }, $jobs));
@@ -495,7 +495,7 @@ class Job extends Resource
                 if ($job == null) {
                     return null;
                 }
-                $id = !is_null($job->id) ? $job->id : (!is_null($job->get()) ? $job->get()->id : null);
+                $id = !is_null($job->id) ? $job->id : (!is_null($job->hydrate()) ? $job->hydrate()->id : null);
 
                 return in_array($id, $errorIds);
             });

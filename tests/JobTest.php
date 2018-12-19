@@ -67,7 +67,7 @@ final class JobTest extends TestCase
         }
         $testJob = new Job();
         $testJob->do_number = getenv('SAMPLE_DELIVERY_DO');
-        $testJob = $testJob->get();
+        $testJob = $testJob->hydrate();
         $tmpDir = sys_get_temp_dir();
         if (!is_writable($tmpDir)) {
             $this->markTestSkipped('Tmp directory ('.$tmpDir.')not writable, please check permissions');
@@ -173,7 +173,7 @@ final class JobTest extends TestCase
         Job::createJobs($testJobs);
         $testJobs = array_map(function ($attrArray) {
             $newJob = new Job($attrArray);
-            $newJob = $newJob->get();
+            $newJob = $newJob->hydrate();
 
             return $newJob;
         }, $testJobs);
