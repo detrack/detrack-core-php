@@ -1,9 +1,9 @@
 ![Detrack logo](https://www.detrack.com/wp-content/uploads/2016/12/Logo_detrack.png)
 # detrack-core-php
 
-Official core library for PHP applications to interact with the [Detrack](https://www.detrack.com) API, built to be as simple to use as possible.
+Official core library for PHP applications to interact with the [Detrack](https://www.detrack.com) API.
 
-**Important** v1.2 fixes a critical bug that makes autoloading fail on case-sensitive filesystems. Please update ASAP.
+**Important v2 release** v2 is **incompatible** with code using the v1 library due to major overhauls in the backend API. Class names and method names have been changed. Please review the documentation carefully and refactor your code accordingly should you decide to upgrade.
 
 ## Installation
 
@@ -16,7 +16,9 @@ Composer will handle all the dependencies for you.
 
 ### Prerequisites
 
-PHP > 5.6, PHP7+ highly recommended.
+**Requires PHP >= 7.1**
+
+PHP 5.6 and 7.0 has already been officially deprecated; our new library and API takes advantage of the new features PHP 7 has to offer for better stability.
 
 You must also have created a (free!) account on Detrack, and understand our basic workflow.
 
@@ -25,99 +27,62 @@ And remember to include the autoloader, if you haven't already:
 ```php
 require_once "vendor/autoload.php";
 ```
-# Simple Usage Guide
+## Simple Usage Guide
 
 In this short guide, we'll pretend that we're an e-shop who sells ice-cream, and use the Detrack service to track our deliveries.
 We will use this library to implement the bare-minimum functionality for Detrack to function. (An advanced guide is available further below)
 
-## The client object
+### The client facade
 
-First, you need to create an instance of `DetrackClient`. This is the main class that handles HTTP requests from your application to the Detrack API, and is needs to be attached to any child objects to provide them with the API Key. The API Key can be retrieved from the web control panel when you log in, and will not change unless you request for a new one.
+First, you need to configure the static facade of `Detrack\DetrackCore\Client\DetrackClientStatic`.
 
 ```php
-use Detrack\DetrackCore\Client\DetrackClient;
-
-$client = new DetrackClient($your_api_key);
+Detrack\DetrackCore\Client\DetrackClientStatic::setApiKey($apiKey);
 ```
 
-You must recreate this client object in every function scope where you wish to interact with the Detrack API. (see below)
+All objects in this library will then use this API key for the rest of your request lifecycle.
 
-## Creating Deliveries
+### Creating Deliveries
 
-When your e-shop confirms payment from a customer, you need to send a request to us regarding the details of the delivery, so that we can automatically assign it to a free vehicle in your fleet. This is represented via the `Delivery` and `Item` objects.
+When your e-shop confirms payment from a customer, you need to send a request to us regarding the details of the delivery so that a free vehicle in your fleet can be assigned to complete this delivery. This is represented via the `Job` and `Item` objects.
 
-`Delivery` represents a single order to be delivered to your customer.
-`Item` represents an item from your shop within the order. While you do not need this for Detrack to function, it will show up in the Electronic Proof of Deliveries (POD) that you and your customer will get when the Delivery is marked as complete.
+`Detrack\DetrackCore\Resource\Job` represents a single delivery job you assign to your drivers. In the context of an e-shop, this also represents a single order on the store.
+`Detrack\DetrackCore\Resource\Model\Item` represents an item from your shop within the order. While you do not need this for Detrack to function, it will show up in the Electronic Proof of Deliveries (POD) that you and your customer will get when the Delivery is marked as complete.
 
-There are three attributes that you must give the Delivery object before you submit it, *date*, *do* (Delivery order number) and *address*.
-
-So let's look at the different ways we can create deliveries:
-
-### Via factories
+There are three attributes that you must give the Job object before you submit it, *date*, *do_number* (Delivery order number) and *address*.
 
 ```php
-use Detrack\DetrackCore\Factory\DeliveryFactory;
+use Detrack\DetrackCore\Resource\Job;
 
-$factory = new DeliveryFactory($client); //remember to pass the client!
-$delivery = $factory->createNew([
-  "date"=>"2018-03-09",
-  "do"=>"DO# 12345",
-  "address"=>"Null Island",
-  "instructions"=>"Tell recipient to come out and retrieve ice cream from van" //not required, but you can specify other fields that are documented on our API reference
-  ]);
-$delivery->save(); //submits the delivery to Detrack
-```
-
-Instead of passing the attributes straightaway in the `createNew` function, you can also first create a blank one, then modify the attributes later:
-
-```php
-use Detrack\DetrackCore\Factory\DeliveryFactory;
-
-$factory = new DeliveryFactory($client); //remember to pass the client!
-$delivery = $factory->createNew();
-$delivery->date = "2018-03-09";
-$delivery->do = "DO# 12345";
-$delivery->address = "Null Island";
-$delivery->instructions = "Tell recipient to come out and retrieve ice cream from van"; //not required, but you can specify other fields that are documented on our API reference
-$delivery->save(); //submits the delivery to Detrack
-```
-
-### Via Class Constructor
-
-If you detest the idea of factories, you can create the Delivery object by yourself, but you **must** attach the client object manually by calling the `setClient()` method before you call `save()`.
-
-```php
-use Detrack\DetrackCore\Model\Delivery;
-
-$delivery = new Delivery([
-  "date"=>"2018-03-09",
-  "do"=>"DO# 12345",
+$delivery = new Job([
+  "date"=>"2018-12-19",
+  "do_number"=>"DO# 12345",
   "address"=>"Null Island",
   "instructions"=>"Tell recipient to come out and retrieve ice cream from van" //not required, but you can specify other fields that are documented on our API reference
 ]);
 
-$delivery->setClient($client)->save(); //you can method chain!
+$delivery->save();
 ```
-Like before, you can also first pass no arguments into the constructor, then modify the attributes later:
+You can also first pass no arguments into the constructor, then modify the attributes later:
 
 ```php
-use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Resource\Job;
 
-$delivery = new Delivery();
-$delivery->date = "2018-03-09";
-$delivery->do = "DO# 12345";
+$delivery = new Job();
+$delivery->date = "2018-12-19";
+$delivery->do_number = "DO# 12345";
 $delivery->address = "Null Island";
 $delivery->instructions = "Tell recipient to come out and retrieve ice cream from van"; //not required, but you can specify other fields that are documented on our API reference
-$delivery->setClient($client)->save(); //submits the delivery to Detrack
+$delivery->save(); //submits the delivery to Detrack
 ```
 
-Remember that you **must** attach the client object, and ensure that the required attributes *date*,*do* and *address* are set before you call `save()`.
+Remember that you must ensure that the required attributes *date*, *do_number* and *address* are set before you call `save()`.
 
-Note that the `save()` function can be used for both creation and update of deliveries. (See below for example of updates)
+Note that the `save()` function behaves as an "upsert" function, which automatically creates jobs that do not yet exist or updates jobs that already exist. If you require a "strict insert" and "strict update", use `create()` and `save()` respectively, but be prepared to catch an `Exception` if `create()` is called on a job with a conflicting *do_number* on the same day and `update()` is called on a job that does not yet exist.
 
 And that's it! You've submitted your first delivery to Detrack. If you have your vehicles set up correctly on the Detrack Control Panel, your system will automatically assign deliveries to your drivers and you can start tracking them through their other apps.
 
-## Adding items to deliveries
+### Adding items to deliveries
 
 While what is documented in the previous section is the bare minimum required to get your application integrated with Detrack, you should add more information that is useful to both your staff and your customers. The next point we shall cover is adding items to your deliveries. These items will show up on receipts and Electronic PODs that you and will customers will receive.
 
@@ -126,15 +91,15 @@ The `Item` object has three base required attributes: *sku* (stock keeping unit 
 Creating the Item objects is similar to Deliveries, but you need not use factories since there's no client to attach:
 
 ```php
-use Detrack\DetrackCore\Model\Item;
+use Detrack\DetrackCore\Resource\Model\Item;
 
 $item = new Item([
   "sku"=>"IC 456",
   "qty"=>"5",
   "desc"=>"Strawberry flavoured ice-cream"
-  ]);
+]);
 ```
-Alternatively, like deliveries, you can pass an empty argument into the constructor, then set the attributes later:
+Alternatively, like jobs, you can pass an empty argument into the constructor, then set the attributes later:
 
 ```php
 use Detrack\DetrackCore\Model\Item;
@@ -153,36 +118,21 @@ $delivery->save() //sends the info to Detrack
 ```
 And that's it: The `items` property is an instance of `Detrack\DetrackCore\Model\ItemCollection`, and contains methods like `push()`, `pop()` for you to manipulate the items attached to the delivery. Don't forget to call `save()` afterwards to commit the changes to the Detrack API.
 
-# Advanced Usage Guide
+## Advanced Usage Guide
 
 This part contains miscellaneous bits and pieces of info should you require more fine control.
 
-## Find deliveries
+### Find deliveries
 
-Deliveries stored in the Detrack database are identified by both their *do* and their scheduled delivery *date*. To get the identifier used to identify a unique delivery, call the `getIdentifier()` method on the `Delivery` object.
+Deliveries stored in the Detrack database are identified by both their *do_number* and their scheduled delivery *date*.
 
-```php
-$identifier = $delivery->getIdentifier();
-/*  returns [
- *    "do" => "DO# 12345",
- *    "date" => "2018-03-09",
- *  ]
- */
-```
-
-Afterwards, call the `findDelivery()` method on the `DetrackClient` object and supply the identifier:
-
-```php
-$client->findDelivery($identifier);
-```
+The `hydrate()` method is available to fill up the rest of the attributes given the *do_number* and *date*.
 
 This is usually used to retrieve updated information of a delivery.
 
-Version 1.3+: You can pass the DO# as a string instead to retrieve the latest delivery attached to that DO#.
+### Upsert and delete
 
-## Update and delete
-
-The `save()` and `delete()` functions work in the Object-Relation-Mapping style, and you can call them on any `Delivery` object:
+The `save()` and `delete()` functions work in the Object-Relation-Mapping style, and you can call them on any `Job` object:
 
 ```php
 // Update instructions
@@ -194,47 +144,123 @@ $delivery->delete();
 ```
 Upon deleting, the Delivery job will no longer show up on the Detrack Dashboard, and will no longer be tracked.
 
-## Retrieving Electronic Proof of Deliveries (POD)
+### Create and updates
 
-If your driver has submitted a proof of delivery, you can retrieve them via the following methods:
+As mentioned above, if you require strict inserts and updates, use `create()` and `update()`:
+```php
+$delivery = new Job();
+$delivery->do_number = "DO# 12345";
+$delivery->address = "PHP Island";
+$delivery->date = date("Y-m-d");
+$delivery->items->add(new Item(["sku"=>"1","qty"=>5,"desc"=>"Chocolate Ice Cream"]));
 
-- `$delivery->getPODImage(Integer $num)` Get a single image. Specify 1 to 5. Returns a binary string representation of the image.
-- `$delivery->downloadPODImage(Integer $num,String $path)` Same as above, but downloads the file to a given path.
-- `$delivery->getPODPDF()` Get PDF file containing all the POD images. Returns binary string representation of the pdf.
-- `$delivery->downloadPODPDF(String $path)` Same as above, but downloads the file to a given path.
+//will throw exception
+$delivery->update();
+//ok
+$delivery->create();
 
-## Bulk operations
+$delivery->items->pop();
+$delivery->items->add(new Item(["sku"=>"2","qty"=>5,"desc"=>"Strawberry Ice Cream"]));
+//will throw exception
+$delivery->create();
+//ok
+$delivery->update();
+```
 
-Bulk operations are available for find, save and delete. However, you should use them with caution when handling large datasets as they may cause your script to timeout if your MAX_EXECUTION_TIME setting in PHP is not long enough.
+### Retrieving Documents
 
-- `$client->bulkFindDeliveries($array)` to retrieve an array of deliveries. Pass an array of delivery identifiers.
-- `$client->bulkSaveDeliveries($array)` to create/update many deliveries at once. Pass an array of delivery objects.
-- `$client->findDeliveriesByDate(String $date)` to retrieve an array of deliveries scheduled for a date. Pass a date string in format YYYY-MM-DD.
-- `$client->bulkDeleteDeliveries($array)` to delete multiple deliveries at once. Pass an array of delivery identifiers.
-- `$client->deleteDeliveriesByDate(String $date)` to delete all deliveries scheduled for a certain date. Pass a date string in format YYYY-MM-DD.
+The `downloadDoc(String $document, String $format, String $target)` method is available to download documents relevant to each `Job`.
+
+- `$document` - `"pod"` (default) or `"shipping-label"`
+- `$format` - `"pdf"` (default) or `"tiff"`
+- `$target` - `NULL` (default) or `/path/to/folder` or `/path/to/nonexistent/file`.
+    - If `NULL` is passed, raw file data will be returned to you as a string.
+    - If the path of an existing folder is given, the file is downloaded into that folder with the default file name from the server.
+    - If a path to a nonexistent file is given, the file will be downloaded to that exact path with that name.
+
+### Bulk operations
+
+Bulk operations are available for list, create (strict) and delete. However, you should use them with caution when handling large datasets as they may cause your script to timeout if your `MAX_EXECUTION_TIME` setting in PHP is not long enough.
+
+- `Job::listJobs(array $args, String $query)`
+    To use if you need to display many jobs like an overview in a dashboard. `$args` is an associative array with the following keys:
+    - *page* `int`, default `1`
+    - *limit* `int`, default `50`
+    - *sort* `String`, provide the attribute name to sort by (e.g. `"date"`). Add a minus sign in front to flip the order. **Does not work if you use together with `$query`**
+    - *date* `String` date in `Y-m-d` format, only list deliveries on that day
+    - *type* `"delivery"` (default) or `"collection"`
+    - *assign_to* `String` only show jobs driven by this driver
+    - *status* `String` only show jobs of a certain status. Available are `"complete"`,`"completed_partial"`,`"failed"`
+    - *do_number* `String` only show jobs of a certain DO number. Used to show reattempts (because reattempts will have the same DO number but different *date*)
+    `$query` is a search term that lets you search across all other fields such as address.
+- `Job::createJobs(array $jobs)`
+    Bulk create an array of jobs. You can either pass an array of `Job` objects or an array of associative arrays representing attributes of `Job` objects.
+- `Job::deleteJobs(array $jobs)`
+    Bulk delete an array of jobs. You can either pass an array of `Job` objects or an array of associative arrays representing attributes of `Job` objects, although you only need the *id* field. The method will automatically strip the other attributes for you.
 
 ## Vehicles
 
-Currently, Vehicles in the API are read-only, so the only things you can do are retrieve driver information and assign drivers to deliveries.
+Vehicles can also be created, retrieved, updated and deleted in a fashion similar to Jobs. The fully qualified class name is `Detrack\DetrackCore\Resource\Vehicle`.
 
-- `$client->findVehicle(String $name)` to retrieve details about a driver. Will be casted into a `Detrack\DetrackCore\Model\Vehicle`
-- `$delivery->assignTo(String $vehicleName | Vehicle $vehicle)` if you want to assign a delivery to a specific driver.
+### Creating vehicles
 
-## Contributing
+There are three keys to `Vehicle`s in the Detrack backend – `name`, which is the name of the driver the *organisation* sets, `detrack_id`, the id unique to the *driver*, and `id`, the id unique to the pairing of the *driver and the organisation*.
+
+The *detrack_id* is the hash string unique to each Driver that can be seen when they open the Detrack Proof of Delivery App on their phone. To create a delivery, construct a `Vehicle` object and fill in the *detrack_id* and *driver* attributes:
+
+```php
+use Detrack\DetrackCore\Resource\Vehicle;
+
+$vehicle = new Vehicle();
+$vehicle->detrack_id = "SGVsbG8gV29ybGQ";
+$vehicle->name = "Tom's Van";
+$vehicle->save();
+//or
+$vehicle->create();
+```
+
+Similarly to `Job`s the `hydrate()`,`update()`,`delete()` functions are also available for `Vehicle` objects.
+
+### Programmatically assigning jobs to vehicles
+
+Use the `assignTo(Vehicle $vehicle)` method on `Job` objects to assign a job to your drivers. Continuing from the above examples:
+
+```php
+$tomsVehicle = new Vehicle();
+$tomsVehicle->name = "Tom's Van";
+$tomsVehicle->hydrate(); //optional, assignTo will do it for you anyway
+
+$delivery->assignTo($tomsVehicle);
+```
+
+Thereafter somewhere else in your code, you can then call `getVehicle()` on the `Job` objects to retrieve the `Vehicle` that has been assigned to it.
+
+```php
+echo $delivery->getVehicle()->name;
+//prints "Tom's Van"
+```
+
+# Contributing
 
 We are open to contributions. If you feel something can be improved, feel free to open a pull request.
 
 ## Bug Reports & Feature Requests
 
-Open an issue on GitHub, or send an email to info@detrack.com addressed to the Engineering team.
+Open an issue on GitHub, or send an email to [info@detrack.com[(mailto:info@detrack.com)] addressed to the Engineering team.
 
-### Setting up the development environment
+## Setting up the development environment
 
-(coming soon)
+Clone this repository and install composer dev dependencies.
+```sh
+git clone https://github.com/detrack/detrack-core-php.git .
+composer install
+```
 
-### Testing
+## Testing
 
-(coming soon)
+Refer to the `.env.example` file and create your own `.env` to enter testing API Keys, DO numbers, Driver detrack_id etc.
+The test will create sample jobs on your Detrack Dashboard, and on successful completion, delete them thereafter. (Consequently, an internet connection is required to run the test suites)
+Run `phpunit` on the `tests` folder, either through the `vendor` folder or through a globally installed executable.
 
 ## Built With
 
