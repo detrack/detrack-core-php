@@ -199,16 +199,97 @@ class Job extends Resource
 
     public function save()
     {
-        $verb = 'POST';
-        $actionPath = 'jobs';
-        $response = DetrackClientStatic::sendData($verb, $actionPath, $this->jsonSerialize());
-        $this->attributes = array_filter(json_decode(json_encode($response->data), true));
-        if (isset($response->data->items) && json_decode(json_encode($response->data->items), true) != []) {
-            $this->attributes['items'] = new ItemCollection(json_decode(json_encode($response->data->items), true));
-        }
-        $this->resetModifiedAttributes();
+        if ($this->id == null) {
+            //try to hydrate and find the id
+            //if found, it means we are going to perform an update
+            //if still null, means we are going to perform an insert
+            $returnVehicle = $this->get();
+            if ($returnVehicle == null) {
+                return $this->create()->resetModifiedAttributes();
+            } else {
+                $this->id = $returnVehicle->id;
 
-        return $response;
+                return $returnVehicle->update()->resetModifiedAttributes();
+            }
+        } else {
+            return $this->update()->resetModifiedAttributes();
+        }
+    }
+
+    /**
+     * Creates the vehicle - performs a strict insert (if it already exists, throw an exception).
+     *
+     * @throws Exception if the current vehicle object have missing fields
+     * @throws Exception if the vehicle contains conflicting name or detrack_id
+     *
+     * @return Vehicle the newly created vehicle
+     */
+    public function create()
+    {
+        $requiredAttributes = ['do_number', 'address', 'date'];
+        foreach ($requiredAttributes as $requiredAttribute) {
+            if ($this->$requiredAttribute == null) {
+                throw new \Exception('Missing attribute: '.$requiredAttribute);
+            }
+        }
+        $actionPath = 'jobs';
+        $verb = 'POST';
+        $validFields = ['type', 'primary_job_status', 'open_to_marketplace', 'marketplace_offer', 'do_number', 'attempt', 'date', 'start_date', 'job_age', 'job_release_time', 'job_time', 'time_window', 'job_received_date', 'tracking_number', 'order_number', 'job_type', 'job_sequence', 'job_fee', 'address_lat', 'address_lng', 'address', 'company_name', 'address_1', 'address_2', 'address_3', 'postal_code', 'city', 'state', 'country', 'billing_address', 'deliver_to_collect_from', 'last_name', 'phone_number', 'sender_phone_number', 'fax_number', 'instructions', 'assign_to', 'notify_email', 'webhook_url', 'zone', 'customer', 'account_no', 'job_owner', 'invoice_number', 'invoice_amount', 'payment_mode', 'payment_amount', 'group_name', 'vendor_name', 'shipper_name', 'source', 'weight', 'parcel_width', 'parcel_length', 'parcel_height', 'cubic_meter', 'boxes', 'cartons', 'pieces', 'envelopes', 'pallets', 'bins', 'trays', 'bundles', 'rolls', 'number_of_shipping_labels', 'attachment_url', 'detrack_number', 'status', 'tracking_status', 'reason', 'last_reason', 'received_by_sent_by', 'note', 'carrier', 'pod_lat', 'pod_lng', 'pod_address', 'address_tracked_at', 'arrived_lat', 'arrived_lng', 'arrived_address', 'arrived_at', 'texted_at', 'called_at', 'serial_number', 'signed_at', 'photo_1_at', 'photo_2_at', 'photo_3_at', 'photo_4_at', 'photo_5_at', 'signature_file_url', 'photo_1_file_url', 'photo_2_file_url', 'photo_3_file_url', 'photo_4_file_url', 'photo_5_file_url', 'actual_weight', 'temperature', 'hold_time', 'payment_collected', 'auto_reschedule', 'actual_crates', 'actual_pallets', 'actual_utilization', 'goods_service_rating', 'driver_rating', 'customer_feedback', 'eta_time', 'live_eta', 'depot', 'depot_contact', 'department', 'sales_person', 'identification_number', 'bank_prefix', 'run_number', 'pick_up_from', 'pick_up_time', 'pick_up_lat', 'pick_up_lng', 'pick_up_address', 'pick_up_address_1', 'pick_up_address_2', 'pick_up_address_3', 'pick_up_city', 'pick_up_state', 'pick_up_country', 'pick_up_postal_code', 'pick_up_zone', 'pick_up_assign_to', 'pick_up_reason', 'info_received_at', 'pick_up_at', 'scheduled_at', 'at_warehouse_at', 'out_for_delivery_at', 'head_to_pick_up_at', 'head_to_delivery_at', 'cancelled_at', 'pod_at', 'pick_up_failed_count', 'deliver_failed_count', 'job_price', 'insurance_price', 'insurance_coverage', 'total_price', 'payer_type', 'remarks', 'items_count', 'service_type', 'warehouse_address', 'destination_time_window', 'door', 'time_zone', 'created_at', 'items'];
+        $data = json_decode(json_encode(array_filter(array_filter($this->attributes, function ($key) use ($validFields) {
+            return in_array($key, $validFields);
+        }, ARRAY_FILTER_USE_KEY))));
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $data);
+        if (isset($response->data)) {
+            foreach ($response->data as $key => $value) {
+                $this->$key = $value;
+            }
+
+            return $this;
+        } elseif (isset($response->code) && $response->code == 'validation_failed') {
+            throw new \Exception('Validation failed: '.implode(', ', array_map(function ($error) {
+                return $error->field.implode('& ', $error->codes);
+            }, $response->errors)));
+        } elseif (isset($response->code)) {
+            throw new \Exception('API Error: ');
+        } else {
+            throw new \Exception('Something broke');
+        }
+    }
+
+    /**
+     * Updates the vehicle - performs a strict update (if it does not exist, throw an exception).
+     *
+     * @throws Exception if the current vehicle object has missing fields
+     * @throws Exception if the vehicle contains conflicting name or detrack_id
+     *
+     * @return Vehicle the newly updated vehicle
+     */
+    public function update()
+    {
+        if ($this->id == null) {
+            $this->attributes = json_decode(json_encode($this->hydrate()), true);
+            if ($this->id == null) {
+                throw new Exception('The vehicle with the said id/name/detrack_id cannot be found');
+            }
+        }
+        $actionPath = 'jobs/'.$this->id;
+        $verb = 'PUT';
+        $validFields = ['type', 'primary_job_status', 'open_to_marketplace', 'marketplace_offer', 'do_number', 'attempt', 'date', 'start_date', 'job_age', 'job_release_time', 'job_time', 'time_window', 'job_received_date', 'tracking_number', 'order_number', 'job_type', 'job_sequence', 'job_fee', 'address_lat', 'address_lng', 'address', 'company_name', 'address_1', 'address_2', 'address_3', 'postal_code', 'city', 'state', 'country', 'billing_address', 'deliver_to_collect_from', 'last_name', 'phone_number', 'sender_phone_number', 'fax_number', 'instructions', 'assign_to', 'notify_email', 'webhook_url', 'zone', 'customer', 'account_no', 'job_owner', 'invoice_number', 'invoice_amount', 'payment_mode', 'payment_amount', 'group_name', 'vendor_name', 'shipper_name', 'source', 'weight', 'parcel_width', 'parcel_length', 'parcel_height', 'cubic_meter', 'boxes', 'cartons', 'pieces', 'envelopes', 'pallets', 'bins', 'trays', 'bundles', 'rolls', 'number_of_shipping_labels', 'attachment_url', 'detrack_number', 'status', 'tracking_status', 'reason', 'last_reason', 'received_by_sent_by', 'note', 'carrier', 'pod_lat', 'pod_lng', 'pod_address', 'address_tracked_at', 'arrived_lat', 'arrived_lng', 'arrived_address', 'arrived_at', 'texted_at', 'called_at', 'serial_number', 'signed_at', 'photo_1_at', 'photo_2_at', 'photo_3_at', 'photo_4_at', 'photo_5_at', 'signature_file_url', 'photo_1_file_url', 'photo_2_file_url', 'photo_3_file_url', 'photo_4_file_url', 'photo_5_file_url', 'actual_weight', 'temperature', 'hold_time', 'payment_collected', 'auto_reschedule', 'actual_crates', 'actual_pallets', 'actual_utilization', 'goods_service_rating', 'driver_rating', 'customer_feedback', 'eta_time', 'live_eta', 'depot', 'depot_contact', 'department', 'sales_person', 'identification_number', 'bank_prefix', 'run_number', 'pick_up_from', 'pick_up_time', 'pick_up_lat', 'pick_up_lng', 'pick_up_address', 'pick_up_address_1', 'pick_up_address_2', 'pick_up_address_3', 'pick_up_city', 'pick_up_state', 'pick_up_country', 'pick_up_postal_code', 'pick_up_zone', 'pick_up_assign_to', 'pick_up_reason', 'info_received_at', 'pick_up_at', 'scheduled_at', 'at_warehouse_at', 'out_for_delivery_at', 'head_to_pick_up_at', 'head_to_delivery_at', 'cancelled_at', 'pod_at', 'pick_up_failed_count', 'deliver_failed_count', 'job_price', 'insurance_price', 'insurance_coverage', 'total_price', 'payer_type', 'remarks', 'items_count', 'service_type', 'warehouse_address', 'destination_time_window', 'door', 'time_zone', 'created_at', 'items'];
+        $data = json_decode(json_encode(array_filter(array_filter($this->attributes, function ($key) use ($validFields) {
+            return in_array($key, $validFields);
+        }, ARRAY_FILTER_USE_KEY))));
+        $response = DetrackClientStatic::sendData($verb, $actionPath, $data);
+        if (isset($response->data)) {
+            foreach ($response->data as $key => $value) {
+                $this->$key = $value;
+            }
+
+            return $this;
+        } elseif (isset($response->code) && $response->code == 'not_found') {
+            throw new Exception('Vehicle with id '.$this->id.' could not be found');
+        } else {
+            throw new Exception('Something broke');
+        }
     }
 
     public function delete()
@@ -421,5 +502,33 @@ class Job extends Resource
         }
 
         return $returnArray;
+    }
+
+    /**
+     * Assigns the current job to the specified Vehicle Object.
+     *
+     * @param Vehicle the vehicle to assign to
+     */
+    public function assignTo(Vehicle $vehicle)
+    {
+        $this->assign_to = $vehicle->name;
+        $this->save();
+    }
+
+    /**
+     * Gets the current Vehicle assigned to the current Job.
+     *
+     * @return Vehicle|null the vehicle the job has been assigned to, NULL if none
+     */
+    public function getVehicle()
+    {
+        if ($this->assign_to == null) {
+            return null;
+        }
+        $vehicle = new Vehicle();
+        $vehicle->name = $this->assign_to;
+        $vehicle->hydrate();
+
+        return $vehicle;
     }
 }

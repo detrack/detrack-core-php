@@ -17,6 +17,10 @@ final class JobTest extends TestCase
         $testJob->save();
         $response = DetrackClientStatic::sendData('GET', 'jobs/'.$testJob->id, []);
         $this->assertEquals($newDo, $response->data->do_number);
+        $testJob->address = 'PHP Islet';
+        $testJob->save();
+        $response = DetrackClientStatic::sendData('GET', 'jobs/'.$testJob->id, []);
+        $this->assertEquals($testJob->address, $response->data->address);
 
         return $testJob;
     }
