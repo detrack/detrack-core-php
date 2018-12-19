@@ -1,6 +1,6 @@
 <?php
 
-namespace Detrack\DetrackCore\Resource\Model;
+namespace Detrack\DetrackCore\Model;
 
 use Detrack\DetrackCore\Resource\Resource;
 

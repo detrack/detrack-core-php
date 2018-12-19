@@ -3,6 +3,7 @@
 namespace Detrack\DetrackCore\Resource;
 
 use Detrack\DetrackCore\Client\DetrackClientStatic;
+use Detrack\DetrackCore\Model\ItemCollection;
 
 class Job extends Resource
 {

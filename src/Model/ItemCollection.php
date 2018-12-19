@@ -1,6 +1,6 @@
 <?php
 
-namespace Detrack\DetrackCore\Resource;
+namespace Detrack\DetrackCore\Model;
 
 use JsonSerializable;
 use Doctrine\Common\Collections\ArrayCollection;

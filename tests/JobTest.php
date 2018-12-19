@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClientStatic;
 use Detrack\DetrackCore\Resource\Job;
-use Detrack\DetrackCore\Resource\Model\Item;
+use Detrack\DetrackCore\Model\Item;
 
 final class JobTest extends TestCase
 {
