@@ -153,7 +153,7 @@ class Vehicle extends Resource
         $requiredAttributes = ['name', 'detrack_id'];
         foreach ($requiredAttributes as $requiredAttribute) {
             if ($this->$requiredAttribute == null) {
-                throw new Exception('Missing attribute: '.$requiredAttribute);
+                throw new \Exception('Missing attribute: '.$requiredAttribute);
             }
         }
         $actionPath = 'vehicles';
