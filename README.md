@@ -10,7 +10,7 @@ Official core library for PHP applications to interact with the [Detrack](https:
 Install the package via [composer](https://getcomposer.org):
 
 ```bash
-composer require detrack/detrack-core
+composer require detrack/detrack-core:^2.0
 ```
 Composer will handle all the dependencies for you.
 
@@ -18,7 +18,7 @@ Composer will handle all the dependencies for you.
 
 **Requires PHP >= 7.1**
 
-PHP 5.6 and 7.0 has already been officially deprecated; our new library and API takes advantage of the new features PHP 7 has to offer for better stability.
+PHP 5.6 and 7.0 has already been officially deprecated; our new library and API takes advantage of the new features PHP 7.1 has to offer for better stability.
 
 You must also have created a (free!) account on Detrack, and understand our basic workflow.
 
@@ -246,7 +246,7 @@ We are open to contributions. If you feel something can be improved, feel free t
 
 ## Bug Reports & Feature Requests
 
-Open an issue on GitHub, or send an email to [info@detrack.com[(mailto:info@detrack.com)] addressed to the Engineering team.
+Open an issue on GitHub, or send an email to [info@detrack.com](mailto:info@detrack.com) addressed to the Engineering team.
 
 ## Setting up the development environment
 
