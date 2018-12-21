@@ -41,21 +41,21 @@ class DetrackClientStatic
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::$baseURI,
-              'http_errors' => false,
+                'base_uri' => static::$baseURI,
+                'http_errors' => false,
             ]);
         }
         if ($verb == 'POST' || $verb != 'GET') {
             $response = static::$httpClient->request($verb, $actionPath, [
-            'json' => [
-              'data' => $dataArray,
-            ],
-            'headers' => ['X-API-KEY' => static::$apiKey],
-          ]);
+                'json' => [
+                    'data' => $dataArray,
+                ],
+                'headers' => ['X-API-KEY' => static::$apiKey],
+            ]);
         } elseif ($verb == 'GET') {
             $response = static::$httpClient->request($verb, $actionPath, [
-              'query' => $dataArray,
-              'headers' => ['X-API-KEY' => static::$apiKey],
+                'query' => $dataArray,
+                'headers' => ['X-API-KEY' => static::$apiKey],
             ]);
         }
         if (isset($response->getHeader('Content-Type')[0]) && $response->getHeader('Content-Type')[0] == 'application/json') {
@@ -113,17 +113,17 @@ class DetrackClientStatic
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::$baseURI,
-              'http_errors' => false,
+                'base_uri' => static::$baseURI,
+                'http_errors' => false,
             ]);
         }
         if (!isset(static::$jwt)) {
             $response = static::$httpClient->request('POST', 'login', [
-              'json' => [
-                'data' => [
-                  'api_key' => static::$apiKey,
+                'json' => [
+                    'data' => [
+                        'api_key' => static::$apiKey,
+                    ],
                 ],
-              ],
             ]);
             $responseJSON = json_decode((string) $response->getBody());
             if (!is_null($responseJSON) && is_string($responseJSON->token)) {
