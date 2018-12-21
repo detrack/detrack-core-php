@@ -312,8 +312,6 @@ class Job extends Resource
     /**
      * Given some attributes already present in the class member, retrieve the rest of the attributes from the server.
      *
-     * @param array $attr optional parameter to indicate only these attributes should be use to search for the Job
-     *
      * @return Job a copy of the job object with all attributes filled up
      */
     public function hydrate()
