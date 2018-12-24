@@ -4,3 +4,5 @@ phpunit
 composer.lock
 test
 undo
+/docs/build
+/docs/cache

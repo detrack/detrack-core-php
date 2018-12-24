@@ -3,3 +3,5 @@
 .gitignore export-ignore
 .env.example export-ignore
 phpunit.xml export-ignore
+sami_conf.php export-ignore
+/docs export-ignore
