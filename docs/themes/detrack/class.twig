@@ -314,8 +314,9 @@
 
     {% if method.tags("netcall") %}
     <td><i class="fas fa-wifi"></i>
-      {% for net in method.tags('time') %}
-          {{ net|join(" ")|join|desc(class) }}
+      {% for net in method.tags('netcall') %}
+        {{ net[0]|join }} request{% if net[0]|join > 1 %}s{% endif %}
+        {{ net[1:]|join(" ") }}
       {% endfor %}
     </td>
     {% else %}
