@@ -296,9 +296,9 @@
 
     {% if not method.static %}
       {% if method.tags('destructive')%}
-        <td><i class="fas fa-exclamation-triangle disabled"></i>Non destructive function</td>
-      {% else %}
         <td><i class="fas fa-exclamation-triangle"></i>Destructive function</td>
+      {% else %}
+        <td><i class="fas fa-exclamation-triangle disabled"></i>Non destructive function</td>
       {% endif %}
     {% endif %}
 
