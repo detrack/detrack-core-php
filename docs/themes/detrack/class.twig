@@ -4,6 +4,8 @@
 {% block body_class 'class' %}
 {% block page_id 'class:' ~ (class.name|replace({'\\': '_'})) %}
 
+{% from "macros.twig" import d_hint %}
+
 {% block below_menu %}
     {% if class.namespace %}
         <div class="namespace-breadcrumbs">
@@ -153,7 +155,7 @@
                         {{ see[0]|raw }}
                     {% endif %}
                 </td>
-                <td>{{ see[1]|raw }}</td>
+                <td>{{ see[1]|desc(class) }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -247,7 +249,7 @@
                     <p>{{ method.shortdesc|desc(class) }}</p>
                     {%- endif %}
                     {% if method.longdesc -%}
-                    <p>{{ method.longdesc|desc(class) }}</p>
+                    <p>{{ d_hint(method.longdesc,class) }}</p>
                     {%- endif %}
                 {%- endif %}
                 {% if project.config('insert_todos') == true %}
@@ -313,11 +315,22 @@
     {% endif %}
 
     {% if method.tags("netcall") %}
-    <td><i class="fas fa-wifi"></i>
+    <td>
+      <table>
       {% for net in method.tags('netcall') %}
-        {{ net[0]|join }} request{% if net[0]|join > 1 %}s{% endif %}
-        {{ net[1:]|join(" ") }}
+        <tr>
+          {% if loop.first %}
+          <td rowspan="{{loop.length}}">
+            <i class="fas fa-wifi"></i>
+          </td>
+          {% endif %}
+          <td>
+          {{ net[0]|join }} request{% if net[0]|join > 1 %}s{% endif %}
+          {{ d_hint(net[1:]|join(' '),class) }}
+          </td>
+        </tr>
       {% endfor %}
+      </table>
     </td>
     {% else %}
       <td><i class="fas fa-wifi disabled"></i>No Network Calls</td>
