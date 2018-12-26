@@ -296,7 +296,7 @@
 
     {% if not method.static %}
       {% if method.tags('destructive')%}
-        <td><i class="fas fa-exclamation-triangle"></i>Non destructive function</td>
+        <td><i class="fas fa-exclamation-triangle disabled"></i>Non destructive function</td>
       {% else %}
         <td><i class="fas fa-exclamation-triangle"></i>Destructive function</td>
       {% endif %}
@@ -320,7 +320,7 @@
       {% endfor %}
     </td>
     {% else %}
-      <td><i class="fas fa-wifi"></i>No Network Calls</td>
+      <td><i class="fas fa-wifi disabled"></i>No Network Calls</td>
     {% endif %}
     </tr>
     </table>
