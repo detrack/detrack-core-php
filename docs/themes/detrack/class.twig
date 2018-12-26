@@ -262,7 +262,7 @@
                 {{ block('parameters') }}
             {% endif %}
 
-            {% if method.hintDesc or method.hint %}
+            {% if method.hintDesc or method.hint and method.hint[0] != 'void'%}
                 <h4>Return Value</h4>
 
                 {{ block('return') }}
