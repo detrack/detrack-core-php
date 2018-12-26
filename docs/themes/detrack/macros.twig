@@ -143,3 +143,28 @@
             </p>
         {% endif %}
 {% endmacro %}
+
+{# A macro to automatically highlight method names. Pass in the full string at once. #}
+{% macro d_hint(text,class) %}
+  {% spaceless %}
+  {% set output = '' %}
+  {% for word in text|split(' ') %}
+    {% set d_methods = class.methods %}
+    {% set found = false %}
+    {% set f_method = '' %}
+    {% for d_method in d_methods %}
+      {% if word == d_method %}
+        {% set found = true %}
+        {% set f_method = d_method %}
+      {% endif %}
+    {% endfor %}
+    {% if found %}
+      {% from _self import method_link %}
+      {% set output = output ~ method_link(f_method,class) ~ ' ' %}
+    {% else %}
+      {% set output = output ~  word ~ ' ' %}
+    {% endif %}
+  {% endfor %}
+  {{- output|desc(class) -}}
+  {% endspaceless %}
+{% endmacro %}
