@@ -465,6 +465,10 @@ dd {
   background-color: #eee;
 }
 
+.detrack_table td{
+  vertical-align: middle !important;
+}
+
 .detrack_table i{
   padding-right: 1vw;
 }
