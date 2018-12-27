@@ -7,6 +7,7 @@ $sami = new Sami\Sami(__DIR__.'/src', array(
     'cache_dir' => __DIR__.'/docs/cache/',
     'remote_repository' => new Sami\RemoteRepository\GitHubRemoteRepository('detrack/detrack-core-php', dirname(__DIR__)),
     'default_opened_level' => 2,
+    'insert_todos' => true,
 ));
 
 $templates = $sami['template_dirs'];
