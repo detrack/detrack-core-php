@@ -194,6 +194,18 @@
                 </td>
             </tr>
         {% endfor %}
+        {% for property in class.tags('property-read') %}
+            <tr>
+                <td class="type" id="property_{{ property[1]|join|raw }}">
+                  {{ property[0][0]|join|raw }}
+                </td>
+                <td>${{ property[1]|join|raw }}</td>
+                <td class="last">{{ property[2]|join|desc(class)|raw }}</td>
+                <td>
+                <small><i>readonly</i></small>
+                </td>
+            </tr>
+        {% endfor %}
     </table>
 {% endblock %}
 
