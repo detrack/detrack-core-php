@@ -225,14 +225,14 @@ class Job extends Resource
     }
 
     /**
-     * Creates the vehicle - performs a strict insert (if it already exists, throw an exception).
+     * Creates the job - performs a strict insert (if it already exists, throw an exception).
      *
-     * @throws Exception if the current vehicle object have missing fields
+     * @throws Exception if the current vehicle job have missing fields
      * @throws Exception if the vehicle contains conflicting name or detrack_id
      *
-     * @return Vehicle the newly created vehicle
+     * @return Job the newly created vehicle
      */
-    public function create(): Vehicle
+    public function create(): Job
     {
         $requiredAttributes = ['do_number', 'address', 'date'];
         foreach ($requiredAttributes as $requiredAttribute) {
@@ -265,14 +265,14 @@ class Job extends Resource
     }
 
     /**
-     * Updates the vehicle - performs a strict update (if it does not exist, throw an exception).
+     * Updates the job - performs a strict update (if it does not exist, throw an exception).
      *
-     * @throws Exception if the current vehicle object has missing fields
+     * @throws Exception if the current job object has missing fields
      * @throws Exception if the vehicle contains conflicting name or detrack_id
      *
-     * @return Vehicle the newly updated vehicle
+     * @return Job the newly updated job
      */
-    public function update(): Vehicle
+    public function update(): Job
     {
         if ($this->id == null) {
             $this->attributes = json_decode(json_encode($this->hydrate()), true);
@@ -321,7 +321,7 @@ class Job extends Resource
      *
      * @return Job a copy of the job object with all attributes filled up
      */
-    public function hydrate(): Job
+    public function hydrate(): ?Job
     {
         $verb = 'POST';
         $actionPath = 'jobs/search';
