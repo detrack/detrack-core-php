@@ -29,7 +29,7 @@ abstract class Resource implements \JsonSerializable
         return $this->attributes[$key];
     }
 
-    public function __set($key, $value)
+    public function __set($key, $value): void
     {
         $this->modifiedAttributes[$key] = true;
         $this->attributes[$key] = $value;
@@ -42,7 +42,7 @@ abstract class Resource implements \JsonSerializable
      *
      * @return array the model's array attributes
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_filter($this->attributes, function ($attribute) {
             /*conditions for not getting filtered out:
@@ -56,7 +56,7 @@ abstract class Resource implements \JsonSerializable
     /**
      * Reset the modifiedAttributes array.
      */
-    protected function resetModifiedAttributes()
+    protected function resetModifiedAttributes(): void
     {
         $this->modifiedAttributes = [];
     }
@@ -68,7 +68,7 @@ abstract class Resource implements \JsonSerializable
      *
      * @return string String representation of the model
      */
-    public function __toString()
+    public function __toString(): string
     {
         return json_encode($this);
     }
