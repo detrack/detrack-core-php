@@ -225,10 +225,10 @@ class Job extends Resource
     }
 
     /**
-     * Creates the job - performs a strict insert (if it already exists, throw an exception).
+     * Creates the job - performs a strict insert (if it already exists, throw an \Exception).
      *
-     * @throws Exception if the current vehicle job have missing fields
-     * @throws Exception if the vehicle contains conflicting name or detrack_id
+     * @throws \Exception if the current vehicle job have missing fields
+     * @throws \Exception if the vehicle contains conflicting name or detrack_id
      *
      * @return Job the newly created vehicle
      */
@@ -265,10 +265,10 @@ class Job extends Resource
     }
 
     /**
-     * Updates the job - performs a strict update (if it does not exist, throw an exception).
+     * Updates the job - performs a strict update (if it does not exist, throw an \Exception).
      *
-     * @throws Exception if the current job object has missing fields
-     * @throws Exception if the vehicle contains conflicting name or detrack_id
+     * @throws \Exception if the current job object has missing fields
+     * @throws \Exception if the vehicle contains conflicting name or detrack_id
      *
      * @return Job the newly updated job
      */
@@ -277,7 +277,7 @@ class Job extends Resource
         if ($this->id == null) {
             $this->attributes = json_decode(json_encode($this->hydrate()), true);
             if ($this->id == null) {
-                throw new Exception('The vehicle with the said id/name/detrack_id cannot be found');
+                throw new \Exception('The vehicle with the said id/name/detrack_id cannot be found');
             }
         }
         $actionPath = 'jobs/'.$this->id;
@@ -294,9 +294,10 @@ class Job extends Resource
 
             return $this;
         } elseif (isset($response->code) && $response->code == 'not_found') {
-            throw new Exception('Vehicle with id '.$this->id.' could not be found');
+            throw new \Exception('Vehicle with id '.$this->id.' could not be found');
         } else {
-            throw new Exception('Something broke');
+            var_dump($response);
+            throw new \Exception('Something broke');
         }
     }
 
@@ -413,7 +414,7 @@ class Job extends Resource
         } elseif (is_null($target)) {
             return (string) $response->getBody();
         } else {
-            throw new Exception('Somehow, you managed to reach unreachable code');
+            throw new \Exception('Somehow, you managed to reach unreachable code');
         }
     }
 
