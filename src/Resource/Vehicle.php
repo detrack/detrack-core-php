@@ -117,6 +117,8 @@ class Vehicle extends Resource
                                 return $this;
                             }
                         }
+                    } else {
+                        return null;
                     }
                 }
             }
