@@ -10,18 +10,172 @@ use Detrack\DetrackCore\Model\ItemCollection;
  *
  * @property-read string $id the unique id used by the Detrack backend to identify the Job
  * @property-read int $job_age the number of days since the Job's scheduled delivery date (same day deliveries count as age 1)
- * @property-read int $geocoded_lat
- * @property string                                    $type         denotes the type of Job, either `"Delivery"` (default) or `"Collection"`
- * @property string                                    $deliver_to   the name of the recipient to deliver to. The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
- * @property string                                    $do_number    the main key used to identify Jobs on the Detrack Dashboard. However, take note that multiple Jobs can have the same `do_number` across different dates to represent reattempts.
- * @property string                                    $date         the delivery date in `"YYYY-MM-DD"` format
- * @property string                                    $address      the full address where the delivery is headed for. Always include country name for accurate geocoding results.
- * @property string                                    $instructions any special delivery instructions for the driver that will be displayed on the Detrack Proof of Delivery app.
- * @property string                                    $assign_to    the name of the vehicle to assign this delivery to
- * @property string                                    $notify_email the email address to sent customer-facing delivery updates to
- * @property string                                    $webhook_url  the url to post delivery updates to. Please refer to [Delivery Push Notification](https://www.detrack.com/api-documentation/delivery-push-notification/) on our documentation for more info.
- * @property string                                    $zone         zone id to assign this Job to.
- * @property \Detrack\DetrackCore\Model\ItemCollection $items        array of items to add to the Job. Do not modify this attribute directly.
+ * @property-read float $geocoded_lat the geocoded latitude of the address. It automatically changes to reflect the coordinates of the current address, however, it is not updated immediately after changing the address as it takes some time for the geocoding service to process the address.
+ * @property-read float $geocoded_lng the geocoded longitude of the address. It automatically changes to reflect the coordinates of the current address, however, it is not updated immediately after changing the address as it takes some time for the geocoding service to process the address.
+ * @property-read string $detrack_number another id used by some other apps to identify the Job
+ * @property-read string $tracking_status user-facing tracking status. Possible values are `"Info received"` (default upon creation), `"Out for delivery"`, `"Completed"`, `"Partially completed"`, `"Failed"`, `"On hold"`, `"Return"`, although more fields can be arbitarily defined in User Profiles. Not to be confused with `$status`.
+ * @property-read string $shipper_name arbitary field
+ * @property-read string $reason the reason provided by the driver why the Job has failed.
+ * @property-read string $last_reason MISSING FIELD
+ * @property-read string $received_by_sent_by the name of the person who signed on the POD when the Job has reached its destination
+ * @property-read string $note personal note entered by the driver on the Detrack Proof of Delivery app
+ * @property-read string $live_eta timestamp in the [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format that mirrors the `$eta_time` field or a certain offset based on `$eta_time` if it has been configured.
+ * @property-read float $pod_lat latitude of position where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
+ * @property-read float $pod_lng longitude of position where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
+ * @property-read float $pod_address estimated address where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
+ * @property-read string $info_received_at MISSING FIELD
+ * @property-read string $head_to_pick_up_at MISSING FIELD
+ * @property-read string $pick_up_at MISSING FIELD
+ * @property-read string $scheduled_at MISSING FIELD
+ * @property-read string $at_warehouse_at MISSING FIELD
+ * @property-read string $out_for_delivery_at MISSING FIELD
+ * @property-read string $head_to_delivery_at MISSING FIELD
+ * @property-read string $cancelled_at MISSING FIELD
+ * @property-read int $pick_up_failed_count MISSING FIELD
+ * @property-read int $deliver_failed_count MISSING FIELD
+ * @property-read string $pick_up_assign_to MISSING FIELD
+ * @property-read string $pick_up_reason MISSING FIELD
+ * @property-read string $pod_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the POD was submitted
+ * @property-read string $texted_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver sent a text message to the recipient
+ * @property-read string $called_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver made a phone call to the recipient
+ * @property-read string $address_tracked_at NO IDEA
+ * @property-read string $arrived_lat NO IDEA
+ * @property-read string $arrived_lng NO IDEA
+ * @property-read string $arrived_address NO IDEA
+ * @property-read string $arrived_at NO IDEA
+ * @property-read string $serial_number NO IDEA
+ * @property-read string $signed_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver captured the recipient's signature
+ * @property-read string $photo_1_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 1st photo in the POD
+ * @property-read string $photo_2_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 2nd photo in the POD
+ * @property-read string $photo_3_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 3rd photo in the POD
+ * @property-read string $photo_4_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 4th photo in the POD
+ * @property-read string $photo_5_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 5th photo in the POD
+ * @property-read string view_signature_url apa
+ * @property-read string view_photo_1_url apa
+ * @property-read string view_photo_2_url apa
+ * @property-read string view_photo_3_url apa
+ * @property-read string view_photo_4_url apa
+ * @property-read string view_photo_5_url apa
+ * @property-read string signature_file_url apa
+ * @property-read string photo_1_file_url apa
+ * @property-read string photo_2_file_url apa
+ * @property-read string photo_3_file_url apa
+ * @property-read string photo_4_file_url apa
+ * @property-read string photo_5_file_url apa
+ * @property-read string actual_weight apa
+ * @property-read string temperature apa
+ * @property-read string hold_time apa
+ * @property-read string payment_collected apa
+ * @property-read string actual_crates apa
+ * @property-read string actual_pallets apa
+ * @property-read string actual_utilization apa
+ * @property-read string attempt apa
+ * @property-read string goods_service_rating apa
+ * @property-read string driver_rating apa
+ * @property-read string customer_feedback apa
+ * @property-read string items_count apa
+ * @property string                                    $type                    denotes the type of Job, either `"Delivery"` (default) or `"Collection"`
+ * @property string                                    $deliver_to_collect_from the name of the recipient to deliver to. The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
+ * @property string                                    $do_number               the main key used to identify Jobs on the Detrack Dashboard. However, take note that multiple Jobs can have the same `do_number` across different dates to represent reattempts.
+ * @property string                                    $date                    the delivery date in `"YYYY-MM-DD"` format
+ * @property string                                    $address                 the full address where the delivery is headed for. Always include country name for accurate geocoding results.
+ * @property string                                    $instructions            any special delivery instructions for the driver that will be displayed on the Detrack Proof of Delivery app.
+ * @property string                                    $assign_to               the name of the vehicle to assign this delivery to
+ * @property string                                    $notify_email            the email address to sent customer-facing delivery updates to
+ * @property string                                    $webhook_url             the url to post delivery updates to. Please refer to [Delivery Push Notification](https://www.detrack.com/api-documentation/delivery-push-notification/) on our documentation for more info.
+ * @property string                                    $zone                    zone id to assign this Job to.
+ * @property \Detrack\DetrackCore\Model\ItemCollection $items                   array of items to add to the Job. Do not modify this attribute directly.
+ * @property string primary_job_status apa
+ * @property string open_to_marketplace apa
+ * @property string marketplace_offer apa
+ * @property string start_date apa
+ * @property string status apa
+ * @property string job_release_time apa
+ * @property string job_time apa
+ * @property string time_window apa
+ * @property string job_received_date apa
+ * @property string tracking_number apa
+ * @property string order_number apa
+ * @property string job_type apa
+ * @property string job_sequence apa
+ * @property string job_fee apa
+ * @property string address_lat apa
+ * @property string address_lng apa
+ * @property string company_name apa
+ * @property string address_1 apa
+ * @property string address_2 apa
+ * @property string address_3 apa
+ * @property string postal_code apa
+ * @property string city apa
+ * @property string state apa
+ * @property string country apa
+ * @property string billing_address apa
+ * @property string last_name apa
+ * @property string phone_number apa
+ * @property string sender_phone_number apa
+ * @property string fax_number apa
+ * @property string customer apa
+ * @property string account_no apa
+ * @property string job_owner apa
+ * @property string invoice_number apa
+ * @property string invoice_amount apa
+ * @property string payment_mode apa
+ * @property string payment_amount apa
+ * @property string group_id apa
+ * @property string group_name apa
+ * @property string vendor_name apa
+ * @property string source apa
+ * @property string weight apa
+ * @property string parcel_width apa
+ * @property string parcel_length apa
+ * @property string parcel_height apa
+ * @property string cubic_meter apa
+ * @property string boxes apa
+ * @property string cartons apa
+ * @property string pieces apa
+ * @property string envelopes apa
+ * @property string pallets apa
+ * @property string bins apa
+ * @property string trays apa
+ * @property string bundles apa
+ * @property string rolls apa
+ * @property string number_of_shipping_labels apa
+ * @property string attachment_url apa
+ * @property string carrier apa
+ * @property string auto_reschedule apa
+ * @property string eta_time apa
+ * @property string depot apa
+ * @property string depot_contact apa
+ * @property string department apa
+ * @property string sales_person apa
+ * @property string identification_number apa
+ * @property string bank_prefix apa
+ * @property string run_number apa
+ * @property string pick_up_from apa
+ * @property string pick_up_time apa
+ * @property string pick_up_lat apa
+ * @property string pick_up_lng apa
+ * @property string pick_up_address apa
+ * @property string pick_up_address_1 apa
+ * @property string pick_up_address_2 apa
+ * @property string pick_up_address_3 apa
+ * @property string pick_up_city apa
+ * @property string pick_up_state apa
+ * @property string pick_up_country apa
+ * @property string pick_up_postal_code apa
+ * @property string pick_up_zone apa
+ * @property string job_price apa
+ * @property string insurance_price apa
+ * @property string insurance_coverage apa
+ * @property string total_price apa
+ * @property string payer_type apa
+ * @property string remarks apa
+ * @property string service_type apa
+ * @property string warehouse_address apa
+ * @property string destination_time_window apa
+ * @property string door apa
+ * @property string time_zone apa
+ * @property string pod_time apa
  */
 class Job extends Resource
 {
@@ -102,6 +256,10 @@ class Job extends Resource
         'items_count' => null,
         //WRITABLE
         'type' => 'Delivery',
+        'do_number' => null,
+        'date' => null,
+        'address' => null,
+        'items' => null,
         'primary_job_status' => null,
         'open_to_marketplace' => null,
         'marketplace_offer' => null,
