@@ -5,6 +5,24 @@ namespace Detrack\DetrackCore\Resource;
 use Detrack\DetrackCore\Client\DetrackClientStatic;
 use Detrack\DetrackCore\Model\ItemCollection;
 
+/**
+ * Represents a Job (either a delivery of a collection) in the Detrack ecosystem.
+ *
+ * @property-read string $id the unique id used by the Detrack backend to identify the Job
+ * @property-read int $job_age the number of days since the Job's scheduled delivery date (same day deliveries count as age 1)
+ * @property-read int $geocoded_lat
+ * @property string                                    $type         denotes the type of Job, either `"Delivery"` (default) or `"Collection"`
+ * @property string                                    $deliver_to   the name of the recipient to deliver to. The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
+ * @property string                                    $do_number    the main key used to identify Jobs on the Detrack Dashboard. However, take note that multiple Jobs can have the same `do_number` across different dates to represent reattempts.
+ * @property string                                    $date         the delivery date in `"YYYY-MM-DD"` format
+ * @property string                                    $address      the full address where the delivery is headed for. Always include country name for accurate geocoding results.
+ * @property string                                    $instructions any special delivery instructions for the driver that will be displayed on the Detrack Proof of Delivery app.
+ * @property string                                    $assign_to    the name of the vehicle to assign this delivery to
+ * @property string                                    $notify_email the email address to sent customer-facing delivery updates to
+ * @property string                                    $webhook_url  the url to post delivery updates to. Please refer to [Delivery Push Notification](https://www.detrack.com/api-documentation/delivery-push-notification/) on our documentation for more info.
+ * @property string                                    $zone         zone id to assign this Job to.
+ * @property \Detrack\DetrackCore\Model\ItemCollection $items        array of items to add to the Job. Do not modify this attribute directly.
+ */
 class Job extends Resource
 {
     /**
