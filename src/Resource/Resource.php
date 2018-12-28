@@ -55,10 +55,14 @@ abstract class Resource implements \JsonSerializable
 
     /**
      * Reset the modifiedAttributes array.
+     *
+     * @return $this returns itself with the modifiedAttributes array reset
      */
-    protected function resetModifiedAttributes(): void
+    protected function resetModifiedAttributes(): Resource
     {
         $this->modifiedAttributes = [];
+
+        return $this;
     }
 
     /**
