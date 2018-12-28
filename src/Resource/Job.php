@@ -15,37 +15,92 @@ class Job extends Resource
      * Fields marked EXTRA (or not marked) are arbitary custom fields that are up to the discretion of the Detrack user to decide what they are used for.
      */
     protected $attributes = [
+        //READONLY
         'id' => null,
-        'type' => 'Delivery', //REQUIRED: either 'Delivery' or 'Collection'
-        'deliver_to' => null, //OPTIONAL: The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
-        'do_number' => null, //REQUIRED: The delivery order number. This attribute must be unique for this date.
-        'date' => null, //REQUIRED: The delivery date. Format: YYYY-MM-DD.
-        'address' => null, //REQUIRED: The full address. Always include country name for accurate geocoding results.
-        'instructions' => null, //OPTIONAL: Any special delivery instruction for the driver. This will be displayed in the delivery detail view on the app.
-        'assign_to' => null, //OPTIONAL: The name of the vehicle to assign this delivery to. This must be spelled exactly the same as your vehicle’s name in your dashboard.
-        'notify_email' => null, //OPTIONAL: The email address to send customer-facing delivery updates to. If specified, a delivery notification will be sent to this email address upon successful delivery.
-        'webhook_url' => null, //OPTIONAL: The URL to post delivery updates to. Please refer to "Delivery Push Notification" on the our documentation.
-        'zone' => null, //OPTIONAL: If you divide your deliveries into zones, then specifying this will help you to easily filter out the deliveries by zones in your dashboard.
-        'items' => [], //OPTIONAL: array of items to add to the delivery. Will be changed in constructor.
-        'initial_status' => null,
-        'open_job' => null,
-        'offer' => null,
-        'do_number' => null,
+        'job_age' => null,
+        'geocoded_lat' => null,
+        'geocoded_lng' => null,
+        'detrack_number' => null,
+        'tracking_status' => null,
+        'shipper_name' => null,
+        'reason' => null,
+        'last_reason' => null,
+        'received_by_sent_by' => null,
+        'note' => null,
+        'live_eta' => null,
+        'pod_lat' => null,
+        'pod_lng' => null,
+        'pod_address' => null,
+        'info_received_at' => null,
+        'head_to_pick_up_at' => null,
+        'pick_up_at' => null,
+        'scheduled_at' => null,
+        'at_warehouse_at' => null,
+        'out_for_delivery_at' => null,
+        'head_to_delivery_at' => null,
+        'cancelled_at' => null,
+        'pick_up_failed_count' => null,
+        'deliver_failed_count' => null,
+        'pick_up_assign_to' => null,
+        'pick_up_reason' => null,
+        'pod_at' => null,
+        'texted_at' => null,
+        'called_at' => null,
+        'address_tracked_at' => null,
+        'arrived_lat' => null,
+        'arrived_lng' => null,
+        'arrived_address' => null,
+        'arrived_at' => null,
+        'serial_number' => null,
+        'signed_at' => null,
+        'photo_1_at' => null,
+        'photo_2_at' => null,
+        'photo_3_at' => null,
+        'photo_4_at' => null,
+        'photo_5_at' => null,
+        'view_signature_url' => null,
+        'view_photo_1_url' => null,
+        'view_photo_2_url' => null,
+        'view_photo_3_url' => null,
+        'view_photo_4_url' => null,
+        'view_photo_5_url' => null,
+        'signature_file_url' => null,
+        'photo_1_file_url' => null,
+        'photo_2_file_url' => null,
+        'photo_3_file_url' => null,
+        'photo_4_file_url' => null,
+        'photo_5_file_url' => null,
+        'actual_weight' => null,
+        'temperature' => null,
+        'hold_time' => null,
+        'payment_collected' => null,
+        'actual_crates' => null,
+        'actual_pallets' => null,
+        'actual_utilization' => null,
         'attempt' => null,
+        'goods_service_rating' => null,
+        'driver_rating' => null,
+        'customer_feedback' => null,
+        'items_count' => null,
+        //WRITABLE
+        'type' => 'Delivery',
+        'primary_job_status' => null,
+        'open_to_marketplace' => null,
+        'marketplace_offer' => null,
         'start_date' => null,
-        'age' => null,
-        'sync_time' => null,
+        'status' => null,
+        'job_release_time' => null,
         'job_time' => null,
-        'time_slot' => null,
-        'request_date' => null,
+        'time_window' => null,
+        'job_received_date' => null,
         'tracking_number' => null,
         'order_number' => null,
         'job_type' => null,
-        'job_order' => null,
+        'job_sequence' => null,
         'job_fee' => null,
         'address_lat' => null,
         'address_lng' => null,
-        'address_company' => null,
+        'company_name' => null,
         'address_1' => null,
         'address_2' => null,
         'address_3' => null,
@@ -54,21 +109,26 @@ class Job extends Resource
         'state' => null,
         'country' => null,
         'billing_address' => null,
-        'contact_name' => null,
-        'contact_last_name' => null,
-        'contact_phone' => null,
-        'sender_phone' => null,
-        'fax' => null,
+        'deliver_to_collect_from' => null,
+        'last_name' => null,
+        'phone_number' => null,
+        'sender_phone_number' => null,
+        'fax_number' => null,
+        'instructions' => null,
+        'assign_to' => null,
+        'notify_email' => null,
+        'webhook_url' => null,
+        'zone' => null,
         'customer' => null,
         'account_no' => null,
-        'owner_name' => null,
+        'job_owner' => null,
         'invoice_number' => null,
         'invoice_amount' => null,
         'payment_mode' => null,
         'payment_amount' => null,
+        'group_id' => null,
         'group_name' => null,
         'vendor_name' => null,
-        'shipper_name' => null,
         'source' => null,
         'weight' => null,
         'parcel_width' => null,
@@ -84,52 +144,11 @@ class Job extends Resource
         'trays' => null,
         'bundles' => null,
         'rolls' => null,
-        'labels' => null,
-        'attachment_1' => null,
-        'detrack_number' => null,
-        'status' => null,
-        'tracking_status' => null,
-        'reason' => null,
-        'last_reason' => null,
-        'handled_by' => null,
-        'note' => null,
+        'number_of_shipping_labels' => null,
+        'attachment_url' => null,
         'carrier' => null,
-        'pod_lat' => null,
-        'pod_lng' => null,
-        'pod_address' => null,
-        'address_tracked_at' => null,
-        'arrived_lat' => null,
-        'arrived_lng' => null,
-        'arrived_address' => null,
-        'arrived_at' => null,
-        'texted_at' => null,
-        'called_at' => null,
-        'serial_number' => null,
-        'signed_at' => null,
-        'photo_1_at' => null,
-        'photo_2_at' => null,
-        'photo_3_at' => null,
-        'photo_4_at' => null,
-        'photo_5_at' => null,
-        'signature_file_url' => null,
-        'photo_1_file_url' => null,
-        'photo_2_file_url' => null,
-        'photo_3_file_url' => null,
-        'photo_4_file_url' => null,
-        'photo_5_file_url' => null,
-        'actual_weight' => null,
-        'temperature' => null,
-        'hold_time' => null,
-        'payment_collected' => null,
-        'reschedule' => null,
-        'actual_crates' => null,
-        'actual_pallets' => null,
-        'actual_utilization' => null,
-        'goods_service_rating' => null,
-        'driver_rating' => null,
-        'feedback_remarks' => null,
+        'auto_reschedule' => null,
         'eta_time' => null,
-        'live_eta' => null,
         'depot' => null,
         'depot_contact' => null,
         'department' => null,
@@ -150,36 +169,24 @@ class Job extends Resource
         'pick_up_country' => null,
         'pick_up_postal_code' => null,
         'pick_up_zone' => null,
-        'pick_up_assign_to' => null,
-        'pick_up_reason' => null,
-        'info_received_at' => null,
-        'pick_up_at' => null,
-        'scheduled_at' => null,
-        'at_warehouse_at' => null,
-        'out_for_delivery_at' => null,
-        'head_to_pick_up_at' => null,
-        'head_to_delivery_at' => null,
-        'cancelled_at' => null,
-        'pod_at' => null,
-        'pick_up_failed_count' => null,
-        'deliver_failed_count' => null,
         'job_price' => null,
         'insurance_price' => null,
-        'insured' => null,
+        'insurance_coverage' => null,
         'total_price' => null,
         'payer_type' => null,
         'remarks' => null,
-        'items_count' => null,
         'service_type' => null,
         'warehouse_address' => null,
-        'destination_timeslot' => null,
+        'destination_time_window' => null,
         'door' => null,
         'time_zone' => null,
-        'created_at' => null,
+        'pod_time' => null,
     ];
 
     /**
      * Constructor function for Job resource.
+     *
+     * @param mixed $attr
      */
     public function __construct($attr = [])
     {
@@ -225,7 +232,7 @@ class Job extends Resource
      *
      * @return Vehicle the newly created vehicle
      */
-    public function create()
+    public function create(): Vehicle
     {
         $requiredAttributes = ['do_number', 'address', 'date'];
         foreach ($requiredAttributes as $requiredAttribute) {
@@ -265,7 +272,7 @@ class Job extends Resource
      *
      * @return Vehicle the newly updated vehicle
      */
-    public function update()
+    public function update(): Vehicle
     {
         if ($this->id == null) {
             $this->attributes = json_decode(json_encode($this->hydrate()), true);
@@ -314,7 +321,7 @@ class Job extends Resource
      *
      * @return Job a copy of the job object with all attributes filled up
      */
-    public function hydrate()
+    public function hydrate(): Job
     {
         $verb = 'POST';
         $actionPath = 'jobs/search';
@@ -346,7 +353,7 @@ class Job extends Resource
      *
      * @return Job an updated version of the Job object
      */
-    public function reattempt()
+    public function reattempt(): Job
     {
         $verb = 'POST';
         if (!isset($this->id) || trim($this->id) == '') {
@@ -423,7 +430,7 @@ class Job extends Resource
      *
      * @return array an array of jobs
      **/
-    public static function listJobs($args = [], $query = null)
+    public static function listJobs($args = [], $query = null): array
     {
         $verb = 'GET';
         $actionPath = 'jobs';
@@ -445,10 +452,11 @@ class Job extends Resource
      * Bulk creates many jobs at once.
      *
      * @param array an array of Job objects, or an array of Job data arguments
+     * @param mixed $jobs
      *
      * @return array a subset of the input array containing jobs that were successfully saved
      */
-    public static function createJobs($jobs)
+    public static function createJobs($jobs): array
     {
         $verb = 'POST';
         $actionPath = 'jobs/batch';
@@ -467,10 +475,11 @@ class Job extends Resource
      * Bulk deletes many jobs at once.
      *
      * @param array an array of Job objects
+     * @param mixed $jobs
      *
      * @return array a subset of the input array containing jobs that were NOT successfully deleted
      */
-    public static function deleteJobs($jobs)
+    public static function deleteJobs($jobs): array
     {
         $verb = 'DELETE';
         $actionPath = 'jobs';
@@ -510,7 +519,7 @@ class Job extends Resource
      *
      * @return Job returns itself for method chaining
      */
-    public function assignTo(Vehicle $vehicle)
+    public function assignTo(Vehicle $vehicle): Job
     {
         if ($vehicle->name == null) {
             $vehicle = $vehicle->hydrate();
@@ -532,7 +541,7 @@ class Job extends Resource
      *
      * @return Vehicle|null the vehicle the job has been assigned to, NULL if none
      */
-    public function getVehicle()
+    public function getVehicle(): ?Vehicle
     {
         if ($this->assign_to == null) {
             return null;
