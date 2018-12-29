@@ -381,19 +381,37 @@ class Job extends Resource
         }
     }
 
-    public function save()
+    /**
+     * Saves the Job.
+     *
+     * This function performs an UPSERT function – it first checks if the Job already exists in the database using the `hydrate();` and calls `update()` if it exists, otherwise calls `create()`.
+     *
+     * @chainable
+     * @destructive
+     * @netcall 1 if the `id` property is already set
+     * @netcall 2 if the `id` property is not set
+     *
+     * @throws \Exception Missing required attributes (do_number, date, address)
+     *
+     * @see Job::hydrate() the hydrate function
+     * @see Job::create() the create function
+     * @see Job::update() the update function
+     *
+     * @return $this the new job
+     */
+    public function save(): Job
     {
         if ($this->id == null) {
             //try to hydrate and find the id
             //if found, it means we are going to perform an update
             //if still null, means we are going to perform an insert
-            $returnVehicle = $this->hydrate();
-            if ($returnVehicle == null) {
+            $returnJob = $this->hydrate();
+            if ($returnJob == null) {
                 return $this->create()->resetModifiedAttributes();
             } else {
-                $this->id = $returnVehicle->id;
+                $this->id = $returnJob->id;
 
-                return $returnVehicle->update()->resetModifiedAttributes();
+                return $returnJob->update()->resetModifiedAttributes();
             }
         } else {
             return $this->update()->resetModifiedAttributes();
@@ -403,8 +421,12 @@ class Job extends Resource
     /**
      * Creates the job - performs a strict insert (if it already exists, throw an \Exception).
      *
-     * @throws \Exception if the current vehicle job have missing fields
-     * @throws \Exception if the vehicle contains conflicting name or detrack_id
+     * @chainable
+     * @destructive
+     * @netcall 1
+     *
+     * @throws \Exception if the current job have missing fields
+     * @throws \Exception if the job contains conflicting do_number on the same date
      *
      * @return Job the newly created vehicle
      */
@@ -443,8 +465,13 @@ class Job extends Resource
     /**
      * Updates the job - performs a strict update (if it does not exist, throw an \Exception).
      *
+     * @chainable
+     * @destructive
+     * @netcall 1 if the `id` of the `Job` object is already set
+     * @netcall 2 if the `id` of the `Job` object is unset, calls \Detrack\DetrackCore\Resource\Job::hydrate
+     *
      * @throws \Exception if the current job object has missing fields
-     * @throws \Exception if the vehicle contains conflicting name or detrack_id
+     * @throws \Exception if the job contains conflicting do_number on the same date
      *
      * @return Job the newly updated job
      */
@@ -477,7 +504,15 @@ class Job extends Resource
         }
     }
 
-    public function delete()
+    /**
+     * Deletes the job and removes it from the dashboard.  **Completed Jobs cannot be deleted**.
+     *
+     * @netcall 1 if the `id` of the `Job` is already set
+     * @netcall 2 if the `id` of the `Job` is not yet set, calls the Detrack\DetrackCore\Resource\Job::hydrate function
+     *
+     * @return bool whether the delete was successful or not
+     */
+    public function delete(): bool
     {
         $verb = 'DELETE';
         if (isset($this->id) && trim($this->id) !== '') {
@@ -495,6 +530,10 @@ class Job extends Resource
 
     /**
      * Given some attributes already present in the class member, retrieve the rest of the attributes from the server.
+     *
+     * @chainable
+     * @destructive
+     * @netcall 1
      *
      * @return Job a copy of the job object with all attributes filled up
      */
@@ -528,7 +567,14 @@ class Job extends Resource
     /**
      * Reattempts the job.
      *
-     * @return Job an updated version of the Job object
+     * Note that job reattempts have a different `id`, but the same `do_number` and `date` unless you reschedule the reattempt to another day.
+     *
+     * @chainable
+     * @destructive
+     * @netcall 1 if `id` of `Job` object is already set
+     * @netcall 2 if `id` of `Job` object is unset, calls the \Detrack\DetrackCore\Resource\Job::hydrate() function
+     *
+     * @return $this an reattempted version of the Job object
      */
     public function reattempt(): Job
     {
@@ -558,6 +604,8 @@ class Job extends Resource
      * If the target is a nonexistent path, it will be treated as a file name and the export will be saved to that full path.
      * If no parameter is passed, the raw data of the file is returned as a string for you to save by yourself.
      * The function returns the full path of the new file if a save target was specified, else it returns the raw file data.
+     *
+     * @netcall 1
      *
      * @param string $document either 'pod' (default) or 'shipping-label'
      * @param string $format   either 'pdf' (default) or 'tiff'
@@ -602,6 +650,8 @@ class Job extends Resource
      * Search terms entered into these keys are evaluated with AND condition
      * $query is an optional string that lets you perform a loose search across all attributes.
      *
+     * @netcall 1
+     *
      * @param array $args  top-level search arguments
      * @param array $query sub-level search term
      *
@@ -628,8 +678,9 @@ class Job extends Resource
     /**
      * Bulk creates many jobs at once.
      *
-     * @param array an array of Job objects, or an array of Job data arguments
-     * @param mixed $jobs
+     * @netcall 1
+     *
+     * @param array $jobs an array of Job objects, or an array of Job data arguments
      *
      * @return array a subset of the input array containing jobs that were successfully saved
      */
@@ -651,8 +702,9 @@ class Job extends Resource
     /**
      * Bulk deletes many jobs at once.
      *
-     * @param array an array of Job objects
-     * @param mixed $jobs
+     * @netcall 1
+     *
+     * @param array $jobs an array of Job objects
      *
      * @return array a subset of the input array containing jobs that were NOT successfully deleted
      */
@@ -692,6 +744,14 @@ class Job extends Resource
     /**
      * Assigns the current job to the specified Vehicle Object.
      *
+     * This function also calls Detrack\DetrackCore\Resource\Job::save upon assigning the vehicle.
+     *
+     * @chainable
+     * @destructive
+     * @netcall 1 if `id` of both `Vehicle` and `Job` is already set
+     * @netcall 2 if `id` of either one is set
+     * @netcall 3 if `id` of neither is set
+     *
      * @param Vehicle the vehicle to assign to
      *
      * @return Job returns itself for method chaining
@@ -715,6 +775,11 @@ class Job extends Resource
 
     /**
      * Gets the current Vehicle assigned to the current Job.
+     *
+     * Calls the Detrack\DetrackCore\Resource\Vehicle::hydrate method on the vehicle.
+     *
+     * @chainable
+     * @netcall 1
      *
      * @return Vehicle|null the vehicle the job has been assigned to, NULL if none
      */
