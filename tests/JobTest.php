@@ -27,15 +27,17 @@ final class JobTest extends TestCase
 
     /**
      * @depends testSaveJob
+     *
+     * @param mixed $testJob
      */
-    public function testDeleteJob($testJob)
+    public function testDeleteJob($testJob): void
     {
         $testJob->delete();
         $response = DetrackClientStatic::sendData('GET', 'jobs/'.$testJob->id, []);
         $this->assertEquals('not_found', $response->code);
     }
 
-    public function testSaveJobWithItems()
+    public function testSaveJobWithItems(): void
     {
         $testJob = new Job();
         $testJob->address = 'PHP Island';
@@ -58,7 +60,7 @@ final class JobTest extends TestCase
      * Tests downloading the docs.
      * Will test pdf/tiff, and all three different target scenarios.
      */
-    public function testDownloadDoc()
+    public function testDownloadDoc(): void
     {
         if (getenv('SAMPLE_DELIVERY_DO') == null) {
             $this->markTestSkipped('Sample delivery DO not found in .env. Refer to .env.example for details.');
@@ -113,7 +115,7 @@ final class JobTest extends TestCase
      *
      * @covers \Detrack\DetrackCore\Resource\Job::listJobs
      */
-    public function testListJobs()
+    public function testListJobs(): void
     {
         $testJobs = [];
         $seed = rand();
@@ -151,6 +153,15 @@ final class JobTest extends TestCase
             }
             $this->assertTrue(true, $found);
         }
+        //test $args
+        $this->assertEquals(1, count(Job::listJobs(
+            [
+                'date' => date('Y-m-d'),
+                'sort' => 'created_at',
+                'limit' => 1,
+            ],
+        'PHP Islet No.'.$seed
+        )));
         foreach ($testJobs as $testJob) {
             $testJob->delete();
         }
@@ -159,7 +170,7 @@ final class JobTest extends TestCase
     /**
      * @covers \Job::createJobs
      */
-    public function testCreateJobs()
+    public function testCreateJobs(): void
     {
         $testJobs = [];
         $seed = rand();
@@ -201,7 +212,7 @@ final class JobTest extends TestCase
         }
     }
 
-    public function testCreateJobs2()
+    public function testCreateJobs2(): void
     {
         //test with attr construction
         $testJobs = [];
@@ -239,7 +250,7 @@ final class JobTest extends TestCase
     /** Tests if we can bulk delete jobs using the Job::deleteJobs function by passing an array of Jobs
      * @covers \Job::deleteJobs
      */
-    public function testDeleteJobsViaJobs()
+    public function testDeleteJobsViaJobs(): void
     {
         $testJobs = [];
         $seed = rand();
@@ -278,7 +289,7 @@ final class JobTest extends TestCase
     /** Tests if we can bulk delete jobs using the Job::deleteJobs function by passing an array of attributes
      * @covers \Job::deleteJobs
      */
-    public function testDeleteJobsViaArray()
+    public function testDeleteJobsViaArray(): void
     {
         $testJobs = [];
         $seed = rand();

@@ -180,6 +180,8 @@ class Job extends Resource
 
     /**
      * Constructor function for Job resource.
+     *
+     * @param mixed $attr
      */
     public function __construct($attr = [])
     {
@@ -429,9 +431,7 @@ class Job extends Resource
     {
         $verb = 'GET';
         $actionPath = 'jobs';
-        $topLevelArgs = [
-        ];
-        $sendData = array_merge($topLevelArgs, ['query' => $query]);
+        $sendData = array_merge($args, ['query' => $query]);
         $response = DetrackClientStatic::sendData($verb, $actionPath, $sendData);
         $returnArray = [];
         foreach ($response->data as $responseData) {
@@ -447,6 +447,7 @@ class Job extends Resource
      * Bulk creates many jobs at once.
      *
      * @param array an array of Job objects, or an array of Job data arguments
+     * @param mixed $jobs
      *
      * @return array a subset of the input array containing jobs that were successfully saved
      */
@@ -469,6 +470,7 @@ class Job extends Resource
      * Bulk deletes many jobs at once.
      *
      * @param array an array of Job objects
+     * @param mixed $jobs
      *
      * @return array a subset of the input array containing jobs that were NOT successfully deleted
      */
