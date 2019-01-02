@@ -14,15 +14,15 @@ use Detrack\DetrackCore\Model\ItemCollection;
  * @property-read float $geocoded_lng the geocoded longitude of the address. It automatically changes to reflect the coordinates of the current address, however, it is not updated immediately after changing the address as it takes some time for the geocoding service to process the address.
  * @property-read string $detrack_number another id used by some other apps to identify the Job
  * @property-read string $tracking_status user-facing tracking status. Possible values are `"Info received"` (default upon creation), `"Out for delivery"`, `"Completed"`, `"Partially completed"`, `"Failed"`, `"On hold"`, `"Return"`, although more fields can be arbitarily defined in User Profiles. Not to be confused with `$status`.
- * @property-read string $shipper_name arbitary field
+ * @property-read string $shipper_name MISSING FIELD
  * @property-read string $reason the reason provided by the driver why the Job has failed.
  * @property-read string $last_reason MISSING FIELD
  * @property-read string $received_by_sent_by the name of the person who signed on the POD when the Job has reached its destination
  * @property-read string $note personal note entered by the driver on the Detrack Proof of Delivery app
  * @property-read string $live_eta timestamp in the [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format that mirrors the `$eta_time` field or a certain offset based on `$eta_time` if it has been configured.
- * @property-read float $pod_lat latitude of position where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
- * @property-read float $pod_lng longitude of position where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
- * @property-read float $pod_address estimated address where the pod was taken by the driver **requires "Enable Manual POD" in Detrack Dashboard Job Settings**
+ * @property-read float $pod_lat latitude of position where the pod was taken by the driver **requires "Enable Manual POD" in the Detrack Dashboard Job Settings**
+ * @property-read float $pod_lng longitude of position where the pod was taken by the driver **requires "Enable Manual POD" in the Detrack Dashboard Job Settings**
+ * @property-read float $pod_address estimated address where the pod was taken by the driver **requires "Enable Manual POD" in the Detrack Dashboard Job Settings**
  * @property-read string $info_received_at MISSING FIELD
  * @property-read string $head_to_pick_up_at MISSING FIELD
  * @property-read string $pick_up_at MISSING FIELD
@@ -39,143 +39,143 @@ use Detrack\DetrackCore\Model\ItemCollection;
  * @property-read string $texted_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver sent a text message to the recipient
  * @property-read string $called_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver made a phone call to the recipient
  * @property-read string $address_tracked_at NO IDEA
- * @property-read string $arrived_lat NO IDEA
- * @property-read string $arrived_lng NO IDEA
- * @property-read string $arrived_address NO IDEA
- * @property-read string $arrived_at NO IDEA
- * @property-read string $serial_number NO IDEA
+ * @property-read float $arrived_lat gps data indicating where the driver was estimated to be when he indicated in the app he had arrived at his destination
+ * @property-read float $arrived_lng gps data indicating where the driver was estimated to be when he indicated in the app he had arrived at his destination
+ * @property-read string $arrived_address roughly resolved address indicating where the driver was estimated to be when he indicated in the app he had arrived at his destination.
+ * @property-read string $arrived_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver has indicated in the Detrack POD app that he has arrived at the destination
+ * @property-read string $serial_number NO IDEA (only when driver has submitted POD??)
  * @property-read string $signed_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver captured the recipient's signature
  * @property-read string $photo_1_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 1st photo in the POD
  * @property-read string $photo_2_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 2nd photo in the POD
  * @property-read string $photo_3_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 3rd photo in the POD
  * @property-read string $photo_4_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 4th photo in the POD
  * @property-read string $photo_5_at timestamp in [ISO8601](http://en.wikipedia.org/wiki/ISO_8601) format indicating when the driver took the 5th photo in the POD
- * @property-read string view_signature_url apa
- * @property-read string view_photo_1_url apa
- * @property-read string view_photo_2_url apa
- * @property-read string view_photo_3_url apa
- * @property-read string view_photo_4_url apa
- * @property-read string view_photo_5_url apa
- * @property-read string signature_file_url apa
- * @property-read string photo_1_file_url apa
- * @property-read string photo_2_file_url apa
- * @property-read string photo_3_file_url apa
- * @property-read string photo_4_file_url apa
- * @property-read string photo_5_file_url apa
- * @property-read string actual_weight apa
- * @property-read string temperature apa
- * @property-read string hold_time apa
- * @property-read string payment_collected apa
- * @property-read string actual_crates apa
- * @property-read string actual_pallets apa
- * @property-read string actual_utilization apa
- * @property-read string attempt apa
- * @property-read string goods_service_rating apa
- * @property-read string driver_rating apa
- * @property-read string customer_feedback apa
- * @property-read string items_count apa
- * @property string                                    $type                    denotes the type of Job, either `"Delivery"` (default) or `"Collection"`
- * @property string                                    $deliver_to_collect_from the name of the recipient to deliver to. The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
- * @property string                                    $do_number               the main key used to identify Jobs on the Detrack Dashboard. However, take note that multiple Jobs can have the same `do_number` across different dates to represent reattempts.
- * @property string                                    $date                    the delivery date in `"YYYY-MM-DD"` format
- * @property string                                    $address                 the full address where the delivery is headed for. Always include country name for accurate geocoding results.
- * @property string                                    $instructions            any special delivery instructions for the driver that will be displayed on the Detrack Proof of Delivery app.
- * @property string                                    $assign_to               the name of the vehicle to assign this delivery to
- * @property string                                    $notify_email            the email address to sent customer-facing delivery updates to
- * @property string                                    $webhook_url             the url to post delivery updates to. Please refer to [Delivery Push Notification](https://www.detrack.com/api-documentation/delivery-push-notification/) on our documentation for more info.
- * @property string                                    $zone                    zone id to assign this Job to.
- * @property \Detrack\DetrackCore\Model\ItemCollection $items                   array of items to add to the Job. Do not modify this attribute directly.
- * @property string primary_job_status apa
- * @property string open_to_marketplace apa
- * @property string marketplace_offer apa
- * @property string start_date apa
- * @property string status apa
- * @property string job_release_time apa
- * @property string job_time apa
- * @property string time_window apa
- * @property string job_received_date apa
- * @property string tracking_number apa
- * @property string order_number apa
- * @property string job_type apa
- * @property string job_sequence apa
- * @property string job_fee apa
- * @property string address_lat apa
- * @property string address_lng apa
- * @property string company_name apa
- * @property string address_1 apa
- * @property string address_2 apa
- * @property string address_3 apa
- * @property string postal_code apa
- * @property string city apa
- * @property string state apa
- * @property string country apa
- * @property string billing_address apa
- * @property string last_name apa
- * @property string phone_number apa
- * @property string sender_phone_number apa
- * @property string fax_number apa
- * @property string customer apa
- * @property string account_no apa
- * @property string job_owner apa
- * @property string invoice_number apa
- * @property string invoice_amount apa
- * @property string payment_mode apa
- * @property string payment_amount apa
- * @property string group_id apa
- * @property string group_name apa
- * @property string vendor_name apa
- * @property string source apa
- * @property string weight apa
- * @property string parcel_width apa
- * @property string parcel_length apa
- * @property string parcel_height apa
- * @property string cubic_meter apa
- * @property string boxes apa
- * @property string cartons apa
- * @property string pieces apa
- * @property string envelopes apa
- * @property string pallets apa
- * @property string bins apa
- * @property string trays apa
- * @property string bundles apa
- * @property string rolls apa
- * @property string number_of_shipping_labels apa
- * @property string attachment_url apa
- * @property string carrier apa
- * @property string auto_reschedule apa
- * @property string eta_time apa
- * @property string depot apa
- * @property string depot_contact apa
- * @property string department apa
- * @property string sales_person apa
- * @property string identification_number apa
- * @property string bank_prefix apa
- * @property string run_number apa
- * @property string pick_up_from apa
- * @property string pick_up_time apa
- * @property string pick_up_lat apa
- * @property string pick_up_lng apa
- * @property string pick_up_address apa
- * @property string pick_up_address_1 apa
- * @property string pick_up_address_2 apa
- * @property string pick_up_address_3 apa
- * @property string pick_up_city apa
- * @property string pick_up_state apa
- * @property string pick_up_country apa
- * @property string pick_up_postal_code apa
- * @property string pick_up_zone apa
- * @property string job_price apa
- * @property string insurance_price apa
- * @property string insurance_coverage apa
- * @property string total_price apa
- * @property string payer_type apa
- * @property string remarks apa
- * @property string service_type apa
- * @property string warehouse_address apa
- * @property string destination_time_window apa
- * @property string door apa
- * @property string time_zone apa
- * @property string pod_time apa
+ * @property-read string $view_signature_url MISSING FIELD
+ * @property-read string $view_photo_1_url MISSING FIELD
+ * @property-read string $view_photo_2_url MISSING FIELD
+ * @property-read string $view_photo_3_url MISSING FIELD
+ * @property-read string $view_photo_4_url MISSING FIELD
+ * @property-read string $view_photo_5_url MISSING FIELD
+ * @property-read string $signature_file_url after submitting POD, a URL where you can download the image file of the signature if the Driver has collected one.
+ * @property-read string $photo_1_file_url after submitting POD, a URL where you can download photo proof #1 if the Driver has collected one.
+ * @property-read string $photo_2_file_url after submitting POD, a URL where you can download photo proof #2 if the Driver has collected one.
+ * @property-read string $photo_3_file_url after submitting POD, a URL where you can download photo proof #3 if the Driver has collected one.
+ * @property-read string $photo_4_file_url after submitting POD, a URL where you can download photo proof #4 if the Driver has collected one.
+ * @property-read string $photo_5_file_url after submitting POD, a URL where you can download photo proof #5 if the Driver has collected one.
+ * @property-read string $actual_weight extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $temperature extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $hold_time extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $payment_collected extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $actual_crates extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $actual_pallets extra field keyed in by the Driver when he submits the POD.
+ * @property-read string $actual_utilization extra field keyed in by the Driver when he submits the POD.
+ * @property-read int $attempt the nth attempt of the job with the same `do_number`. Indexed at 1.
+ * @property-read int $goods_service_rating star rating out of 5 the recipient has given the driver in the Tap to Track widget after receiving the delivery
+ * @property-read int $driver_rating star rating out of 5 the recipient has given the driver in the Tap to Track widget after receiving the delivery
+ * @property-read string $customer_feedback text feedback the recipient has given the driver in the Tap to Track widget after receiving the delivery
+ * @property-read int $items_count number of items added to the job, which is basically counting the number of objects in the `items` array.
+ * @property string                                    $type                      denotes the type of Job, either `"Delivery"` (default) or `"Collection"`
+ * @property string                                    $deliver_to_collect_from   the name of the recipient to deliver to. The name of the recipient to deliver to. This can be a person’s name e.g. John Tan, a company’s name e.g. ABC Inc., or both e.g. John Tan (ABC Inc.)
+ * @property string                                    $do_number                 the main key used to identify Jobs on the Detrack Dashboard. However, take note that multiple Jobs can have the same `do_number` across different dates to represent reattempts.
+ * @property string                                    $date                      the delivery date in `"YYYY-MM-DD"` format
+ * @property string                                    $address                   the full address where the delivery is headed for. Always include country name for accurate geocoding results.
+ * @property string                                    $instructions              any special delivery instructions for the driver that will be displayed on the Detrack Proof of Delivery app.
+ * @property string                                    $assign_to                 the name of the vehicle to assign this delivery to
+ * @property string                                    $notify_email              the email address where the customer-facing delivery notification will be sent to upon completion of the delivery. Set this only if you wish to send a delivery notification to your customer. Otherwise, leave this field blank.
+ * @property string                                    $webhook_url               the url to post delivery updates to. Please refer to [Delivery Push Notification](https://www.detrack.com/api-documentation/delivery-push-notification/) on our documentation for more info.
+ * @property string                                    $zone                      zone id to assign this Job to.
+ * @property \Detrack\DetrackCore\Model\ItemCollection $items                     array of items to add to the Job. Do not modify this attribute directly.
+ * @property string                                    $primary_job_status        CHECK AGAIN
+ * @property string                                    $open_to_marketplace       whether this job is available in the marketplace for drivers to grab
+ * @property string                                    $marketplace_offer         price at which this job is placed on the marketplace for
+ * @property string                                    $start_date                date this job started. Used to calculate `job_age`. If left blank, `date` is used instead.
+ * @property string                                    $status                    the functional status of the Job. Can either be `"info_recv"`, `"dispatched"`, `"completed"`, `"completed_partial"`, `"failed"`, `"on_hold"`, or `"return"`.
+ * @property string                                    $job_release_time          NO IDEA
+ * @property string                                    $job_time                  arbitary field entered in the Detrack Dashboard under "Delivery / Collection time"
+ * @property string                                    $time_window               NO IDEA
+ * @property string                                    $job_received_date         NO IDEA
+ * @property string                                    $tracking_number           arbitary field entered in the Detrack Dashboard under "Tracking #"
+ * @property string                                    $order_number              arbitary field entered in the Detrack Dashboard under "Order #"
+ * @property string                                    $job_type                  NO IDEA
+ * @property string                                    $job_sequence              NO IDEA
+ * @property string                                    $job_fee                   NO IDEA
+ * @property float                                     $address_lat               lets you manually specify the coordinates of `address`
+ * @property float                                     $address_lng               lets you manually specify the coordinates of `address`
+ * @property string                                    $company_name              arbitary field entered in the Detrack Dashboard under "Address Company"
+ * @property string                                    $address_1                 NO IDEA
+ * @property string                                    $address_2                 NO IDEA
+ * @property string                                    $address_3                 NO IDEA
+ * @property string                                    $postal_code               NO IDEA
+ * @property string                                    $city                      NO IDEA
+ * @property string                                    $state                     NO IDEA
+ * @property string                                    $country                   NO IDEA
+ * @property string                                    $billing_address           arbitary field entered in the Detrack Dashboard under "Billing Address"
+ * @property string                                    $last_name                 arbitary field entered in the Detrack Dashboard under "Last name"
+ * @property string                                    $phone_number              phone number of the recipient. If entered, the driver will be able to call or text the recipient directly from the Detrack POD app.
+ * @property string                                    $sender_phone_number       arbitary field entered in the Detrack Dashboard under "Sender phone #"
+ * @property string                                    $fax_number                arbitary field entered in the Detrack Dashboard under "Fax #"
+ * @property string                                    $customer                  arbitary field entered in the Detrack Dashboard under "Customer"
+ * @property string                                    $account_no                arbitary field entered in the Detrack Dashboard under "Account #"
+ * @property string                                    $job_owner                 arbitary field entered in the Detrack Dashboard under "Owner name"
+ * @property string                                    $invoice_number            arbitary field entered in the Detrack Dashboard under "Invoice #"
+ * @property float                                     $invoice_amount            arbitary field entered in the Detrack Dashboard under "Invoice amt"
+ * @property string                                    $payment_mode              arbitary field entered in the Detrack Dashboard under "Payment mode"
+ * @property string                                    $payment_amount            if specified, tells the Driver to collect said amount of money in the Detrack POD app.
+ * @property string                                    $group_id                  id of group if this Job is assigned to one
+ * @property string                                    $group_name                name of group if this Job is assigned to one
+ * @property string                                    $vendor_name               MISSING FIELD
+ * @property string                                    $source                    arbitary field entered in the Detrack Dashboard under "Source"
+ * @property float                                     $weight                    arbitary field entered in the Detrack Dashboard under "Weight"
+ * @property float                                     $parcel_width              arbitary field entered in the Detrack Dashboard under "Parcel width"
+ * @property float                                     $parcel_length             arbitary field entered in the Detrack Dashboard under "Parcel length"
+ * @property float                                     $parcel_height             arbitary field entered in the Detrack Dashboard under "Parcel height"
+ * @property float                                     $cubic_meter               arbitary field entered in the Detrack Dashboard under "CBM"
+ * @property int                                       $boxes                     arbitary field entered in the Detrack Dashboard under "Boxes"
+ * @property int                                       $cartons                   arbitary field entered in the Detrack Dashboard under "Cartons"
+ * @property int                                       $pieces                    arbitary field entered in the Detrack Dashboard under "Pieces"
+ * @property int                                       $envelopes                 arbitary field entered in the Detrack Dashboard under "Envelopes"
+ * @property int                                       $pallets                   arbitary field entered in the Detrack Dashboard under "Pallets"
+ * @property int                                       $bins                      arbitary field entered in the Detrack Dashboard under "Bins"
+ * @property int                                       $trays                     arbitary field entered in the Detrack Dashboard under "Trays"
+ * @property int                                       $bundles                   arbitary field entered in the Detrack Dashboard under "Bundles"
+ * @property int                                       $rolls                     arbitary field entered in the Detrack Dashboard under "Rolls"
+ * @property string                                    $number_of_shipping_labels NO IDEA
+ * @property string                                    $attachment_url            optional field where you can specify a URL to an attachment that the driver can view in the Detrack POD app
+ * @property string                                    $carrier                   arbitary field entered in the Detrack Dashboard under "Carrier"
+ * @property string                                    $auto_reschedule           NO IDEA
+ * @property string                                    $eta_time                  NO IDEA
+ * @property string                                    $depot                     arbitary field entered in the Detrack Dashboard under "Depot"
+ * @property string                                    $depot_contact             arbitary field entered in the Detrack Dashboard under "Depot contact"
+ * @property string                                    $department                arbitary field entered in the Detrack Dashboard under "Department"
+ * @property string                                    $sales_person              arbitary field entered in the Detrack Dashboard under "Sales person"
+ * @property string                                    $identification_number     arbitary field entered in the Detrack Dashboard under "Identification #"
+ * @property string                                    $bank_prefix               arbitary field entered in the Detrack Dashboard under "Bank Prefix"
+ * @property string                                    $run_number                arbitary field entered in the Detrack Dashboard under "Run #"
+ * @property string                                    $pick_up_from              MISSING FIELD
+ * @property string                                    $pick_up_time              MISSING FIELD
+ * @property float                                     $pick_up_lat               MISSING FIELD
+ * @property float                                     $pick_up_lng               MISSING FIELD
+ * @property string                                    $pick_up_address           MISSING FIELD
+ * @property string                                    $pick_up_address_1         MISSING FIELD
+ * @property string                                    $pick_up_address_2         MISSING FIELD
+ * @property string                                    $pick_up_address_3         MISSING FIELD
+ * @property string                                    $pick_up_city              MISSING FIELD
+ * @property string                                    $pick_up_state             MISSING FIELD
+ * @property string                                    $pick_up_country           MISSING FIELD
+ * @property string                                    $pick_up_postal_code       MISSING FIELD
+ * @property string                                    $pick_up_zone              MISSING FIELD
+ * @property float                                     $job_price                 arbitary field entered in the Detrack Dashboard under "Job price"
+ * @property float                                     $insurance_price           arbitary field entered in the Detrack Dashboard under "Insurance price"
+ * @property bool                                      $insurance_coverage        arbitary field entered in the Detrack Dashboard under "Insured"
+ * @property float                                     $total_price               arbitary field entered in the Detrack Dashboard under "Total price"
+ * @property string                                    $payer_type                NO IDEA
+ * @property string                                    $remarks                   arbitary field entered in the Detrack Dashboard under "Remarks"
+ * @property string                                    $service_type              arbitary field entered in the Detrack Dashboard under "Service type"
+ * @property string                                    $warehouse_address         arbitary field entered in the Detrack Dashboard under "Warehouse address"
+ * @property string                                    $destination_time_window   arbitary field entered in the Detrack Dashboard under "Destination timeslot"
+ * @property string                                    $door                      arbitary field entered in the Detrack Dashboard under "door"
+ * @property string                                    $time_zone                 NO IDEA
+ * @property string                                    $pod_time                  time at which POD was submitted, in `HH:MM AM|PM` format.
  */
 class Job extends Resource
 {
@@ -505,7 +505,9 @@ class Job extends Resource
     }
 
     /**
-     * Deletes the job and removes it from the dashboard.  **Completed Jobs cannot be deleted**.
+     * Deletes the job and removes it from the dashboard.  **Completed and Failed Jobs cannot be deleted by default (see full description)**.
+     *
+     * Under the default dashboard settings, Jobs with a status of `"completed"`, `"completed_partial"`, or `"failed"` cannot be deleted unless you enable the "Enable deletion of completed jobs" setting in the Detrack Dashboard (Settings > Job Settings > POD. Enable deletion of completed jobs)
      *
      * @netcall 1 if the `id` of the `Job` is already set
      * @netcall 2 if the `id` of the `Job` is not yet set, calls the Detrack\DetrackCore\Resource\Job::hydrate function
