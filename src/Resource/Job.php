@@ -336,11 +336,11 @@ class Job extends Resource
         } else {
             if (is_array($response->data)) {
                 foreach ($response->data[0] as $key => $value) {
-                    $this->$key = $this->value;
+                    $this->$key = $value;
                 }
             } else {
                 foreach ($response->data as $key => $value) {
-                    $this->$key = $this->value;
+                    $this->$key = $value;
                 }
             }
             $this->resetModifiedAttributes();
