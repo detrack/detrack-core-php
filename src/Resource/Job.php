@@ -320,13 +320,11 @@ class Job extends Resource
      */
     public function hydrate()
     {
-        $verb = 'POST';
-        $actionPath = 'jobs/search';
         if ($this->id != null) {
             $response = DetrackClientStatic::sendData('GET', 'jobs/'.$this->id, null);
         } elseif ($this->do_number != null) {
-            $response = DetrackClientStatic::sendData($verb, $actionPath, array_filter($this->jsonSerialize(), function ($key) {
-                return $key == 'do_number';
+            $response = DetrackClientStatic::sendData('GET', 'jobs', array_filter($this->jsonSerialize(), function ($key) {
+                return $key == 'do_number' || $key == 'date';
             }, ARRAY_FILTER_USE_KEY));
         } else {
             return null;

@@ -46,6 +46,25 @@ final class JobTest extends TestCase
         $this->assertEquals($testJob->address, $anotherJob->address);
     }
 
+    public function testCanSaveJobsWithSameDONumbersButOnDifferentDates(): void
+    {
+        $testJob = new Job();
+        $testJob->address = 'PHP Island';
+        $testJob->do_number = 'DCPHPv2_'.rand();
+        $testJob->date = date('Y-m-d');
+        $testJob->save();
+
+        $anotherJob = new Job();
+        $anotherJob->address = 'PHP Island 2';
+        $anotherJob->do_number = $testJob->do_number;
+        $anotherJob->date = (new DateTime('tomorrow'))->format('Y-m-d');
+        $anotherJob->save();
+
+        $response = Job::listJobs(['do_number' => $testJob->do_number]);
+
+        $this->assertEquals(2, count($response));
+    }
+
     /**
      * @depends testSaveJob
      *
