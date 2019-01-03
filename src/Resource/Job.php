@@ -270,10 +270,7 @@ class Job extends Resource
     public function update()
     {
         if ($this->id == null) {
-            $newAttributes = $this->attributes;
-            $this->hydrate();
-            $newAttributes['id'] = $this->id;
-            $this->attributes = $newAttributes;
+            $this->id = $this->hydrate()->id;
             if ($this->id == null) {
                 throw new Exception('The vehicle with the said id/name/detrack_id cannot be found');
             }
@@ -338,17 +335,13 @@ class Job extends Resource
             return null;
         } else {
             if (is_array($response->data)) {
-                foreach ($response->data[0] as $key => $value) {
-                    $this->$key = $value;
-                }
+                $returnJob = new Job($response->data[0]);
             } else {
-                foreach ($response->data as $key => $value) {
-                    $this->$key = $value;
-                }
+                $returnJob = new Job($response->data);
             }
-            $this->resetModifiedAttributes();
+            $returnJob->resetModifiedAttributes();
 
-            return $this;
+            return $returnJob;
         }
     }
 

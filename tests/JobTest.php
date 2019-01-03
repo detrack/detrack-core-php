@@ -41,7 +41,7 @@ final class JobTest extends TestCase
         $anotherJob->update();
         $this->assertNotNull($anotherJob->id);
 
-        $testJob->hydrate();
+        $testJob = $testJob->hydrate();
 
         $this->assertEquals($testJob->address, $anotherJob->address);
     }
