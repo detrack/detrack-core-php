@@ -16,4 +16,10 @@
   stopOnIncomplete="false"
   stopOnSkipped="false"
   stopOnRisky="false"
-  verbose="true"></phpunit>
+  verbose="true">
+  <filter>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">src</directory>
+    </whitelist>
+  </filter>
+</phpunit>
