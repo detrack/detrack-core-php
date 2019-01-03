@@ -335,13 +335,17 @@ class Job extends Resource
             return null;
         } else {
             if (is_array($response->data)) {
-                $newJob = new Job($response->data[0]);
+                foreach ($response->data[0] as $key => $value) {
+                    $this->$key = $this->value;
+                }
             } else {
-                $newJob = new Job($response->data);
+                foreach ($response->data as $key => $value) {
+                    $this->$key = $this->value;
+                }
             }
-            $newJob->resetModifiedAttributes();
+            $this->resetModifiedAttributes();
 
-            return $newJob;
+            return $this;
         }
     }
 
