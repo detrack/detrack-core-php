@@ -270,7 +270,10 @@ class Job extends Resource
     public function update()
     {
         if ($this->id == null) {
-            $this->attributes = json_decode(json_encode($this->hydrate()), true);
+            $newAttributes = $this->attributes;
+            $this->hydrate();
+            $newAttributes['id'] = $this->id;
+            $this->attributes = $newAttributes;
             if ($this->id == null) {
                 throw new Exception('The vehicle with the said id/name/detrack_id cannot be found');
             }

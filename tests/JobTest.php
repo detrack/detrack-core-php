@@ -25,6 +25,27 @@ final class JobTest extends TestCase
         return $testJob;
     }
 
+    public function testUpdateJob(): void
+    {
+        $testJob = new Job();
+        $testJob->address = 'PHP Island';
+        $testJob->do_number = 'DCPHPv2_'.rand();
+        $testJob->date = date('Y-m-d');
+        $testJob->save();
+        $this->assertNotNull($testJob->id);
+
+        $anotherJob = new Job();
+        $anotherJob->address = 'PHP Continent';
+        $anotherJob->do_number = $testJob->do_number;
+        $anotherJob->date = date('Y-m-d');
+        $anotherJob->update();
+        $this->assertNotNull($anotherJob->id);
+
+        $testJob->hydrate();
+
+        $this->assertEquals($testJob->address, $anotherJob->address);
+    }
+
     /**
      * @depends testSaveJob
      *
