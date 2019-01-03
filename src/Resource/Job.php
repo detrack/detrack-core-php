@@ -212,7 +212,7 @@ class Job extends Resource
             } else {
                 $this->id = $returnVehicle->id;
 
-                return $returnVehicle->update()->resetModifiedAttributes();
+                return $this->update()->resetModifiedAttributes();
             }
         } else {
             return $this->update()->resetModifiedAttributes();
