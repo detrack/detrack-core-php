@@ -42,7 +42,7 @@ final class ItemTest extends TestCase
     public function testCannotSaveWithoutSku(): void
     {
         $testItem = new Item([
-            'qty' => 1,
+            'quantity' => 1,
         ]);
         $this->testJob->items->add($testItem);
         $this->testJob->save();
