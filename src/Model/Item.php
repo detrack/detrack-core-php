@@ -17,21 +17,22 @@ use Detrack\DetrackCore\Resource\Resource;
  * @property string   $batch_number          arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
  * @property string   $expiry_date           arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
  * @property string   $comments              arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
- * @property int      $quantity              quantity of item. will be shown on Detrack Proof of Delivery app.
+ * @property int      $quantity              quantity of item. will be shown on Detrack Proof of Delivery app to the driver.
  * @property string   $unit_of_measure       arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
  * @property bool     $checked               arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
- * @property int      $actual_quantity
- * @property int      $inbound_quantity
- * @property string   $unload_time_estimate
- * @property string   $unload_time_actual
- * @property int      $follow_up_quantity
- * @property string   $follow_up_reason
- * @property int      $rework_quantity
- * @property string   $rework_reason
- * @property int      $reject_quantity
- * @property string   $reject_reason
+ * @property int      $actual_quantity       the actual quantity of item delivered to the customer as indicated by the Driver in the Detrack Proof of Delivery App. If the Driver submits POD without manually filling up this field, it will be set to be equal to the `$qty` field. Must be enabled under Job Settings to show up in the Detrack Dashboard.
+ * @property int      $inbound_quantity      arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property string   $unload_time_estimate  arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property string   $unload_time_actual    arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property int      $follow_up_quantity    arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property string   $follow_up_reason      arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property int      $rework_quantity       arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property string   $rework_reason         arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
+ * @property int      $reject_quantity       quantity of rejects of this item if the Driver has indicated that the customer has rejected some or all of the item in the Detrack Proof of Delivery App
+ * @property string   $reject_reason         reason given by the Driver in the Detrack Proof of Delivery App for the customer rejecting items. Valid values are `"Wrong Type"`, `"Wrong Size"`, `"Wrong Color"`, `"Wrong Quantity"`, `"Wrong Item"`, `"Goods Damaged"`, `"Did Not Order"` or `"Others"`.
  * @property float    $weight                arbitary field, must be enabled in Job Settings to show up in the Detrack Dashboard
- * @property string[] $serial_numbers
+ * @property string[] $serial_numbers        array of strings representing the data contained in the barcodes/qr codes the driver has scanned using the Detrack Proof of Delivery App
+ * @property-read string $photo_url URL of the photo proof of the individual driver taken by the Detrack Proof of Deliery App
  */
 class Item extends Resource
 {
