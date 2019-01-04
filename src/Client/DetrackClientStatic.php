@@ -18,8 +18,10 @@ class DetrackClientStatic
      * Sets the "default" API Key for the Detrack Client for this application.
      *
      * @param string $newApiKey The API Key you wish to set as the default API Key
+     *
+     * @return void
      */
-    public static function setApiKey($newApiKey)
+    public static function setApiKey(string $newApiKey): void
     {
         static::$apiKey = $newApiKey;
     }
@@ -27,35 +29,39 @@ class DetrackClientStatic
     /**
      * Sends a HTTP request to the API with the given HTTP verb and path, and returns the JSON-decoded response.
      *
+     * @netcall 1
+     *
      * @param string $verb       the HTTP verbs POST, GET, PUT, DELETE etc
      * @param string $actionPath the path you want to send the request to
-     * @param array  $dataArray  the array of data you want to send
+     * @param mixed  $dataArray  the array of data or the stdClass you want to send
      *
-     * @return \Guzzle\Http\Message\Response $response returns a \stdClass if the response is valid json, the original Response object if it is not
+     * @throws \Exception If API Key is not set
+     *
+     * @return object|\Guzzle\Http\Message\Response parsed JSON response as a stdClass if the response body contains valid JSON, or the original Response object if the response body does not contain valid JSON
      */
-    public static function sendData($verb, $actionPath, $dataArray)
+    public static function sendData(string $verb, string $actionPath, $dataArray)
     {
         $verb = strtoupper($verb);
         if (!isset(static::$apiKey)) {
-            return;
+            throw new Exception('API Key Not Set');
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::$baseURI,
-              'http_errors' => false,
+                'base_uri' => static::$baseURI,
+                'http_errors' => false,
             ]);
         }
         if ($verb == 'POST' || $verb != 'GET') {
             $response = static::$httpClient->request($verb, $actionPath, [
-            'json' => [
-              'data' => $dataArray,
-            ],
-            'headers' => ['X-API-KEY' => static::$apiKey],
-          ]);
+                'json' => [
+                    'data' => $dataArray,
+                ],
+                'headers' => ['X-API-KEY' => static::$apiKey],
+            ]);
         } elseif ($verb == 'GET') {
             $response = static::$httpClient->request($verb, $actionPath, [
-              'query' => $dataArray,
-              'headers' => ['X-API-KEY' => static::$apiKey],
+                'query' => $dataArray,
+                'headers' => ['X-API-KEY' => static::$apiKey],
             ]);
         }
         if (isset($response->getHeader('Content-Type')[0]) && $response->getHeader('Content-Type')[0] == 'application/json') {
@@ -73,7 +79,6 @@ class DetrackClientStatic
     /**
      * Returns the JSON Web Token (JWT), if the client has done so in this session.
      *
-     * Returns the JSON Web Token (JWT), if the client has done so in this session.
      * If it is null, you should either manually set it via DetrackClientStatic::setJWT(DetrackClientStatic::retrieveJWT()).
      *
      * @see static::setJWT()
@@ -81,7 +86,7 @@ class DetrackClientStatic
      *
      * @return string the associated JWT
      */
-    public static function getJWT()
+    public static function getJWT(): string
     {
         return static::$jwt;
     }
@@ -90,8 +95,10 @@ class DetrackClientStatic
      * Sets the JSON Web Token (JWT).
      *
      * @param string $newJWT the new JWT you want to set as the default for this session
+     *
+     * @return void
      */
-    public static function setJWT($newJWT)
+    public static function setJWT($newJWT): void
     {
         static::$jwt = $newJWT;
     }
@@ -102,28 +109,32 @@ class DetrackClientStatic
      * Calls the login path to retrieve a new JWT, but does not actually set the static $jwt class property.
      * This is for you to use with DetrackClientStatic::setJWT() or to save it in some persistent (or transient) storage in your application to set it across requests.
      *
+     * @netcall 1
+     *
      * @see static::setJWT()
+     *
+     * @throws \Exception if the api key is not yet set
      *
      * @return string $token the JWT token
      */
-    public static function retrieveJWT()
+    public static function retrieveJWT(): string
     {
         if (!isset(static::$apiKey)) {
-            return;
+            throw new Exception('API Key is not set for retrieving JWT');
         }
         if (!isset(static::$httpClient)) {
             static::$httpClient = new HttpClient([
-              'base_uri' => static::$baseURI,
-              'http_errors' => false,
+                'base_uri' => static::$baseURI,
+                'http_errors' => false,
             ]);
         }
         if (!isset(static::$jwt)) {
             $response = static::$httpClient->request('POST', 'login', [
-              'json' => [
-                'data' => [
-                  'api_key' => static::$apiKey,
+                'json' => [
+                    'data' => [
+                        'api_key' => static::$apiKey,
+                    ],
                 ],
-              ],
             ]);
             $responseJSON = json_decode((string) $response->getBody());
             if (!is_null($responseJSON) && is_string($responseJSON->token)) {

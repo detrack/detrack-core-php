@@ -1,8 +1,8 @@
 <?php
 
-namespace Detrack\DetrackCore\Resource;
+namespace Detrack\DetrackCore\Model;
 
-abstract class Resource implements \JsonSerializable
+abstract class Model implements \JsonSerializable
 {
     /**
      * An associative array that stores what values have been updated since the last save() function calls.
@@ -51,18 +51,6 @@ abstract class Resource implements \JsonSerializable
             */
             return !is_null($this->attributes[$attribute]) ? true : (isset($this->modifiedAttributes[$attribute]) || in_array($attribute, static::$requiredAttributes));
         }, ARRAY_FILTER_USE_KEY);
-    }
-
-    /**
-     * Reset the modifiedAttributes array.
-     *
-     * @return $this returns itself with the modifiedAttributes array reset
-     */
-    protected function resetModifiedAttributes(): Resource
-    {
-        $this->modifiedAttributes = [];
-
-        return $this;
     }
 
     /**

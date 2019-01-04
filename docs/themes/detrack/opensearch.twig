@@ -1,0 +1,17 @@
+{% if project.config('base_url') -%}
+  <?xml version="1.0" encoding="UTF-8"?>
+  <opensearchdescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:referrer="http://a9.com/-/opensearch/extensions/referrer/">
+    <shortname>{{ project.config('title') }}
+      ({{ project.version }})</shortname>
+    <description>Searches
+      {{ project.config('title') }}
+      ({{ project.version }})</description>
+    <tags>{{ project.config('title') }}</tags>
+    {% if project.config('favicon') -%}
+      <Image height="16" width="16" type="image/x-icon">{{ project.config('favicon') }}</image>
+    {% endif %}
+    <Url type="text/html" method="GET" template="{{ project.config('base_url')|replace({'%version%': project.version}) ~ '/index.html?q={searchTerms}&src={referrer:source?}' }}"/>
+    <inputencoding>UTF-8</inputencoding>
+    <adultcontent>false</adultcontent>
+  </opensearchdescription>
+{% endif %}

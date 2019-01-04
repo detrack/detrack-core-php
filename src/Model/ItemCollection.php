@@ -15,7 +15,7 @@ class ItemCollection extends ArrayCollection implements JsonSerializable
      *
      * @return array the model's array attributes
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -27,7 +27,7 @@ class ItemCollection extends ArrayCollection implements JsonSerializable
      *
      * @return string String representation of the model
      */
-    public function __toString()
+    public function __toString(): string
     {
         return json_encode($this);
     }
