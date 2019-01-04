@@ -2,8 +2,6 @@
 
 namespace Detrack\DetrackCore\Model;
 
-use Detrack\DetrackCore\Resource\Resource;
-
 /**
  * Represents a line item belonging to each Job.
  *
@@ -34,7 +32,7 @@ use Detrack\DetrackCore\Resource\Resource;
  * @property string[] $serial_numbers        array of strings representing the data contained in the barcodes/qr codes the driver has scanned using the Detrack Proof of Delivery App
  * @property-read string $photo_url URL of the photo proof of the individual driver taken by the Detrack Proof of Deliery App
  */
-class Item extends Resource
+class Item extends Model
 {
     /**
      * Attributes an item model has.
