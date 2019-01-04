@@ -69,8 +69,4 @@ class Item extends Resource
         'serial_numbers' => null,
         'photo_url' => null,
     ];
-    /**
-     * Required attributes are defined here.
-     */
-    protected static $requiredAttributes = ['sku', 'description', 'quantity'];
 }
