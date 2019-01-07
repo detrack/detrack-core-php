@@ -228,7 +228,7 @@ Use the `assignTo(Vehicle $vehicle)` method on `Job` objects to assign a job to 
 ```php
 $tomsVehicle = new Vehicle();
 $tomsVehicle->name = "Tom's Van";
-$tomsVehicle->hydrate(); //optional, assignTo will do it for you anyway
+$tomsVehicle = $tomsVehicle->hydrate(); //optional, assignTo will do it for you anyway
 
 $delivery->assignTo($tomsVehicle);
 ```

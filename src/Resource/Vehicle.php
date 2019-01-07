@@ -95,7 +95,6 @@ class Vehicle extends Resource
      * This function is destructive only if a match is found. If no match is found, the function returns null, but the original object is not modified.
      *
      * @chainable
-     * @destructive
      * @netcall 1
      *
      * @return $this|null the vehicle with filled up attributes, null if not found
@@ -111,10 +110,10 @@ class Vehicle extends Resource
                     if (count($searchResults) != 0) {
                         foreach ($searchResults as $searchResult) {
                             if ($searchResult->$otherKey == $this->$otherKey) {
-                                $this->attributes = json_decode(json_encode($searchResult), true);
-                                $this->resetModifiedAttributes();
+                                $returnVehicle = new Vehicle($searchResult);
+                                $returnVehicle->resetModifiedAttributes();
 
-                                return $this;
+                                return $returnVehicle;
                             }
                         }
                     } else {
@@ -127,12 +126,10 @@ class Vehicle extends Resource
             $verb = 'GET';
             $response = DetrackClientStatic::sendData($verb, $actionPath, null);
             if (isset($response->data)) {
-                foreach ($response->data as $key => $value) {
-                    $this->$key = $value;
-                }
-                $this->modifiedAttributes = [];
+                $returnVehicle = new Vehicle($response->data);
+                $returnVehicle->resetModifiedAttributes();
 
-                return $this;
+                return $returnVehicle;
             } elseif (isset($response->code) && $response->code == 'not_found') {
                 return null;
             }
@@ -205,9 +202,7 @@ class Vehicle extends Resource
             if ($returnVehicle == null) {
                 return $this->create()->resetModifiedAttributes();
             } else {
-                $this->id = $returnVehicle->id;
-
-                return $returnVehicle->update()->resetModifiedAttributes();
+                return $this->update()->resetModifiedAttributes();
             }
         } else {
             return $this->update()->resetModifiedAttributes();

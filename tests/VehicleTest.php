@@ -35,10 +35,10 @@ final class VehicleTest extends TestCase
     {
         $newVehicle = new Vehicle();
         $newVehicle->id = $newVehicleId;
-        $newVehicle->hydrate();
-        $this->assertEquals($newVehicle->mobile_number, '91234567');
-        $this->assertEquals($newVehicle->name, 'PHP Boat');
-        $this->assertEquals($newVehicle->detrack_id, getenv('TEST_DRIVER_ID'));
+        $returnVehicle = $newVehicle->hydrate();
+        $this->assertEquals($returnVehicle->mobile_number, '91234567');
+        $this->assertEquals($returnVehicle->name, 'PHP Boat');
+        $this->assertEquals($returnVehicle->detrack_id, getenv('TEST_DRIVER_ID'));
 
         return $newVehicle->id;
     }
@@ -46,7 +46,7 @@ final class VehicleTest extends TestCase
     /**
      * @depends testHydrateVehicle
      */
-    public function testDeleteVehicle(string $newVehicleId)
+    public function testDeleteVehicle(string $newVehicleId): void
     {
         $newVehicle = new Vehicle();
         $newVehicle->id = $newVehicleId;
