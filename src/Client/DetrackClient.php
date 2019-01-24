@@ -5,6 +5,7 @@ namespace Detrack\DetrackCore\Client;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Vehicle;
 use Detrack\DetrackCore\Client\Traits\DeliveryMiscActions;
+use Detrack\DetrackCore\Client\Traits\CollectionMiscActions;
 use GuzzleHttp\Client as httpClient;
 
 class DetrackClient
@@ -13,6 +14,7 @@ class DetrackClient
     private $apiKey;
     private $baseURI = 'https://app.detrack.com/api/v1/';
     use DeliveryMiscActions;
+    use CollectionMiscActions;
 
     public function __construct($apiKey, $proxy = null)
     {
