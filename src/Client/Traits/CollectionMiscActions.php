@@ -13,11 +13,11 @@ use Detrack\DetrackCore\Model\Collection;
 trait CollectionMiscActions
 {
     /**
-     * Sends HTTP request to the View delivery endpoint to find a single delivery.
+     * Sends HTTP request to the View collection endpoint to find a single collection.
      *
-     * @param array|string $attr An associative array containing the keys "date" and "do" that identifies the delivery, or just the DO to fetch the latest delivery attempt with that DO
+     * @param array|string $attr An associative array containing the keys "date" and "do" that identifies the collection, or just the DO to fetch the latest collection attempt with that DO
      *
-     * @return Collection|null The first delivery that matches the two fields
+     * @return Collection|null The first collection that matches the two fields
      */
     public function findCollection($attr)
     {
@@ -38,7 +38,7 @@ trait CollectionMiscActions
                     return null;
                 }
             }
-            $foundCollection = new Collection($responseObj->results[0]->delivery);
+            $foundCollection = new Collection($responseObj->results[0]->collection);
             //important to reattach the client upon creating the object, or method chaining will fail
             $foundCollection->setClient($this);
 
@@ -55,7 +55,7 @@ trait CollectionMiscActions
      * Supply an array of Collection objects or an array of Collection Indentifier Associative arrays
      * Please use sparingly.
      *
-     * @param array $paramArray an array of collections or delivery identifiers to findCollection
+     * @param array $paramArray an array of collections or collection identifiers to findCollection
      *
      * @return array array of Collection objects
      */
@@ -83,7 +83,7 @@ trait CollectionMiscActions
             if ($response->info->status == 'ok') {
                 foreach ($response->results as $responseResult) {
                     if ($responseResult->status == 'ok') {
-                        array_push($resultsArray, new Collection(array_filter(json_decode(json_encode($responseResult->delivery), true))));
+                        array_push($resultsArray, new Collection(array_filter(json_decode(json_encode($responseResult->collection), true))));
                     }
                 }
             }
@@ -107,8 +107,8 @@ trait CollectionMiscActions
         $response = json_decode((string) $this->sendData($apiPath, $data)->getBody());
         $collections = [];
         if ($response->info->status == 'ok') {
-            foreach ($response->collections as $delivery) {
-                array_push($collections, new Collection($delivery));
+            foreach ($response->collections as $collection) {
+                array_push($collections, new Collection($collection));
             }
         }
 
@@ -116,7 +116,7 @@ trait CollectionMiscActions
     }
 
     /**
-     * Bulk create collections. Strictly creates only, if a certain delivery already exists it will be returned in an array of failed creates.
+     * Bulk create collections. Strictly creates only, if a certain collection already exists it will be returned in an array of failed creates.
      *
      * @param array $collections an array of collections to create
      *
@@ -146,7 +146,7 @@ trait CollectionMiscActions
     }
 
     /**
-     * Bulk update collections. Strictly updates only, if a certain delivery does not already exist it will be returned in an array of failed updates.
+     * Bulk update collections. Strictly updates only, if a certain collection does not already exist it will be returned in an array of failed updates.
      *
      * @param array $collections an array of collections to update
      *
@@ -186,7 +186,7 @@ trait CollectionMiscActions
      * It goes through recursion if there are more than 100 collections passed in
      * Use this instead of multiple Collection::save() calls to cut down on the number of HTTP requests you have to make.
      * Supply an array of Collection objects.
-     * It first attempts "create" on every delivery object, collects the ones that failed because it already exists, then calls "update" on the rest.
+     * It first attempts "create" on every collection object, collects the ones that failed because it already exists, then calls "update" on the rest.
      * Please use sparingly.
      *
      * @param array $collections an array of collections to save
@@ -214,22 +214,22 @@ trait CollectionMiscActions
                     if ($error->code == Collection::ERROR_CODE_COLLECTION_ALREADY_EXISTS) {
                         /*create has failed because it already exists
                          find the Collection object in the original $dataArray array, and push it to $failedCreates
-                         we must push the original delivery object in the $collections array instead of the response result,
+                         we must push the original collection object in the $collections array instead of the response result,
                          or updates will be lost.
                         */
-                        foreach ($collections as $collectionsKey => $delivery) {
-                            if (['date' => $responseResult->date, 'do' => $responseResult->do] == $delivery->getIdentifier()) {
-                                array_push($failedCreates, $delivery);
+                        foreach ($collections as $collectionsKey => $collection) {
+                            if (['date' => $responseResult->date, 'do' => $responseResult->do] == $collection->getIdentifier()) {
+                                array_push($failedCreates, $collection);
                                 unset($collections[$collectionsKey]); //unset for faster search next iteration
                             }
                         }
                         array_push($failedCreates, $responseResult);
                     } else {
                         //create failed because of some other reason. ignore.
-                        //once again, we must push the original delivery object, or information will be lost.
-                        foreach ($collections as $collectionsKey => $delivery) {
-                            if (['date' => $responseResult->date, 'do' => $responseResult->do] == $delivery->getIdentifier()) {
-                                array_push($failedEitherWay, $delivery);
+                        //once again, we must push the original collection object, or information will be lost.
+                        foreach ($collections as $collectionsKey => $collection) {
+                            if (['date' => $responseResult->date, 'do' => $responseResult->do] == $collection->getIdentifier()) {
+                                array_push($failedEitherWay, $collection);
                                 unset($collections[$collectionsKey]); //unset for faster search next iteration
                             }
                         }
@@ -270,7 +270,7 @@ trait CollectionMiscActions
      *
      * @param array $paramArray this can either be an array of Collection objects, or an array of Collection identifier associative arrays
      *
-     * @return bool|array returns true if all the deletes worked, or a list of delivery identifiers that failed, with an additional index called "errors" that list the errors that occured
+     * @return bool|array returns true if all the deletes worked, or a list of collection identifiers that failed, with an additional index called "errors" that list the errors that occured
      */
     public function bulkDeleteCollections($paramArray)
     {

@@ -4,7 +4,9 @@ use PHPUnit\Framework\TestCase;
 use Detrack\DetrackCore\Client\DetrackClient;
 use Detrack\DetrackCore\Client\Exception\InvalidAPIKeyException;
 use Detrack\DetrackCore\Model\Delivery;
+use Detrack\DetrackCore\Model\Collection;
 use Detrack\DetrackCore\Factory\DeliveryFactory;
+use Detrack\DetrackCore\Factory\CollectionFactory;
 use Detrack\DetrackCore\Model\Vehicle;
 
 class DetrackClientTest extends TestCase
@@ -65,6 +67,8 @@ class DetrackClientTest extends TestCase
      * @depends testBulkSaveDeliveries
      *
      * @covers \DeliveryMiscActions::bulkFindDeliveries;
+     *
+     * @param mixed $combinedDeliveries
      */
     public function testBulkFindDeliveries($combinedDeliveries)
     {
@@ -86,6 +90,8 @@ class DetrackClientTest extends TestCase
      * @depends testBulkFindDeliveries
      *
      * @covers \DeliveryMiscActions::findDeliveriesByDate
+     *
+     * @param mixed $combinedDeliveries
      */
     public function testFindDeliveriesByDate($combinedDeliveries)
     {
@@ -102,6 +108,8 @@ class DetrackClientTest extends TestCase
      * @depends testFindDeliveriesByDate
      *
      * @covers \DeliveryMiscActions::bulkDeleteDeliveries
+     *
+     * @param mixed $combinedDeliveries
      */
     public function testBulkDeleteDeliveries($combinedDeliveries)
     {
@@ -119,11 +127,121 @@ class DetrackClientTest extends TestCase
      * @depends testBulkDeleteDeliveries
      *
      * @covers \DeliveryMiscActions::deleteDeliveriesByDate
+     *
+     * @param mixed $combinedDeliveries
      */
     public function testDeleteDeliveriesByDate($combinedDeliveries)
     {
         $this->assertSame(true, $this->client->deleteDeliveriesByDate($combinedDeliveries[0]->date));
         $this->assertSame([], $this->client->findDeliveriesByDate($combinedDeliveries[0]->date));
+    }
+
+    /**
+     * Tests the bulkSaveCollections()'s create functionality in the CollectionMiscActions traits.
+     *
+     * @covers \CollectionFactory::create();
+     * @covers \CollectionMiscActions::bulkSaveCollections();
+     */
+    public function testBulkSaveCollections()
+    {
+        $newFactory = new CollectionFactory($this->client);
+        $newCollections = $newFactory->createFakes(rand(101, 150));
+        //ensure nothing broke during the bulkSaveCollections call
+        $this->assertTrue($this->client->bulkSaveCollections($newCollections));
+        //now we try mixing create and update and see how it goes
+        $newCollections2 = $newFactory->createFakes(rand(101, 150));
+        foreach ($newCollections as $newCollection) {
+            //modify some fields
+            $newCollection->instructions = 'lorem ipsum bottom kek';
+        }
+        $combinedCollections = array_merge_recursive($newCollections, $newCollections2);
+        shuffle($combinedCollections);
+        //ensure nothing broke during the bulkSaveCollections call
+        $this->assertTrue($this->client->bulkSaveCollections($combinedCollections));
+        //sample one random collection from $newCollections and $newCollections2
+        $sampleCollection = $newCollections[rand(0, count($newCollections) - 1)];
+        $sampleCollection2 = $newCollections2[rand(0, count($newCollections2) - 1)];
+        //test if update worked
+        $this->assertEquals('lorem ipsum bottom kek', $this->client->findCollection($sampleCollection->getIdentifier())->instructions);
+        //test if create worked
+        $this->assertNotNull($this->client->findCollection($sampleCollection2->getIdentifier()));
+
+        return $combinedCollections;
+    }
+
+    /**
+     * Tests the bulkFindCollections function to see if we can find the collections we just created.
+     *
+     * @depends testBulkSaveCollections
+     *
+     * @covers \CollectionMiscActions::bulkFindCollections;
+     *
+     * @param mixed $combinedCollections
+     */
+    public function testBulkFindCollections($combinedCollections)
+    {
+        //first test finding via collection objects
+        $this->assertEquals(count($combinedCollections), count($this->client->bulkFindCollections($combinedCollections)));
+        //then test via collection identifiers
+        $combinedCollectionIdentifiers = [];
+        foreach ($combinedCollections as $combinedCollection) {
+            array_push($combinedCollectionIdentifiers, $combinedCollection->getIdentifier());
+        }
+        $this->assertEquals(count($combinedCollections), count($this->client->bulkFindCollections($combinedCollectionIdentifiers)));
+
+        return $combinedCollections;
+    }
+
+    /**
+     * Test the findCollectionsByDate function to see if we can list all collections created today.
+     *
+     * @depends testBulkFindCollections
+     *
+     * @covers \CollectionMiscActions::findCollectionsByDate
+     *
+     * @param mixed $combinedCollections
+     */
+    public function testFindCollectionsByDate($combinedCollections)
+    {
+        $receivedCollections = $this->client->findCollectionsByDate($combinedCollections[0]->date);
+        $this->assertInstanceOf(Collection::class, $receivedCollections[rand(0, count($receivedCollections))]);
+        $this->assertGreaterThanOrEqual(count($combinedCollections), count($receivedCollections));
+
+        return $combinedCollections;
+    }
+
+    /**
+     * Tests the bulkDeleteCollections function to see if we can delete some of the collections we created today.
+     *
+     * @depends testFindCollectionsByDate
+     *
+     * @covers \CollectionMiscActions::bulkDeleteCollections
+     *
+     * @param mixed $combinedCollections
+     */
+    public function testBulkDeleteCollections($combinedCollections)
+    {
+        //choose a subset of collections to deletes
+        $toBeDeleted = array_slice($combinedCollections, 0, rand(1, count($combinedCollections) - 1));
+        $this->assertSame(true, $this->client->bulkDeleteCollections($toBeDeleted));
+        $this->assertSame([], $this->client->bulkFindCollections($toBeDeleted));
+
+        return array_slice($combinedCollections, count($toBeDeleted));
+    }
+
+    /**
+     * Tests the deleteCollectionsByDate function to see if we can delete all collections created today.
+     *
+     * @depends testBulkDeleteCollections
+     *
+     * @covers \CollectionMiscActions::deleteCollectionsByDate
+     *
+     * @param mixed $combinedCollections
+     */
+    public function testDeleteCollectionsByDate($combinedCollections)
+    {
+        $this->assertSame(true, $this->client->deleteCollectionsByDate($combinedCollections[0]->date));
+        $this->assertSame([], $this->client->findCollectionsByDate($combinedCollections[0]->date));
     }
 
     /**

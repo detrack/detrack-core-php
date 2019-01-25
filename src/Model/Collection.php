@@ -3,13 +3,14 @@
 namespace Detrack\DetrackCore\Model;
 
 use RuntimeException;
+use Detrack\DetrackCore\Repository\CollectionRepository;
 
 class Collection extends Model
 {
-    use DeliveryRepository;
+    use CollectionRepository;
     /**
      * Attributes a collection model has.
-     * This is essentially the same as Delivery, but with different endpoints and delivery_time and delivery_to changed to collect_from and collection_time.
+     * This is essentially the same as Collection, but with different endpoints and delivery_time and delivery_to changed to collect_from and collection_time.
      * Not all of these attributes are compulsory. Required values are to be specified in the $requiredAttributes static variable
      * Fields marked REQUIRED are required by the Detrack API for the most basic functionality.
      * Fields marked OPTIONAL are optional but still utilised by the Detrack Backend System if you supply them.
@@ -51,7 +52,7 @@ class Collection extends Model
         'instructions' => null, //OPTIONAL: Any special delivery instruction for the driver. This will be displayed in the delivery detail view on the app.
         'assign_to' => null, //OPTIONAL: The name of the vehicle to assign this delivery to. This must be spelled exactly the same as your vehicle’s name in your dashboard.
         'notify_email' => null, //OPTIONAL: The email address to send customer-facing delivery updates to. If specified, a delivery notification will be sent to this email address upon successful delivery.
-        'notify_url' => null, //OPTIONAL: The URL to post delivery updates to. Please refer to "Delivery Push Notification" on the our documentation.
+        'notify_url' => null, //OPTIONAL: The URL to post delivery updates to. Please refer to "Collection Push Notification" on the our documentation.
         'zone' => null, //OPTIONAL: If you divide your deliveries into zones, then specifying this will help you to easily filter out the deliveries by zones in your dashboard.
         'customer' => null,
         'acc_no' => null,
@@ -125,18 +126,18 @@ class Collection extends Model
     /**
      * Define error code constants returned by the API when calling delivery endpoints.
      *
-     * Why are these defined here and not in DeliveryRepository, you ask?
+     * Why are these defined here and not in CollectionRepository, you ask?
      * IDK, ask PHP why I can't define constants in traits.
      */
     const ERROR_CODE_INVALID_ARGUMENT = '1000';
     const ERROR_CODE_INVALID_KEY = '1001';
-    const ERROR_CODE_DELIVERY_ALREADY_EXISTS = '1002';
-    const ERROR_CODE_DELIVERY_NOT_FOUND = '1003';
-    const ERROR_CODE_DELIVERY_NOT_EDITABLE = '1004';
-    const ERROR_CODE_DELIVERY_NOT_DELETABLE = '1005';
+    const ERROR_CODE_COLLECTION_ALREADY_EXISTS = '1002';
+    const ERROR_CODE_COLLECTION_NOT_FOUND = '1003';
+    const ERROR_CODE_COLLECTION_NOT_EDITABLE = '1004';
+    const ERROR_CODE_COLLECTION_NOT_DELETABLE = '1005';
 
     /**
-     * Constructor function for Delivery model.
+     * Constructor function for Collection model.
      *
      * @param mixed      $attr
      * @param null|mixed $client
@@ -282,7 +283,7 @@ class Collection extends Model
      *
      * @param string|Vehicle $driver either the name of the driver or the Vehicle object
      *
-     * @return Delivery returns itself for method chaining
+     * @return Collection returns itself for method chaining
      */
     public function assignTo($driver)
     {
@@ -314,7 +315,7 @@ class Collection extends Model
     /**
      * Retrieve driver information. Alias to getVehicle.
      *
-     * @see Delivery::getVehicle the function this function aliases
+     * @see Collection::getVehicle the function this function aliases
      *
      * @return Vehicle the vehicle assigned to this delivery
      */
@@ -326,11 +327,11 @@ class Collection extends Model
     /**
      * Set the delivery vehicle. Alias to assignTo().
      *
-     * @see Delivery::assignTo() the function this function aliases.
+     * @see Collection::assignTo() the function this function aliases.
      *
      * @param string|Vehicle $driver either the name of the driver or the Vehicle object
      *
-     * @return Delivery returns itself for method chaining
+     * @return Collection returns itself for method chaining
      */
     public function setVehicle($driver)
     {
@@ -340,11 +341,11 @@ class Collection extends Model
     /**
      * Set the delivery vehicle. Alias to assignTo().
      *
-     * @see Delivery::assignTo() the function this function aliases.
+     * @see Collection::assignTo() the function this function aliases.
      *
      * @param string|Vehicle $driver either the name of the driver or the Vehicle object
      *
-     * @return Delivery returns itself for method chaining
+     * @return Collection returns itself for method chaining
      */
     public function setDriver($driver)
     {
@@ -354,7 +355,7 @@ class Collection extends Model
     /**
      * Gets the entire array of attributes in key=>value format.
      *
-     * @see Delivery::$attributes the array this function references
+     * @see Collection::$attributes the array this function references
      *
      * @return array an array of attributes in key=>value format
      */
