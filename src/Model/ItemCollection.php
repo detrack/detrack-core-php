@@ -16,11 +16,11 @@ class ItemCollection extends \ArrayObject implements \JsonSerializable
     public function __construct($attr = null)
     {
         if (is_array($attr)) {
-            for ($i = 0; $i < count($attr); ++$i) {
-                if (is_array($attr[$i])) {
-                    $attr[$i] = new Item($attr[$i]);
-                } elseif (!($attr[$i] instanceof Item)) {
-                    unset($attr[$i]);
+            foreach ($attr as &$element) {
+                if (is_array($element)) {
+                    $element = new Item($element);
+                } elseif (!($element instanceof Item)) {
+                    unset($element);
                 }
             }
             parent::__construct(array_values($attr));
@@ -84,7 +84,9 @@ class ItemCollection extends \ArrayObject implements \JsonSerializable
      */
     private function resetKeys()
     {
-        return new self(array_values($this->getArrayCopy()));
+        $this->exchangeArray(array_values($this->getArrayCopy()));
+
+        return $this;
     }
 
     /**
@@ -141,7 +143,7 @@ class ItemCollection extends \ArrayObject implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->getArrayCopy();
+        return array_values($this->getArrayCopy());
     }
 
     /**
